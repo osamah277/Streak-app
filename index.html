@@ -242,7 +242,7 @@ document.getElementById('cancel-btn').addEventListener('click',function(){
   document.getElementById('reset-btn').style.display='block';
 });
 document.getElementById('confirm-btn').addEventListener('click',function(){
-  const s=load();s.log=[];s.lastTs=0;save(s);
+  try{localStorage.removeItem(KS);localStorage.removeItem(KL);localStorage.removeItem(KT);}catch(e){}
   stopTicker();
   document.getElementById('confirm-box').style.display='none';
   document.getElementById('reset-btn').style.display='block';
