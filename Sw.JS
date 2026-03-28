@@ -1,6 +1,3 @@
-S
-Copy
-
 const CACHE = 'streak-v1';
 const FILES = ['./index.html', './manifest.json', './icon.svg'];
  
