@@ -32,6 +32,14 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 .drawer-item-label{color:#fff;font-size:15px;font-weight:500}
 .drawer-item-sub{color:#555;font-size:12px;font-weight:400;margin-top:2px}
 .drawer-close{position:absolute;top:16px;right:16px;background:none;border:none;color:#555;font-size:22px;cursor:pointer;padding:4px}
+.drawer-notif{padding:16px 20px;border-top:0.5px solid #1a1a1a;margin-top:8px}
+.drawer-notif-title{color:#555;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px}
+.notif-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.notif-label{color:#ccc;font-size:14px}
+.toggle{position:relative;width:44px;height:26px;background:#333;border-radius:13px;cursor:pointer;transition:background 0.2s;border:none;flex-shrink:0}
+.toggle.on{background:#5dca7e}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left 0.2s}
+.toggle.on::after{left:21px}
 .tab-bar{display:flex;background:#000;border-bottom:0.5px solid #1e1e1e;flex-shrink:0}
 .tab{flex:1;padding:12px 8px;text-align:center;cursor:pointer;font-size:13px;color:#555;font-weight:500;border-bottom:2px solid transparent}
 .tab.active{color:#fff;border-bottom-color:#fff}
@@ -74,6 +82,7 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 .confirm-box p{color:#ccc;font-size:14px;text-align:center;margin-bottom:14px;line-height:1.5}
 .confirm-row{display:flex;gap:10px}
 .confirm-row .sbtn{margin-bottom:0;padding:13px;font-size:15px}
+.notif-banner{background:#1a2e1a;border:0.5px solid #1a5c1a;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#5dca7e;text-align:center;display:none}
 .home-bar{height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#000}
 .home-pill{width:120px;height:5px;background:#333;border-radius:3px}
 </style>
@@ -104,6 +113,7 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 <div class="app-body">
 
   <div class="page active" id="page-daily">
+    <div class="notif-banner" id="daily-notif-banner">Notifications on — we'll remind you when you can add again</div>
     <div id="daily-splash" class="splash-screen">
       <span class="splash-icon-big">⚡</span>
       <div class="splash-title">Daily streak</div>
@@ -141,6 +151,7 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
   </div>
 
   <div class="page" id="page-workout">
+    <div class="notif-banner" id="workout-notif-banner">Notifications on — we'll remind you when you can log again</div>
     <div id="workout-splash" class="splash-screen">
       <span class="splash-icon-big">💪</span>
       <div class="splash-title">Workout streak</div>
@@ -193,10 +204,21 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
     <span class="drawer-item-icon">💪</span>
     <div><div class="drawer-item-label">Workout</div><div class="drawer-item-sub">Stay fit, stay consistent</div></div>
   </div>
+  <div class="drawer-notif">
+    <div class="drawer-notif-title">Notifications</div>
+    <div class="notif-row">
+      <span class="notif-label">⚡ Daily reminder</span>
+      <button class="toggle" id="toggle-daily" onclick="toggleNotif('daily')"></button>
+    </div>
+    <div class="notif-row">
+      <span class="notif-label">💪 Workout reminder</span>
+      <button class="toggle" id="toggle-workout" onclick="toggleNotif('workout')"></button>
+    </div>
+  </div>
 </div>
 
 <script>
-const KEYS={daily:{s:'d_start',l:'d_log',t:'d_last'},workout:{s:'w_start',l:'w_log',t:'w_last'}};
+const KEYS={daily:{s:'d_start',l:'d_log',t:'d_last',n:'d_notif',nt:'d_notif_timer'},workout:{s:'w_start',l:'w_log',t:'w_last',n:'w_notif',nt:'w_notif_timer'}};
 const tickers={daily:null,workout:null};
 
 function load(type){const k=KEYS[type];try{return{start:localStorage.getItem(k.s),log:JSON.parse(localStorage.getItem(k.l)||'[]'),lastTs:parseInt(localStorage.getItem(k.t)||'0')};}catch(e){return{start:null,log:[],lastTs:0};}}
@@ -220,6 +242,49 @@ function stopTicker(type){if(tickers[type]){clearInterval(tickers[type]);tickers
 function updateClock(){const now=new Date(),h=now.getHours()%12||12,m=String(now.getMinutes()).padStart(2,'0');document.getElementById('clock').textContent=h+':'+m;}
 updateClock();setInterval(updateClock,10000);
 
+function isNotifOn(type){return localStorage.getItem(KEYS[type].n)==='1';}
+
+function scheduleNotif(type, msDelay){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  if(!navigator.serviceWorker.controller)return;
+  const label = type==='workout'?'💪 Time to log your workout!':'⚡ Time to add to your daily streak!';
+  const body = type==='workout'?'Your 24h window is open — log your workout now.':'Your 24h window is open — keep the streak going!';
+  setTimeout(function(){
+    if(!isNotifOn(type))return;
+    navigator.serviceWorker.ready.then(function(reg){
+      reg.showNotification('Streak', {body:body,icon:'./icon-192.png',badge:'./icon-192.png',tag:'streak-'+type,renotify:true,vibrate:[200,100,200]});
+    });
+  }, msDelay);
+}
+
+function toggleNotif(type){
+  if(!('Notification' in window)){alert('Notifications are not supported on this browser.');return;}
+  if(isNotifOn(type)){
+    localStorage.setItem(KEYS[type].n,'0');
+    updateToggleUI();
+    document.getElementById(type+'-notif-banner').style.display='none';
+    return;
+  }
+  Notification.requestPermission().then(function(perm){
+    if(perm==='granted'){
+      localStorage.setItem(KEYS[type].n,'1');
+      updateToggleUI();
+      document.getElementById(type+'-notif-banner').style.display='block';
+      const s=load(type);
+      if(s.lastTs>0){const rem=msLeft(s.lastTs);if(rem>0)scheduleNotif(type,rem);}
+    } else {
+      alert('Please enable notifications for this site in your browser settings.');
+    }
+  });
+}
+
+function updateToggleUI(){
+  ['daily','workout'].forEach(function(type){
+    const btn=document.getElementById('toggle-'+type);
+    if(isNotifOn(type))btn.classList.add('on');else btn.classList.remove('on');
+  });
+}
+
 function render(type){
   const s=load(type);
   const isW=type==='workout';
@@ -227,6 +292,7 @@ function render(type){
   const main=document.getElementById(type+'-main');
   if(!s.start){splash.style.display='block';main.style.display='none';stopTicker(type);return;}
   splash.style.display='none';main.style.display='block';
+  document.getElementById(type+'-notif-banner').style.display=isNotifOn(type)?'block':'none';
   const streak=calcStreak(s.log);
   document.getElementById(type+'-num').textContent=streak;
   document.getElementById(type+'-icon').textContent=isW?(streak>=14?'🏆':streak>=7?'🔥':'💪'):(streak>=14?'🔥':streak>=7?'✨':streak>=3?'⚡':'◆');
@@ -276,7 +342,7 @@ function switchTab(type){
   document.getElementById('header-title').textContent=type==='workout'?'Workout':'Streak';
   render(type);
 }
-function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open');}
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open');updateToggleUI();}
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open');}
 
 document.getElementById('burger-btn').addEventListener('click',openDrawer);
@@ -285,11 +351,16 @@ document.getElementById('drawer-overlay').addEventListener('click',closeDrawer);
 
 ['daily','workout'].forEach(function(type){
   document.getElementById(type+'-start-btn').addEventListener('click',function(){
-    const now=Date.now();save(type,{start:String(now),log:[now],lastTs:now});render(type);
+    const now=Date.now();
+    save(type,{start:String(now),log:[now],lastTs:now});
+    if(isNotifOn(type))scheduleNotif(type,86400000);
+    render(type);
   });
   document.getElementById(type+'-add-btn').addEventListener('click',function(){
     const s=load(type);if(s.lastTs>0&&msLeft(s.lastTs)>0)return;
-    const now=Date.now();s.log.push(now);s.lastTs=now;save(type,s);render(type);
+    const now=Date.now();s.log.push(now);s.lastTs=now;save(type,s);
+    if(isNotifOn(type))scheduleNotif(type,86400000);
+    render(type);
   });
   document.getElementById(type+'-reset-btn').addEventListener('click',function(){
     document.getElementById(type+'-confirm').style.display='block';
@@ -307,8 +378,21 @@ document.getElementById('drawer-overlay').addEventListener('click',closeDrawer);
   });
 });
 
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
-render('daily');render('workout');
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(function(){
+    ['daily','workout'].forEach(function(type){
+      const s=load(type);
+      if(s.lastTs>0&&isNotifOn(type)){
+        const rem=msLeft(s.lastTs);
+        if(rem>0)scheduleNotif(type,rem);
+      }
+    });
+  });
+}
+
+updateToggleUI();
+render('daily');
+render('workout');
 </script>
 </body>
 </html>
