@@ -23,17 +23,16 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 .burger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px}
 .drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100}
 .drawer-overlay.open{display:block}
-.drawer{position:fixed;top:0;right:-260px;width:240px;height:100%;background:#111;z-index:101;transition:right 0.25s ease;padding:60px 0 40px;border-left:0.5px solid #222}
+.drawer{position:fixed;top:0;right:-260px;width:240px;height:100%;background:#111;z-index:101;transition:right 0.25s ease;padding:60px 0 40px;border-left:0.5px solid #222;overflow-y:auto}
 .drawer.open{right:0}
-.drawer-title{color:#555;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;padding:0 20px 12px}
-.drawer-item{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;border-bottom:0.5px solid #1a1a1a}
+.drawer-section-title{color:#555;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;padding:0 20px 10px}
+.drawer-item{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;border-bottom:0.5px solid #1a1a1a}
 .drawer-item:active{background:#1a1a1a}
 .drawer-item-icon{font-size:20px;width:28px;text-align:center}
 .drawer-item-label{color:#fff;font-size:15px;font-weight:500}
-.drawer-item-sub{color:#555;font-size:12px;font-weight:400;margin-top:2px}
+.drawer-item-sub{color:#555;font-size:12px;margin-top:2px}
 .drawer-close{position:absolute;top:16px;right:16px;background:none;border:none;color:#555;font-size:22px;cursor:pointer;padding:4px}
-.drawer-notif{padding:16px 20px;border-top:0.5px solid #1a1a1a;margin-top:8px}
-.drawer-notif-title{color:#555;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px}
+.drawer-notif{padding:14px 20px;border-top:0.5px solid #1a1a1a;margin-top:6px}
 .notif-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .notif-label{color:#ccc;font-size:14px}
 .toggle{position:relative;width:44px;height:26px;background:#333;border-radius:13px;cursor:pointer;transition:background 0.2s;border:none;flex-shrink:0}
@@ -46,45 +45,87 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 .app-body{padding:20px 16px 32px;background:#000;flex:1;overflow-y:auto}
 .page{display:none}
 .page.active{display:block}
-.splash-screen{text-align:center;padding:60px 20px 40px}
-.splash-icon-big{font-size:64px;display:block;margin-bottom:20px}
-.splash-title{color:#fff;font-size:26px;font-weight:600;margin-bottom:10px}
-.splash-sub{color:#666;font-size:15px;line-height:1.6;margin-bottom:40px}
+
+/* shared buttons */
 .sbtn{display:block;width:100%;padding:16px;border-radius:14px;border:none;font-size:17px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity 0.1s,transform 0.1s;margin-bottom:12px;text-align:center}
 .sbtn:active{transform:scale(0.97);opacity:0.85}
 .sbtn-white{background:#fff;color:#000}
 .sbtn-grey{background:#1e1e1e;color:#fff}
 .sbtn-red{background:#c0392b;color:#fff}
+.sbtn-green{background:#5dca7e;color:#000}
 .sbtn-locked{background:#111;color:#333;cursor:not-allowed;border:1px solid #1e1e1e}
 .sbtn-locked:active{transform:none;opacity:1}
-.streak-card{border-radius:22px;padding:28px 20px;margin-bottom:16px;text-align:center;border:0.5px solid #1e1e1e;background:#111}
+.sbtn-sm{padding:11px 16px;font-size:15px;margin-bottom:0}
+
+/* streak card */
+.streak-card{border-radius:22px;padding:24px 20px;margin-bottom:16px;text-align:center;border:0.5px solid #1e1e1e;background:#111}
 .streak-card.workout{background:#0d1a0d}
-.streak-icon{font-size:36px;display:block;margin-bottom:10px}
-.streak-big{font-size:72px;font-weight:600;color:#fff;line-height:1}
-.streak-sub{color:#555;font-size:14px;margin-top:6px}
-.started-label{color:#333;font-size:12px;margin-top:12px}
+.streak-icon{font-size:32px;display:block;margin-bottom:8px}
+.streak-big{font-size:64px;font-weight:600;color:#fff;line-height:1}
+.streak-sub{color:#555;font-size:14px;margin-top:4px}
+.started-label{color:#333;font-size:11px;margin-top:10px}
 .status-pill{border-radius:12px;padding:11px 16px;font-size:14px;text-align:center;margin-bottom:14px}
 .pill-ready{background:#0d2e0d;color:#5dca7e;border:0.5px solid #1a5c1a}
 .pill-locked{background:#2e1f00;color:#f0a500;border:0.5px solid #5c3d00}
-.countdown-num{font-size:36px;font-weight:600;color:#fff;text-align:center;margin:4px 0;letter-spacing:0.05em}
+.countdown-num{font-size:32px;font-weight:600;color:#fff;text-align:center;margin:4px 0;letter-spacing:0.05em}
 .countdown-lbl{font-size:12px;color:#444;text-align:center;margin-bottom:12px}
-.prog-track{height:4px;background:#1a1a1a;border-radius:2px;margin-bottom:16px;overflow:hidden}
+.prog-track{height:4px;background:#1a1a1a;border-radius:2px;margin-bottom:14px;overflow:hidden}
 .prog-fill{height:100%;background:#fff;border-radius:2px;transition:width 1s linear}
 .prog-fill.green{background:#5dca7e}
 .dots-wrap{margin-bottom:16px}
-.dots-title{color:#444;font-size:12px;margin-bottom:10px;letter-spacing:0.08em;text-transform:uppercase}
+.dots-title{color:#444;font-size:12px;margin-bottom:8px;letter-spacing:0.08em;text-transform:uppercase}
 .dots-grid{display:flex;flex-wrap:wrap;gap:5px}
-.dot{width:30px;height:30px;border-radius:8px;background:#111;display:flex;align-items:center;justify-content:center;font-size:10px;color:#333;border:0.5px solid #1e1e1e}
+.dot{width:28px;height:28px;border-radius:8px;background:#111;display:flex;align-items:center;justify-content:center;font-size:10px;color:#333;border:0.5px solid #1e1e1e}
 .dot.done{background:#fff;color:#000;border-color:#fff}
 .dot.done.green{background:#5dca7e;color:#000;border-color:#5dca7e}
 .divider{border:none;border-top:0.5px solid #1a1a1a;margin:14px 0}
 .confirm-box{background:#111;border:1.5px solid #c0392b;border-radius:16px;padding:16px;margin-bottom:12px}
 .confirm-box p{color:#ccc;font-size:14px;text-align:center;margin-bottom:14px;line-height:1.5}
 .confirm-row{display:flex;gap:10px}
-.confirm-row .sbtn{margin-bottom:0;padding:13px;font-size:15px}
-.notif-banner{background:#1a2e1a;border:0.5px solid #1a5c1a;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#5dca7e;text-align:center;display:none}
+
+/* splash */
+.splash-screen{text-align:center;padding:50px 20px 30px}
+.splash-icon-big{font-size:60px;display:block;margin-bottom:16px}
+.splash-title{color:#fff;font-size:24px;font-weight:600;margin-bottom:8px}
+.splash-sub{color:#666;font-size:14px;line-height:1.6;margin-bottom:32px}
+
+/* routine picker */
+.section-label{color:#555;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px}
+.muscle-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.muscle-card{background:#111;border:0.5px solid #1e1e1e;border-radius:16px;padding:16px 12px;text-align:center;cursor:pointer;transition:border-color 0.15s,background 0.15s}
+.muscle-card:active{transform:scale(0.97)}
+.muscle-card.selected{border-color:#fff;background:#1a1a1a}
+.muscle-card-icon{font-size:28px;display:block;margin-bottom:6px}
+.muscle-card-name{color:#fff;font-size:14px;font-weight:500}
+.muscle-card-desc{color:#555;font-size:11px;margin-top:3px}
+
+/* workout active screen */
+.workout-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.workout-back{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px}
+.workout-title{color:#fff;font-size:18px;font-weight:600}
+.workout-progress-bar{height:4px;background:#1a1a1a;border-radius:2px;margin-bottom:20px;overflow:hidden}
+.workout-progress-fill{height:100%;background:#5dca7e;border-radius:2px;transition:width 0.4s ease}
+.exercise-card{background:#111;border:0.5px solid #1e1e1e;border-radius:20px;padding:22px 18px;margin-bottom:14px}
+.exercise-num{color:#555;font-size:12px;margin-bottom:6px}
+.exercise-name{color:#fff;font-size:20px;font-weight:600;margin-bottom:6px}
+.exercise-detail{color:#888;font-size:14px;margin-bottom:16px;line-height:1.5}
+.exercise-tip{background:#0d1a0d;border-radius:10px;padding:10px 12px;font-size:12px;color:#5dca7e;line-height:1.5}
+
+/* rest / timer */
+.timer-circle{width:140px;height:140px;border-radius:50%;background:#111;border:3px solid #1e1e1e;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 20px}
+.timer-num{font-size:42px;font-weight:600;color:#fff;line-height:1}
+.timer-lbl{font-size:12px;color:#555;margin-top:4px}
+.timer-circle.active{border-color:#5dca7e}
+.timer-circle.rest{border-color:#f0a500}
+
+.done-card{background:#0d2e0d;border:0.5px solid #1a5c1a;border-radius:20px;padding:28px 20px;text-align:center;margin-bottom:16px}
+.done-icon{font-size:48px;display:block;margin-bottom:12px}
+.done-title{color:#5dca7e;font-size:22px;font-weight:600;margin-bottom:6px}
+.done-sub{color:#3a7a3a;font-size:14px;line-height:1.5}
+
 .home-bar{height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#000}
 .home-pill{width:120px;height:5px;background:#333;border-radius:3px}
+.notif-banner{background:#1a2e1a;border:0.5px solid #1a5c1a;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#5dca7e;text-align:center;display:none}
 </style>
 </head>
 <body>
@@ -100,9 +141,7 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 
 <div class="app-header">
   <div class="app-header-title" id="header-title">Streak</div>
-  <button class="burger" id="burger-btn" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="burger" id="burger-btn" aria-label="Menu"><span></span><span></span><span></span></button>
 </div>
 
 <div class="tab-bar">
@@ -112,8 +151,9 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 
 <div class="app-body">
 
+  <!-- ── DAILY TAB ── -->
   <div class="page active" id="page-daily">
-    <div class="notif-banner" id="daily-notif-banner">Notifications on — we'll remind you when you can add again</div>
+    <div class="notif-banner" id="daily-notif-banner">Notifications on — we'll remind you when ready</div>
     <div id="daily-splash" class="splash-screen">
       <span class="splash-icon-big">⚡</span>
       <div class="splash-title">Daily streak</div>
@@ -134,78 +174,163 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
         <div class="prog-track"><div class="prog-fill" id="daily-prog" style="width:0%"></div></div>
       </div>
       <button class="sbtn sbtn-white" id="daily-add-btn">+ Add one</button>
-      <div class="dots-wrap">
-        <div class="dots-title">Last 30 days</div>
-        <div class="dots-grid" id="daily-dots"></div>
-      </div>
+      <div class="dots-wrap"><div class="dots-title">Last 30 days</div><div class="dots-grid" id="daily-dots"></div></div>
       <div class="divider"></div>
       <div id="daily-confirm" style="display:none" class="confirm-box">
         <p>Reset daily streak? Clears all entries and the timer.</p>
         <div class="confirm-row">
-          <button class="sbtn sbtn-grey" id="daily-cancel-btn">Cancel</button>
-          <button class="sbtn sbtn-red" id="daily-confirm-btn">Yes, reset</button>
+          <button class="sbtn sbtn-grey sbtn-sm" id="daily-cancel-btn">Cancel</button>
+          <button class="sbtn sbtn-red sbtn-sm" id="daily-confirm-btn">Yes, reset</button>
         </div>
       </div>
       <button class="sbtn sbtn-grey" id="daily-reset-btn">Reset my streak</button>
     </div>
   </div>
 
+  <!-- ── WORKOUT TAB ── -->
   <div class="page" id="page-workout">
-    <div class="notif-banner" id="workout-notif-banner">Notifications on — we'll remind you when you can log again</div>
-    <div id="workout-splash" class="splash-screen">
-      <span class="splash-icon-big">💪</span>
-      <div class="splash-title">Workout streak</div>
-      <p class="splash-sub">Stay consistent. Log a workout every 24 hours from when you start.</p>
-      <button class="sbtn sbtn-white" id="workout-start-btn">Start</button>
-    </div>
-    <div id="workout-main" style="display:none">
+
+    <!-- streak overview -->
+    <div id="workout-streak-area" style="display:none">
+      <div class="notif-banner" id="workout-notif-banner">Notifications on — we'll remind you when ready</div>
       <div class="streak-card workout">
         <span class="streak-icon" id="workout-icon">💪</span>
         <div class="streak-big" id="workout-num">0</div>
         <div class="streak-sub">workout streak</div>
         <div class="started-label" id="workout-started"></div>
       </div>
-      <div class="status-pill" id="workout-status"></div>
-      <div id="workout-locked" style="display:none">
+      <div class="status-pill" id="workout-streak-status"></div>
+      <div id="workout-streak-locked" style="display:none">
         <div class="countdown-num" id="workout-countdown">00:00:00</div>
-        <div class="countdown-lbl">until you can log again</div>
+        <div class="countdown-lbl">until you can work out again</div>
         <div class="prog-track"><div class="prog-fill green" id="workout-prog" style="width:0%"></div></div>
       </div>
-      <button class="sbtn sbtn-white" id="workout-add-btn">+ Log workout</button>
-      <div class="dots-wrap">
-        <div class="dots-title">Last 30 days</div>
-        <div class="dots-grid" id="workout-dots"></div>
+    </div>
+
+    <!-- routine picker -->
+    <div id="workout-picker">
+      <div id="workout-splash" class="splash-screen" style="padding-top:30px">
+        <span class="splash-icon-big">💪</span>
+        <div class="splash-title">Choose a workout</div>
+        <p class="splash-sub">Pick a muscle group and we'll walk you through the exercises.</p>
       </div>
+      <div id="workout-picker-main">
+        <div class="section-label">Choose muscle group</div>
+        <div class="muscle-grid">
+          <div class="muscle-card" onclick="selectMuscle('abs')">
+            <span class="muscle-card-icon">🔥</span>
+            <div class="muscle-card-name">Abs</div>
+            <div class="muscle-card-desc">Core & Obliques</div>
+          </div>
+          <div class="muscle-card" onclick="selectMuscle('legs')">
+            <span class="muscle-card-icon">🦵</span>
+            <div class="muscle-card-name">Legs</div>
+            <div class="muscle-card-desc">Quads, Glutes, Calves</div>
+          </div>
+          <div class="muscle-card" onclick="selectMuscle('chest')">
+            <span class="muscle-card-icon">💪</span>
+            <div class="muscle-card-name">Chest</div>
+            <div class="muscle-card-desc">Pecs & Triceps</div>
+          </div>
+          <div class="muscle-card" onclick="selectMuscle('back')">
+            <span class="muscle-card-icon">🏋️</span>
+            <div class="muscle-card-name">Back</div>
+            <div class="muscle-card-desc">Lats & Shoulders</div>
+          </div>
+          <div class="muscle-card" onclick="selectMuscle('arms')">
+            <span class="muscle-card-icon">💥</span>
+            <div class="muscle-card-name">Arms</div>
+            <div class="muscle-card-desc">Biceps & Triceps</div>
+          </div>
+          <div class="muscle-card" onclick="selectMuscle('fullbody')">
+            <span class="muscle-card-icon">⚡</span>
+            <div class="muscle-card-name">Full Body</div>
+            <div class="muscle-card-desc">Everything</div>
+          </div>
+        </div>
+        <div id="start-workout-wrap" style="display:none">
+          <button class="sbtn sbtn-white" id="start-workout-btn">Start workout</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- active workout -->
+    <div id="workout-active" style="display:none">
+      <div class="workout-header">
+        <button class="workout-back" id="workout-back-btn">←</button>
+        <div class="workout-title" id="workout-active-title">Abs</div>
+      </div>
+      <div class="workout-progress-bar"><div class="workout-progress-fill" id="workout-prog-fill" style="width:0%"></div></div>
+      <div id="workout-exercise-area"></div>
+      <div id="workout-nav-btns" style="display:flex;gap:10px">
+        <button class="sbtn sbtn-grey sbtn-sm" id="prev-btn" style="flex:1" onclick="prevExercise()">← Prev</button>
+        <button class="sbtn sbtn-white sbtn-sm" id="next-btn" style="flex:1" onclick="nextExercise()">Next →</button>
+      </div>
+    </div>
+
+    <!-- done screen -->
+    <div id="workout-done" style="display:none">
+      <div class="done-card">
+        <span class="done-icon">🏆</span>
+        <div class="done-title">Workout complete!</div>
+        <div class="done-sub" id="done-sub">Great job finishing your workout.</div>
+      </div>
+      <div class="streak-card workout" id="done-streak-card" style="display:none">
+        <span class="streak-icon" id="done-streak-icon">💪</span>
+        <div class="streak-big" id="done-streak-num">1</div>
+        <div class="streak-sub">workout streak</div>
+      </div>
+      <button class="sbtn sbtn-white" onclick="goPickerFromDone()">Do another workout</button>
       <div class="divider"></div>
       <div id="workout-confirm" style="display:none" class="confirm-box">
         <p>Reset workout streak? Clears all entries and the timer.</p>
         <div class="confirm-row">
-          <button class="sbtn sbtn-grey" id="workout-cancel-btn">Cancel</button>
-          <button class="sbtn sbtn-red" id="workout-confirm-btn">Yes, reset</button>
+          <button class="sbtn sbtn-grey sbtn-sm" id="workout-cancel-btn">Cancel</button>
+          <button class="sbtn sbtn-red sbtn-sm" id="workout-confirm-btn">Yes, reset</button>
         </div>
       </div>
       <button class="sbtn sbtn-grey" id="workout-reset-btn">Reset my streak</button>
     </div>
-  </div>
 
-</div>
+    <!-- locked screen (already worked out) -->
+    <div id="workout-locked-screen" style="display:none">
+      <div class="divider"></div>
+      <div id="workout-confirm2" style="display:none" class="confirm-box">
+        <p>Reset workout streak? Clears all entries and the timer.</p>
+        <div class="confirm-row">
+          <button class="sbtn sbtn-grey sbtn-sm" id="workout-cancel-btn2">Cancel</button>
+          <button class="sbtn sbtn-red sbtn-sm" id="workout-confirm-btn2">Yes, reset</button>
+        </div>
+      </div>
+      <button class="sbtn sbtn-grey" id="workout-reset-btn2">Reset my streak</button>
+    </div>
+
+    <div class="dots-wrap" id="workout-dots-wrap" style="display:none">
+      <div class="dots-title">Last 30 days</div>
+      <div class="dots-grid" id="workout-dots"></div>
+    </div>
+
+  </div><!-- end workout page -->
+
+</div><!-- end app-body -->
 
 <div class="home-bar"><div class="home-pill"></div></div>
 
+<!-- DRAWER -->
 <div class="drawer-overlay" id="drawer-overlay"></div>
 <div class="drawer" id="drawer">
   <button class="drawer-close" id="drawer-close">✕</button>
-  <div class="drawer-title">Streaks</div>
+  <div class="drawer-section-title">Streaks</div>
   <div class="drawer-item" onclick="switchTab('daily');closeDrawer()">
     <span class="drawer-item-icon">⚡</span>
     <div><div class="drawer-item-label">Daily</div><div class="drawer-item-sub">Your everyday habit</div></div>
   </div>
   <div class="drawer-item" onclick="switchTab('workout');closeDrawer()">
     <span class="drawer-item-icon">💪</span>
-    <div><div class="drawer-item-label">Workout</div><div class="drawer-item-sub">Stay fit, stay consistent</div></div>
+    <div><div class="drawer-item-label">Workout</div><div class="drawer-item-sub">Routines + streak</div></div>
   </div>
   <div class="drawer-notif">
-    <div class="drawer-notif-title">Notifications</div>
+    <div class="drawer-section-title" style="padding:0 0 10px">Notifications</div>
     <div class="notif-row">
       <span class="notif-label">⚡ Daily reminder</span>
       <button class="toggle" id="toggle-daily" onclick="toggleNotif('daily')"></button>
@@ -218,8 +343,86 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 </div>
 
 <script>
-const KEYS={daily:{s:'d_start',l:'d_log',t:'d_last',n:'d_notif',nt:'d_notif_timer'},workout:{s:'w_start',l:'w_log',t:'w_last',n:'w_notif',nt:'w_notif_timer'}};
+const ROUTINES = {
+  abs: {
+    name:'Abs', icon:'🔥',
+    exercises:[
+      {name:'Crunches', type:'reps', reps:'3 sets of 20', tip:'Keep your lower back pressed to the floor. Exhale as you crunch up.'},
+      {name:'Plank', type:'timer', seconds:45, tip:'Keep your body in a straight line. Squeeze your core the entire time.'},
+      {name:'Bicycle Crunches', type:'reps', reps:'3 sets of 16', tip:'Opposite elbow to opposite knee. Slow and controlled.'},
+      {name:'Leg Raises', type:'reps', reps:'3 sets of 15', tip:'Keep legs straight, lower them slowly without touching the floor.'},
+      {name:'Side Plank (Left)', type:'timer', seconds:30, tip:'Stack your feet or stagger them. Keep hips lifted.'},
+      {name:'Side Plank (Right)', type:'timer', seconds:30, tip:'Switch sides. Keep breathing steadily.'},
+      {name:'Mountain Climbers', type:'timer', seconds:40, tip:'Fast pace — drive knees to chest alternately. Keep hips down.'},
+    ]
+  },
+  legs: {
+    name:'Legs', icon:'🦵',
+    exercises:[
+      {name:'Bodyweight Squats', type:'reps', reps:'4 sets of 15', tip:'Feet shoulder-width apart. Push knees out, chest up. Go to parallel or below.'},
+      {name:'Reverse Lunges', type:'reps', reps:'3 sets of 12 each leg', tip:'Step back and lower your back knee to just above the floor. Keep front knee behind toes.'},
+      {name:'Glute Bridges', type:'reps', reps:'3 sets of 20', tip:'Squeeze your glutes hard at the top. Hold for 1 second each rep.'},
+      {name:'Wall Sit', type:'timer', seconds:45, tip:'Thighs parallel to the floor. Keep your back flat against the wall.'},
+      {name:'Jump Squats', type:'reps', reps:'3 sets of 10', tip:'Land softly, absorb the landing through your hips and knees.'},
+      {name:'Calf Raises', type:'reps', reps:'3 sets of 25', tip:'Use a step for full range of motion. Slow on the way down.'},
+      {name:'Standing Rest', type:'timer', seconds:60, tip:'Shake out your legs. Walk in place to keep blood flowing.'},
+    ]
+  },
+  chest: {
+    name:'Chest', icon:'💪',
+    exercises:[
+      {name:'Push-Ups', type:'reps', reps:'4 sets of 15', tip:'Hands slightly wider than shoulders. Lower your chest to just above the floor.'},
+      {name:'Wide Push-Ups', type:'reps', reps:'3 sets of 12', tip:'Wider grip targets more chest. Keep elbows at 45°.'},
+      {name:'Diamond Push-Ups', type:'reps', reps:'3 sets of 10', tip:'Hands form a diamond shape. Great for inner chest and triceps.'},
+      {name:'Decline Push-Ups', type:'reps', reps:'3 sets of 10', tip:'Feet elevated on a chair. Targets upper chest.'},
+      {name:'Push-Up Hold', type:'timer', seconds:30, tip:'Hold at the bottom of a push-up. Feel the chest engage fully.'},
+      {name:'Chest Squeeze', type:'timer', seconds:20, tip:'Press both palms together in front of chest as hard as you can.'},
+    ]
+  },
+  back: {
+    name:'Back', icon:'🏋️',
+    exercises:[
+      {name:'Superman Hold', type:'timer', seconds:40, tip:'Lie face down, lift arms and legs off the floor. Squeeze your back at the top.'},
+      {name:'Reverse Snow Angels', type:'reps', reps:'3 sets of 15', tip:'Lie face down, arms at sides. Sweep arms overhead and back. Keep them off the floor.'},
+      {name:'Prone Y Raise', type:'reps', reps:'3 sets of 12', tip:'Arms make a Y shape above your head. Squeeze shoulder blades together.'},
+      {name:'Bird Dog (Left)', type:'reps', reps:'3 sets of 10', tip:'On hands and knees — extend opposite arm and leg. Hold 2 seconds.'},
+      {name:'Bird Dog (Right)', type:'reps', reps:'3 sets of 10', tip:'Switch sides. Keep your core braced and hips level.'},
+      {name:'Wall Angels', type:'reps', reps:'3 sets of 10', tip:'Stand against a wall, slide arms up and down like a snow angel. Keep contact throughout.'},
+    ]
+  },
+  arms: {
+    name:'Arms', icon:'💥',
+    exercises:[
+      {name:'Push-Ups', type:'reps', reps:'3 sets of 15', tip:'Standard push-ups warm up the triceps and chest.'},
+      {name:'Diamond Push-Ups', type:'reps', reps:'3 sets of 12', tip:'Diamond hand position isolates triceps more. Go slow.'},
+      {name:'Tricep Dips', type:'reps', reps:'3 sets of 15', tip:'Use a chair. Keep elbows pointing back, not out.'},
+      {name:'Bicep Curl Hold', type:'timer', seconds:30, tip:'If you have anything weighted (bag, bottle) curl to 90° and hold. Feel the burn.'},
+      {name:'Plank Shoulder Taps', type:'reps', reps:'3 sets of 20 total', tip:'In a plank, tap each shoulder alternately. Keep hips still.'},
+      {name:'Arm Circles', type:'timer', seconds:30, tip:'20 seconds forward, 10 seconds backward. Burn out the shoulders.'},
+    ]
+  },
+  fullbody: {
+    name:'Full Body', icon:'⚡',
+    exercises:[
+      {name:'Jumping Jacks', type:'timer', seconds:45, tip:'Warm up the whole body. Keep a steady rhythm.'},
+      {name:'Bodyweight Squats', type:'reps', reps:'3 sets of 15', tip:'Full range of motion. Chest up, knees out.'},
+      {name:'Push-Ups', type:'reps', reps:'3 sets of 12', tip:'Keep a straight line from head to heels.'},
+      {name:'Reverse Lunges', type:'reps', reps:'2 sets of 10 each leg', tip:'Controlled movement. Keep front knee behind toes.'},
+      {name:'Plank', type:'timer', seconds:40, tip:'Squeeze everything — abs, glutes, quads.'},
+      {name:'Burpees', type:'reps', reps:'3 sets of 8', tip:'Squat down, kick back, push-up, jump up. Full extension at the top.'},
+      {name:'Mountain Climbers', type:'timer', seconds:40, tip:'Fast pace for cardio. Keep hips level.'},
+      {name:'Cool Down Stretch', type:'timer', seconds:60, tip:'Slow breathing. Stretch quads, hamstrings, chest, and shoulders.'},
+    ]
+  }
+};
+
+const KEYS={daily:{s:'d_start',l:'d_log',t:'d_last',n:'d_notif'},workout:{s:'w_start',l:'w_log',t:'w_last',n:'w_notif'}};
 const tickers={daily:null,workout:null};
+let exTimer=null;
+let currentMuscle=null;
+let currentExIdx=0;
+let exCountdown=0;
+let exInterval=null;
 
 function load(type){const k=KEYS[type];try{return{start:localStorage.getItem(k.s),log:JSON.parse(localStorage.getItem(k.l)||'[]'),lastTs:parseInt(localStorage.getItem(k.t)||'0')};}catch(e){return{start:null,log:[],lastTs:0};}}
 function save(type,s){const k=KEYS[type];try{localStorage.setItem(k.s,s.start);localStorage.setItem(k.l,JSON.stringify(s.log));localStorage.setItem(k.t,String(s.lastTs));}catch(e){}}
@@ -238,40 +441,27 @@ function calcStreak(log){
 }
 function fmtDT(ts){return new Date(ts).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});}
 function stopTicker(type){if(tickers[type]){clearInterval(tickers[type]);tickers[type]=null;}}
-
-function updateClock(){const now=new Date(),h=now.getHours()%12||12,m=String(now.getMinutes()).padStart(2,'0');document.getElementById('clock').textContent=h+':'+m;}
-updateClock();setInterval(updateClock,10000);
-
 function isNotifOn(type){return localStorage.getItem(KEYS[type].n)==='1';}
 
-function scheduleNotif(type, msDelay){
+function scheduleNotif(type,msDelay){
   if(!('Notification' in window)||Notification.permission!=='granted')return;
   if(!navigator.serviceWorker.controller)return;
-  const label = type==='workout'?'💪 Time to log your workout!':'⚡ Time to add to your daily streak!';
-  const body = type==='workout'?'Your 24h window is open — log your workout now.':'Your 24h window is open — keep the streak going!';
+  const body=type==='workout'?'Time to work out — keep your streak alive!':'Your 24h window is open — keep the streak going!';
   setTimeout(function(){
     if(!isNotifOn(type))return;
     navigator.serviceWorker.ready.then(function(reg){
-      reg.showNotification('Streak', {body:body,icon:'./icon-192.png',badge:'./icon-192.png',tag:'streak-'+type,renotify:true,vibrate:[200,100,200]});
+      reg.showNotification('Streak',{body:body,icon:'./icon-192.png',badge:'./icon-192.png',tag:'streak-'+type,renotify:true,vibrate:[200,100,200]});
     });
-  }, msDelay);
+  },msDelay);
 }
 
 function toggleNotif(type){
-  if(!('Notification' in window)){alert('Notifications are not supported on this browser.');return;}
-  if(isNotifOn(type)){
-    localStorage.setItem(KEYS[type].n,'0');
-    updateToggleUI();
-    document.getElementById(type+'-notif-banner').style.display='none';
-    return;
-  }
+  if(!('Notification' in window)){alert('Notifications not supported.');return;}
+  if(isNotifOn(type)){localStorage.setItem(KEYS[type].n,'0');updateToggleUI();return;}
   Notification.requestPermission().then(function(perm){
     if(perm==='granted'){
-      localStorage.setItem(KEYS[type].n,'1');
-      updateToggleUI();
-      document.getElementById(type+'-notif-banner').style.display='block';
-      const s=load(type);
-      if(s.lastTs>0){const rem=msLeft(s.lastTs);if(rem>0)scheduleNotif(type,rem);}
+      localStorage.setItem(KEYS[type].n,'1');updateToggleUI();
+      const s=load(type);if(s.lastTs>0){const rem=msLeft(s.lastTs);if(rem>0)scheduleNotif(type,rem);}
     } else {
       alert('Please enable notifications for this site in your browser settings.');
     }
@@ -285,42 +475,50 @@ function updateToggleUI(){
   });
 }
 
-function render(type){
-  const s=load(type);
-  const isW=type==='workout';
-  const splash=document.getElementById(type+'-splash');
-  const main=document.getElementById(type+'-main');
-  if(!s.start){splash.style.display='block';main.style.display='none';stopTicker(type);return;}
+function updateClock(){const now=new Date(),h=now.getHours()%12||12,m=String(now.getMinutes()).padStart(2,'0');document.getElementById('clock').textContent=h+':'+m;}
+updateClock();setInterval(updateClock,10000);
+
+// ── DAILY ──
+function renderDaily(){
+  const s=load('daily');
+  const splash=document.getElementById('daily-splash');
+  const main=document.getElementById('daily-main');
+  if(!s.start){splash.style.display='block';main.style.display='none';stopTicker('daily');return;}
   splash.style.display='none';main.style.display='block';
-  document.getElementById(type+'-notif-banner').style.display=isNotifOn(type)?'block':'none';
+  document.getElementById('daily-notif-banner').style.display=isNotifOn('daily')?'block':'none';
   const streak=calcStreak(s.log);
-  document.getElementById(type+'-num').textContent=streak;
-  document.getElementById(type+'-icon').textContent=isW?(streak>=14?'🏆':streak>=7?'🔥':'💪'):(streak>=14?'🔥':streak>=7?'✨':streak>=3?'⚡':'◆');
-  document.getElementById(type+'-started').textContent='Started '+fmtDT(parseInt(s.start));
+  document.getElementById('daily-num').textContent=streak;
+  document.getElementById('daily-icon').textContent=streak>=14?'🔥':streak>=7?'✨':streak>=3?'⚡':'◆';
+  document.getElementById('daily-started').textContent='Started '+fmtDT(parseInt(s.start));
   const rem=msLeft(s.lastTs),canAdd=s.lastTs===0||rem<=0;
-  const addBtn=document.getElementById(type+'-add-btn');
+  const addBtn=document.getElementById('daily-add-btn');
   if(canAdd){
     addBtn.className='sbtn sbtn-white';
-    document.getElementById(type+'-status').className='status-pill pill-ready';
-    document.getElementById(type+'-status').textContent='Ready — you can '+(isW?'log a workout':'add one')+' now';
-    document.getElementById(type+'-locked').style.display='none';
-    stopTicker(type);
+    document.getElementById('daily-status').className='status-pill pill-ready';
+    document.getElementById('daily-status').textContent='Ready — you can add one now';
+    document.getElementById('daily-locked').style.display='none';
+    stopTicker('daily');
   } else {
     addBtn.className='sbtn sbtn-locked';
-    document.getElementById(type+'-status').className='status-pill pill-locked';
-    document.getElementById(type+'-status').textContent='Already logged — come back in:';
-    document.getElementById(type+'-locked').style.display='block';
-    document.getElementById(type+'-countdown').textContent=fmt(rem);
-    document.getElementById(type+'-prog').style.width=(100-Math.floor((rem/86400000)*100))+'%';
-    stopTicker(type);
-    tickers[type]=setInterval(function(){
+    document.getElementById('daily-status').className='status-pill pill-locked';
+    document.getElementById('daily-status').textContent='Already added — come back in:';
+    document.getElementById('daily-locked').style.display='block';
+    document.getElementById('daily-countdown').textContent=fmt(rem);
+    document.getElementById('daily-prog').style.width=(100-Math.floor((rem/86400000)*100))+'%';
+    stopTicker('daily');
+    tickers['daily']=setInterval(function(){
       const r=msLeft(s.lastTs);
-      if(r<=0){stopTicker(type);render(type);return;}
-      document.getElementById(type+'-countdown').textContent=fmt(r);
-      document.getElementById(type+'-prog').style.width=(100-Math.floor((r/86400000)*100))+'%';
+      if(r<=0){stopTicker('daily');renderDaily();return;}
+      document.getElementById('daily-countdown').textContent=fmt(r);
+      document.getElementById('daily-prog').style.width=(100-Math.floor((r/86400000)*100))+'%';
     },1000);
   }
+  renderDots('daily',s,false);
+}
+
+function renderDots(type,s,isGreen){
   const container=document.getElementById(type+'-dots');
+  if(!container)return;
   container.innerHTML='';
   const logDays=new Set(s.log.map(toDay));
   for(let i=29;i>=0;i--){
@@ -328,10 +526,183 @@ function render(type){
     const ds=toDay(d.getTime());
     if(s.start&&ds<toDay(parseInt(s.start)))continue;
     const dot=document.createElement('div');
-    dot.className='dot'+(logDays.has(ds)?(isW?' done green':' done'):'');
+    dot.className='dot'+(logDays.has(ds)?(isGreen?' done green':' done'):'');
     dot.textContent=d.getDate();
     container.appendChild(dot);
   }
+}
+
+// ── WORKOUT ──
+function renderWorkout(){
+  const s=load('workout');
+  const canWork=s.lastTs===0||msLeft(s.lastTs)<=0;
+
+  // streak area
+  const streakArea=document.getElementById('workout-streak-area');
+  const dotsWrap=document.getElementById('workout-dots-wrap');
+
+  if(s.start){
+    streakArea.style.display='block';
+    dotsWrap.style.display='block';
+    document.getElementById('workout-notif-banner').style.display=isNotifOn('workout')?'block':'none';
+    const streak=calcStreak(s.log);
+    document.getElementById('workout-num').textContent=streak;
+    document.getElementById('workout-icon').textContent=streak>=14?'🏆':streak>=7?'🔥':'💪';
+    document.getElementById('workout-started').textContent='Started '+fmtDT(parseInt(s.start));
+    const rem=msLeft(s.lastTs);
+    if(s.lastTs>0&&rem>0){
+      document.getElementById('workout-streak-status').className='status-pill pill-locked';
+      document.getElementById('workout-streak-status').textContent='Already worked out — come back in:';
+      document.getElementById('workout-streak-locked').style.display='block';
+      document.getElementById('workout-countdown').textContent=fmt(rem);
+      document.getElementById('workout-prog').style.width=(100-Math.floor((rem/86400000)*100))+'%';
+      stopTicker('workout');
+      tickers['workout']=setInterval(function(){
+        const r=msLeft(s.lastTs);
+        if(r<=0){stopTicker('workout');renderWorkout();return;}
+        document.getElementById('workout-countdown').textContent=fmt(r);
+        document.getElementById('workout-prog').style.width=(100-Math.floor((r/86400000)*100))+'%';
+      },1000);
+    } else {
+      document.getElementById('workout-streak-status').className='status-pill pill-ready';
+      document.getElementById('workout-streak-status').textContent='Ready — choose a workout below';
+      document.getElementById('workout-streak-locked').style.display='none';
+      stopTicker('workout');
+    }
+    renderDots('workout',s,true);
+  } else {
+    streakArea.style.display='none';
+    dotsWrap.style.display='none';
+  }
+
+  if(canWork){
+    showScreen('picker');
+    document.getElementById('workout-splash').style.display=s.start?'none':'block';
+    document.getElementById('workout-picker-main').style.display='block';
+  } else {
+    showScreen('locked');
+  }
+}
+
+function showScreen(name){
+  document.getElementById('workout-picker').style.display='none';
+  document.getElementById('workout-active').style.display='none';
+  document.getElementById('workout-done').style.display='none';
+  document.getElementById('workout-locked-screen').style.display='none';
+  if(name==='picker')document.getElementById('workout-picker').style.display='block';
+  else if(name==='active')document.getElementById('workout-active').style.display='block';
+  else if(name==='done')document.getElementById('workout-done').style.display='block';
+  else if(name==='locked')document.getElementById('workout-locked-screen').style.display='block';
+}
+
+function selectMuscle(muscle){
+  document.querySelectorAll('.muscle-card').forEach(c=>c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  currentMuscle=muscle;
+  document.getElementById('start-workout-wrap').style.display='block';
+}
+
+function startWorkout(){
+  if(!currentMuscle)return;
+  currentExIdx=0;
+  stopExTimer();
+  const r=ROUTINES[currentMuscle];
+  document.getElementById('workout-active-title').textContent=r.icon+' '+r.name;
+  showScreen('active');
+  renderExercise();
+}
+
+function renderExercise(){
+  const r=ROUTINES[currentMuscle];
+  const ex=r.exercises[currentExIdx];
+  const total=r.exercises.length;
+  const pct=Math.round((currentExIdx/total)*100);
+  document.getElementById('workout-prog-fill').style.width=pct+'%';
+
+  const area=document.getElementById('workout-exercise-area');
+  const prevBtn=document.getElementById('prev-btn');
+  const nextBtn=document.getElementById('next-btn');
+  prevBtn.style.display=currentExIdx===0?'none':'block';
+  nextBtn.textContent=currentExIdx===total-1?'Finish workout ✓':'Next →';
+
+  let html='<div class="exercise-card">';
+  html+='<div class="exercise-num">Exercise '+(currentExIdx+1)+' of '+total+'</div>';
+  html+='<div class="exercise-name">'+ex.name+'</div>';
+
+  if(ex.type==='reps'){
+    html+='<div class="exercise-detail">'+ex.reps+'</div>';
+    html+='<div class="exercise-tip">💡 '+ex.tip+'</div>';
+    html+='</div>';
+    area.innerHTML=html;
+    stopExTimer();
+  } else {
+    html+='<div class="exercise-detail">Hold for '+ex.seconds+' seconds</div>';
+    html+='<div class="exercise-tip">💡 '+ex.tip+'</div>';
+    html+='</div>';
+    html+='<div class="timer-circle active" id="ex-timer-circle"><div class="timer-num" id="ex-timer-num">'+ex.seconds+'</div><div class="timer-lbl">seconds</div></div>';
+    area.innerHTML=html;
+    startExTimer(ex.seconds);
+  }
+}
+
+function startExTimer(seconds){
+  stopExTimer();
+  exCountdown=seconds;
+  document.getElementById('ex-timer-num').textContent=exCountdown;
+  exInterval=setInterval(function(){
+    exCountdown--;
+    const el=document.getElementById('ex-timer-num');
+    if(el)el.textContent=exCountdown;
+    if(exCountdown<=0){
+      stopExTimer();
+      const circle=document.getElementById('ex-timer-circle');
+      if(circle){circle.classList.remove('active');circle.classList.add('rest');}
+      if(el)el.textContent='Done!';
+    }
+  },1000);
+}
+
+function stopExTimer(){if(exInterval){clearInterval(exInterval);exInterval=null;}}
+
+function nextExercise(){
+  const r=ROUTINES[currentMuscle];
+  if(currentExIdx>=r.exercises.length-1){
+    finishWorkout();
+  } else {
+    currentExIdx++;
+    stopExTimer();
+    renderExercise();
+  }
+}
+
+function prevExercise(){
+  if(currentExIdx>0){currentExIdx--;stopExTimer();renderExercise();}
+}
+
+function finishWorkout(){
+  stopExTimer();
+  const s=load('workout');
+  const now=Date.now();
+  if(!s.start){s.start=String(now);}
+  s.log.push(now);s.lastTs=now;
+  save('workout',s);
+  if(isNotifOn('workout'))scheduleNotif('workout',86400000);
+
+  showScreen('done');
+  const streak=calcStreak(s.log);
+  const r=ROUTINES[currentMuscle];
+  document.getElementById('done-sub').textContent='You completed the '+r.name+' routine. Your streak is now '+streak+' day'+(streak===1?'':'s')+'!';
+  document.getElementById('done-streak-card').style.display='block';
+  document.getElementById('done-streak-num').textContent=streak;
+  document.getElementById('done-streak-icon').textContent=streak>=14?'🏆':streak>=7?'🔥':'💪';
+  renderWorkout();
+}
+
+function goPickerFromDone(){
+  currentMuscle=null;
+  document.querySelectorAll('.muscle-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('start-workout-wrap').style.display='none';
+  showScreen('picker');
 }
 
 function switchTab(type){
@@ -340,59 +711,56 @@ function switchTab(type){
   document.getElementById('tab-'+type).classList.add('active');
   document.getElementById('page-'+type).classList.add('active');
   document.getElementById('header-title').textContent=type==='workout'?'Workout':'Streak';
-  render(type);
+  if(type==='daily')renderDaily();else renderWorkout();
 }
+
 function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open');updateToggleUI();}
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open');}
 
 document.getElementById('burger-btn').addEventListener('click',openDrawer);
 document.getElementById('drawer-close').addEventListener('click',closeDrawer);
 document.getElementById('drawer-overlay').addEventListener('click',closeDrawer);
+document.getElementById('start-workout-btn').addEventListener('click',startWorkout);
+document.getElementById('workout-back-btn').addEventListener('click',function(){stopExTimer();showScreen('picker');});
 
-['daily','workout'].forEach(function(type){
-  document.getElementById(type+'-start-btn').addEventListener('click',function(){
-    const now=Date.now();
-    save(type,{start:String(now),log:[now],lastTs:now});
-    if(isNotifOn(type))scheduleNotif(type,86400000);
-    render(type);
-  });
-  document.getElementById(type+'-add-btn').addEventListener('click',function(){
-    const s=load(type);if(s.lastTs>0&&msLeft(s.lastTs)>0)return;
-    const now=Date.now();s.log.push(now);s.lastTs=now;save(type,s);
-    if(isNotifOn(type))scheduleNotif(type,86400000);
-    render(type);
-  });
-  document.getElementById(type+'-reset-btn').addEventListener('click',function(){
-    document.getElementById(type+'-confirm').style.display='block';
-    document.getElementById(type+'-reset-btn').style.display='none';
-  });
-  document.getElementById(type+'-cancel-btn').addEventListener('click',function(){
-    document.getElementById(type+'-confirm').style.display='none';
-    document.getElementById(type+'-reset-btn').style.display='block';
-  });
-  document.getElementById(type+'-confirm-btn').addEventListener('click',function(){
-    clearAll(type);stopTicker(type);
-    document.getElementById(type+'-confirm').style.display='none';
-    document.getElementById(type+'-reset-btn').style.display='block';
-    render(type);
-  });
+// daily buttons
+document.getElementById('daily-start-btn').addEventListener('click',function(){
+  const now=Date.now();save('daily',{start:String(now),log:[now],lastTs:now});
+  if(isNotifOn('daily'))scheduleNotif('daily',86400000);
+  renderDaily();
 });
+document.getElementById('daily-add-btn').addEventListener('click',function(){
+  const s=load('daily');if(s.lastTs>0&&msLeft(s.lastTs)>0)return;
+  const now=Date.now();s.log.push(now);s.lastTs=now;save('daily',s);
+  if(isNotifOn('daily'))scheduleNotif('daily',86400000);
+  renderDaily();
+});
+document.getElementById('daily-reset-btn').addEventListener('click',function(){document.getElementById('daily-confirm').style.display='block';document.getElementById('daily-reset-btn').style.display='none';});
+document.getElementById('daily-cancel-btn').addEventListener('click',function(){document.getElementById('daily-confirm').style.display='none';document.getElementById('daily-reset-btn').style.display='block';});
+document.getElementById('daily-confirm-btn').addEventListener('click',function(){clearAll('daily');stopTicker('daily');document.getElementById('daily-confirm').style.display='none';document.getElementById('daily-reset-btn').style.display='block';renderDaily();});
+
+// workout reset (done screen)
+document.getElementById('workout-reset-btn').addEventListener('click',function(){document.getElementById('workout-confirm').style.display='block';document.getElementById('workout-reset-btn').style.display='none';});
+document.getElementById('workout-cancel-btn').addEventListener('click',function(){document.getElementById('workout-confirm').style.display='none';document.getElementById('workout-reset-btn').style.display='block';});
+document.getElementById('workout-confirm-btn').addEventListener('click',function(){clearAll('workout');stopTicker('workout');document.getElementById('workout-confirm').style.display='none';document.getElementById('workout-reset-btn').style.display='block';renderWorkout();});
+
+// workout reset (locked screen)
+document.getElementById('workout-reset-btn2').addEventListener('click',function(){document.getElementById('workout-confirm2').style.display='block';document.getElementById('workout-reset-btn2').style.display='none';});
+document.getElementById('workout-cancel-btn2').addEventListener('click',function(){document.getElementById('workout-confirm2').style.display='none';document.getElementById('workout-reset-btn2').style.display='block';});
+document.getElementById('workout-confirm-btn2').addEventListener('click',function(){clearAll('workout');stopTicker('workout');document.getElementById('workout-confirm2').style.display='none';document.getElementById('workout-reset-btn2').style.display='block';renderWorkout();});
 
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').then(function(){
     ['daily','workout'].forEach(function(type){
       const s=load(type);
-      if(s.lastTs>0&&isNotifOn(type)){
-        const rem=msLeft(s.lastTs);
-        if(rem>0)scheduleNotif(type,rem);
-      }
+      if(s.lastTs>0&&isNotifOn(type)){const rem=msLeft(s.lastTs);if(rem>0)scheduleNotif(type,rem);}
     });
   });
 }
 
 updateToggleUI();
-render('daily');
-render('workout');
+renderDaily();
+renderWorkout();
 </script>
 </body>
 </html>
