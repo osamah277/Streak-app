@@ -135,6 +135,26 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 .quran-btn{background:#c9a84c;color:#000;border:none;border-radius:14px;padding:14px 40px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
 .quran-btn:active{opacity:0.85;transform:scale(0.97)}
 .quran-ornament{font-size:36px;margin-bottom:20px}
+.quran-actions{display:flex;gap:10px;justify-content:center;width:100%}
+.quran-btn-share{background:transparent;color:#c9a84c;border:1.5px solid #c9a84c;border-radius:14px;padding:14px 24px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
+.quran-btn-share:active{opacity:0.75}
+
+/* share card overlay */
+.share-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.share-overlay.open{display:flex}
+.share-card{width:100%;max-width:340px;background:linear-gradient(160deg,#1a1200 0%,#0d0d0d 60%,#0d1a0d 100%);border:1px solid #c9a84c;border-radius:24px;padding:32px 24px;text-align:center;position:relative}
+.share-card-ornament{font-size:28px;margin-bottom:12px;display:block}
+.share-card-bismillah{font-size:18px;color:#c9a84c;margin-bottom:16px;font-family:serif;line-height:1.5}
+.share-card-arabic{font-size:18px;color:#fff;line-height:1.9;margin-bottom:14px;direction:rtl;font-family:serif}
+.share-card-divider{width:40px;height:1px;background:#c9a84c;margin:0 auto 14px;opacity:0.5}
+.share-card-translation{font-size:14px;color:#ccc;line-height:1.7;font-style:italic;margin-bottom:10px}
+.share-card-ref{font-size:11px;color:#c9a84c;margin-bottom:16px}
+.share-card-footer{font-size:10px;color:#444;margin-top:16px;border-top:0.5px solid #222;padding-top:12px}
+.share-card-date{font-size:11px;color:#555;margin-bottom:20px}
+.share-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px;margin-top:16px}
+.share-dl-btn{background:#c9a84c;color:#000;border:none;border-radius:14px;padding:14px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
+.share-dl-btn:active{opacity:0.85}
+.share-close-btn{background:transparent;color:#666;border:none;font-size:14px;cursor:pointer;padding:8px;font-family:inherit}
 </style>
 </head>
 <body>
@@ -146,7 +166,28 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
   <div class="quran-translation" id="quran-translation"></div>
   <div class="quran-ref" id="quran-ref"></div>
   <div class="quran-date" id="quran-date"></div>
-  <button class="quran-btn" onclick="dismissQuran()">Continue</button>
+  <div class="quran-actions">
+    <button class="quran-btn-share" onclick="openShareCard()">Share</button>
+    <button class="quran-btn" onclick="dismissQuran()">Continue</button>
+  </div>
+</div>
+
+<!-- share card overlay -->
+<div class="share-overlay" id="share-overlay">
+  <div class="share-card" id="share-card">
+    <span class="share-card-ornament">&#9775;&#65039;</span>
+    <div class="share-card-bismillah">&#1576;&#1616;&#1587;&#1618;&#1605;&#1616; &#1575;&#1604;&#1604;&#1607;&#1616; &#1575;&#1604;&#1585;&#1617;&#1614;&#1581;&#1618;&#1605;&#1614;&#1606;&#1616; &#1575;&#1604;&#1585;&#1617;&#1614;&#1581;&#1616;&#1610;&#1618;&#1605;&#1616;</div>
+    <div class="share-card-arabic" id="sc-arabic"></div>
+    <div class="share-card-divider"></div>
+    <div class="share-card-translation" id="sc-translation"></div>
+    <div class="share-card-ref" id="sc-ref"></div>
+    <div class="share-card-date" id="sc-date"></div>
+    <div class="share-card-footer">Quran Daily — streak app</div>
+  </div>
+  <div class="share-actions">
+    <button class="share-dl-btn" id="share-dl-btn">Save image to share</button>
+    <button class="share-close-btn" onclick="closeShareCard()">Cancel</button>
+  </div>
 </div>
 
 <div class="status-bar">
@@ -415,6 +456,51 @@ function showQuranSplash(){
 function dismissQuran(){
   document.getElementById('quran-overlay').style.display='none';
 }
+
+function openShareCard(){
+  const v=getTodayVerse();
+  document.getElementById('sc-arabic').textContent=v.arabic;
+  document.getElementById('sc-translation').textContent='"'+v.translation+'"';
+  document.getElementById('sc-ref').textContent='— '+v.ref;
+  const d=new Date();
+  document.getElementById('sc-date').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('share-overlay').classList.add('open');
+}
+
+function closeShareCard(){
+  document.getElementById('share-overlay').classList.remove('open');
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('share-dl-btn').addEventListener('click',function(){
+    var btn=document.getElementById('share-dl-btn');
+    btn.textContent='Saving...';
+    var script=document.createElement('script');
+    script.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    script.onload=function(){
+      html2canvas(document.getElementById('share-card'),{
+        backgroundColor:null,
+        scale:3,
+        useCORS:true,
+        logging:false
+      }).then(function(canvas){
+        var link=document.createElement('a');
+        link.download='quran-verse-'+new Date().toISOString().slice(0,10)+'.png';
+        link.href=canvas.toDataURL('image/png');
+        link.click();
+        btn.textContent='Save image to share';
+      }).catch(function(){
+        btn.textContent='Save image to share';
+        alert('Could not save image. Try a screenshot instead.');
+      });
+    };
+    script.onerror=function(){
+      btn.textContent='Save image to share';
+      alert('Could not load image tool. Try taking a screenshot instead.');
+    };
+    document.head.appendChild(script);
+  });
+});
 
 const ROUTINES = {
   abs: {
