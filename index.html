@@ -126,9 +126,28 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 .home-bar{height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#000}
 .home-pill{width:120px;height:5px;background:#333;border-radius:3px}
 .notif-banner{background:#1a2e1a;border:0.5px solid #1a5c1a;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#5dca7e;text-align:center;display:none}
+.quran-overlay{position:fixed;inset:0;background:#000;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center}
+.quran-bismillah{font-size:26px;color:#c9a84c;margin-bottom:24px;line-height:1.5;font-family:serif}
+.quran-arabic{font-size:21px;color:#fff;line-height:1.9;margin-bottom:18px;direction:rtl;font-family:serif}
+.quran-translation{font-size:15px;color:#aaa;line-height:1.7;margin-bottom:8px;font-style:italic}
+.quran-ref{font-size:12px;color:#c9a84c;margin-bottom:10px}
+.quran-date{font-size:11px;color:#444;margin-bottom:32px}
+.quran-btn{background:#c9a84c;color:#000;border:none;border-radius:14px;padding:14px 40px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
+.quran-btn:active{opacity:0.85;transform:scale(0.97)}
+.quran-ornament{font-size:36px;margin-bottom:20px}
 </style>
 </head>
 <body>
+
+<div class="quran-overlay" id="quran-overlay">
+  <div class="quran-ornament">&#9775;&#65039;</div>
+  <div class="quran-bismillah">&#1576;&#1616;&#1587;&#1618;&#1605;&#1616; &#1575;&#1604;&#1604;&#1607;&#1616; &#1575;&#1604;&#1585;&#1617;&#1614;&#1581;&#1618;&#1605;&#1614;&#1606;&#1616; &#1575;&#1604;&#1585;&#1617;&#1614;&#1581;&#1616;&#1610;&#1618;&#1605;&#1616;</div>
+  <div class="quran-arabic" id="quran-arabic"></div>
+  <div class="quran-translation" id="quran-translation"></div>
+  <div class="quran-ref" id="quran-ref"></div>
+  <div class="quran-date" id="quran-date"></div>
+  <button class="quran-btn" onclick="dismissQuran()">Continue</button>
+</div>
 
 <div class="status-bar">
   <span class="status-time" id="clock">9:41</span>
@@ -343,6 +362,66 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 </div>
 
 <script>
+
+const VERSES = [
+  {arabic:'إِنَّ مَعَ الْعُسْرِ يُسْرًا', translation:'Indeed, with hardship comes ease.', ref:'Surah Ash-Sharh 94:6'},
+  {arabic:'وَلَا تَيْأَسُوا مِن رَّوْحِ اللَّهِ', translation:'Do not despair of relief from Allah.', ref:'Surah Yusuf 12:87'},
+  {arabic:'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا', translation:'For indeed, with hardship will be ease.', ref:'Surah Ash-Sharh 94:5'},
+  {arabic:'وَاصْبِرْ فَإِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ', translation:'And be patient, for indeed Allah does not allow to be lost the reward of those who do good.', ref:'Surah Hud 11:115'},
+  {arabic:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ', translation:'Allah is sufficient for us, and He is the best disposer of affairs.', ref:'Surah Aal-Imran 3:173'},
+  {arabic:'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ', translation:'And whoever relies upon Allah — then He is sufficient for him.', ref:'Surah At-Talaq 65:3'},
+  {arabic:'اللَّهُ لَطِيفٌ بِعِبَادِهِ', translation:'Allah is Kind to His servants.', ref:'Surah Ash-Shura 42:19'},
+  {arabic:'وَلَذِكْرُ اللَّهِ أَكْبَرُ', translation:'And the remembrance of Allah is greater.', ref:'Surah Al-Ankabut 29:45'},
+  {arabic:'رَبِّ زِدْنِي عِلْمًا', translation:'My Lord, increase me in knowledge.', ref:'Surah Taha 20:114'},
+  {arabic:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ', translation:'Indeed, Allah is with the patient.', ref:'Surah Al-Baqarah 2:153'},
+  {arabic:'وَلَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ', translation:'Do not despair of the mercy of Allah.', ref:'Surah Az-Zumar 39:53'},
+  {arabic:'وَفَوْقَ كُلِّ ذِي عِلْمٍ عَلِيمٌ', translation:'And above every owner of knowledge is one more knowing.', ref:'Surah Yusuf 12:76'},
+  {arabic:'تَوَكَّلْ عَلَى اللَّهِ إِنَّ اللَّهَ يُحِبُّ الْمُتَوَكِّلِينَ', translation:'Put your trust in Allah. Indeed Allah loves those who trust in Him.', ref:'Surah Aal-Imran 3:159'},
+  {arabic:'وَاللَّهُ غَالِبٌ عَلَى أَمْرِهِ', translation:'And Allah is predominant over His affair.', ref:'Surah Yusuf 12:21'},
+  {arabic:'إِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ', translation:'Indeed Allah does not allow to be lost the reward of the good-doers.', ref:'Surah At-Tawbah 9:120'},
+  {arabic:'وَبَشِّرِ الصَّابِرِينَ', translation:'And give good tidings to the patient.', ref:'Surah Al-Baqarah 2:155'},
+  {arabic:'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ', translation:'Verily, in the remembrance of Allah do hearts find rest.', ref:'Surah Ar-Rad 13:28'},
+  {arabic:'إِنَّ اللَّهَ مَعَنَا', translation:'Indeed, Allah is with us.', ref:'Surah At-Tawbah 9:40'},
+  {arabic:'وَاللَّهُ خَيْرٌ وَأَبْقَى', translation:'But what is with Allah is better and more lasting.', ref:'Surah Al-Ala 87:17'},
+  {arabic:'وَعَسَى أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ', translation:'Perhaps you dislike a thing and it is good for you.', ref:'Surah Al-Baqarah 2:216'},
+  {arabic:'يُرِيدُ اللَّهُ بِكُمُ الْيُسْرَ وَلَا يُرِيدُ بِكُمُ الْعُسْرَ', translation:'Allah intends for you ease and does not intend for you hardship.', ref:'Surah Al-Baqarah 2:185'},
+  {arabic:'وَاللَّهُ يُحِبُّ الصَّابِرِينَ', translation:'And Allah loves the steadfast.', ref:'Surah Aal-Imran 3:146'},
+  {arabic:'إِنَّ اللَّهَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', translation:'Indeed, Allah is over all things competent.', ref:'Surah Al-Baqarah 2:20'},
+  {arabic:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً', translation:'Our Lord, give us good in this world and good in the Hereafter.', ref:'Surah Al-Baqarah 2:201'},
+  {arabic:'وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ', translation:'And when My servants ask you concerning Me — indeed I am near.', ref:'Surah Al-Baqarah 2:186'},
+  {arabic:'فَسَتَذْكُرُونَ مَا أَقُولُ لَكُمْ', translation:'And you will remember what I tell you.', ref:'Surah Ghafir 40:44'},
+  {arabic:'وَاللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ', translation:'And Allah knows and you do not know.', ref:'Surah Al-Baqarah 2:232'},
+  {arabic:'سُبْحَانَكَ لَا عِلْمَ لَنَا إِلَّا مَا عَلَّمْتَنَا', translation:'Exalted are You; we have no knowledge except what You have taught us.', ref:'Surah Al-Baqarah 2:32'},
+  {arabic:'إِنَّ اللَّهَ لَا يُحِبُّ الْمُعْتَدِينَ', translation:'Indeed, Allah does not like transgressors.', ref:'Surah Al-Baqarah 2:190'},
+  {arabic:'وَقُل رَّبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا', translation:'And say: My Lord, have mercy upon them as they brought me up when I was small.', ref:'Surah Al-Isra 17:24'},
+];
+
+function getTodayVerse(){
+  const d=new Date();
+  const dayOfYear=Math.floor((d-new Date(d.getFullYear(),0,0))/(1000*60*60*24));
+  return VERSES[dayOfYear % VERSES.length];
+}
+
+function showQuranSplash(){
+  const shownKey='quran_shown_'+new Date().toDateString();
+  if(localStorage.getItem(shownKey)==='1'){
+    document.getElementById('quran-overlay').style.display='none';
+    return;
+  }
+  const v=getTodayVerse();
+  document.getElementById('quran-arabic').textContent=v.arabic;
+  document.getElementById('quran-translation').textContent='"'+v.translation+'"';
+  document.getElementById('quran-ref').textContent='— '+v.ref;
+  const d=new Date();
+  document.getElementById('quran-date').textContent=d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('quran-overlay').style.display='flex';
+}
+
+function dismissQuran(){
+  localStorage.setItem('quran_shown_'+new Date().toDateString(),'1');
+  document.getElementById('quran-overlay').style.display='none';
+}
+
 const ROUTINES = {
   abs: {
     name:'Abs', icon:'🔥',
@@ -761,6 +840,7 @@ if('serviceWorker' in navigator){
 updateToggleUI();
 renderDaily();
 renderWorkout();
+showQuranSplash();
 </script>
 </body>
 </html>
