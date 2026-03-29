@@ -403,11 +403,6 @@ function getTodayVerse(){
 }
 
 function showQuranSplash(){
-  const shownKey='quran_shown_'+new Date().toDateString();
-  if(localStorage.getItem(shownKey)==='1'){
-    document.getElementById('quran-overlay').style.display='none';
-    return;
-  }
   const v=getTodayVerse();
   document.getElementById('quran-arabic').textContent=v.arabic;
   document.getElementById('quran-translation').textContent='"'+v.translation+'"';
@@ -418,7 +413,6 @@ function showQuranSplash(){
 }
 
 function dismissQuran(){
-  localStorage.setItem('quran_shown_'+new Date().toDateString(),'1');
   document.getElementById('quran-overlay').style.display='none';
 }
 
