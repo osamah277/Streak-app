@@ -3,6 +3,6 @@
   "target": {
     "namespace": "android_app",
     "package_name": "app.netlify.hilarious_swan_aa842a",
-    "sha256_cert_fingerprints": ["REPLACE_WITH_YOUR_SHA256_FINGERPRINT"]
+    "sha256_cert_fingerprints": ["26:9D:98:8D:BE:44:B3:A6:EA:5F:8F:EB:BE:84:CA:AA:92:63:80:41:D1:69:95:F7:B1:64:B4:08:DF:05:49:B4"]
   }
 }]
