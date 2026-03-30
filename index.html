@@ -34,6 +34,35 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 .drawer-item-label{color:#fff;font-size:15px;font-weight:500}
 .drawer-item-sub{color:#555;font-size:12px;margin-top:2px}
 .drawer-close{position:absolute;top:16px;right:16px;background:none;border:none;color:#555;font-size:22px;cursor:pointer;padding:4px}
+.drawer-admin-btn{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;border-top:0.5px solid #1a1a1a;margin-top:auto}
+.drawer-admin-btn:active{background:#1a1a1a}
+
+/* login modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:400;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.open{display:flex}
+.modal-box{background:#111;border:0.5px solid #333;border-radius:20px;padding:28px 22px;width:100%;max-width:320px}
+.modal-title{color:#fff;font-size:18px;font-weight:600;margin-bottom:6px}
+.modal-sub{color:#555;font-size:13px;margin-bottom:20px}
+.modal-input{width:100%;background:#000;border:0.5px solid #333;border-radius:10px;padding:12px 14px;color:#fff;font-size:15px;font-family:inherit;margin-bottom:12px;outline:none}
+.modal-input:focus{border-color:#666}
+.modal-error{color:#ff6b6b;font-size:13px;margin-bottom:12px;display:none}
+.modal-row{display:flex;gap:10px}
+.modal-row .sbtn{margin-bottom:0;flex:1;padding:13px;font-size:15px}
+
+/* admin panel overlay */
+.admin-overlay{position:fixed;inset:0;background:#000;z-index:500;display:none;flex-direction:column}
+.admin-overlay.open{display:flex}
+.admin-header{background:#111;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #222;flex-shrink:0}
+.admin-title{color:#fff;font-size:16px;font-weight:600}
+.admin-close{background:none;border:none;color:#555;font-size:22px;cursor:pointer}
+.admin-body{padding:20px 16px;overflow-y:auto;flex:1}
+.admin-section{margin-bottom:24px}
+.admin-section-title{color:#555;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px}
+.admin-card{background:#111;border:0.5px solid #1e1e1e;border-radius:16px;padding:16px;margin-bottom:10px}
+.admin-card-title{color:#fff;font-size:14px;font-weight:500;margin-bottom:4px}
+.admin-card-sub{color:#555;font-size:12px;margin-bottom:12px}
+.admin-badge{display:inline-block;background:#1a2e1a;color:#5dca7e;border-radius:6px;padding:3px 8px;font-size:11px;margin-bottom:12px}
+.admin-badge.warn{background:#2e1a00;color:#c9a84c}
 .drawer-notif{padding:14px 20px;border-top:0.5px solid #1a1a1a;margin-top:6px}
 .notif-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .notif-label{color:#ccc;font-size:14px}
@@ -402,6 +431,75 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
       <button class="toggle" id="toggle-workout" onclick="toggleNotif('workout')"></button>
     </div>
   </div>
+  <div class="drawer-admin-btn" onclick="openLoginModal()">
+    <span class="drawer-item-icon" style="font-size:16px">🔐</span>
+    <div><div class="drawer-item-label" style="font-size:13px;color:#555">Admin</div></div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal-box">
+    <div class="modal-title">Admin login</div>
+    <div class="modal-sub">Testing & notification tools</div>
+    <input class="modal-input" type="password" id="admin-password" placeholder="Password" />
+    <div class="modal-error" id="login-error">Wrong password. Try again.</div>
+    <div class="modal-row">
+      <button class="sbtn sbtn-grey" onclick="closeLoginModal()">Cancel</button>
+      <button class="sbtn sbtn-white" onclick="submitLogin()">Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-overlay" id="admin-panel">
+  <div class="admin-header">
+    <div class="admin-title">Admin panel</div>
+    <button class="admin-close" onclick="closeAdminPanel()">✕</button>
+  </div>
+  <div class="admin-body">
+
+    <div class="admin-section">
+      <div class="admin-section-title">Notification testing</div>
+      <div class="admin-card">
+        <div class="admin-card-title">Test daily notification</div>
+        <div class="admin-card-sub">Fires a notification right now as if 24h passed on daily streak</div>
+        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" onclick="testNotif('daily')">Send test notification</button>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Test workout notification</div>
+        <div class="admin-card-sub">Fires a notification right now as if 24h passed on workout streak</div>
+        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" onclick="testNotif('workout')">Send test notification</button>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Test both in 10 seconds</div>
+        <div class="admin-card-sub">Schedules both notifications to fire in 10 seconds — close the app and wait</div>
+        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" id="test-delayed-btn" onclick="testDelayedNotif()">Schedule in 10s</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-section-title">Notification status</div>
+      <div class="admin-card">
+        <div class="admin-card-title">Permission</div>
+        <div id="admin-notif-perm" class="admin-badge">Checking...</div>
+        <div class="admin-card-title" style="margin-top:8px">Daily fires at</div>
+        <div id="admin-daily-fire" style="color:#888;font-size:12px;margin-top:2px">—</div>
+        <div class="admin-card-title" style="margin-top:8px">Workout fires at</div>
+        <div id="admin-workout-fire" style="color:#888;font-size:12px;margin-top:2px">—</div>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-section-title">Danger zone</div>
+      <div class="admin-card">
+        <div class="admin-card-title">Clear all data</div>
+        <div class="admin-card-sub">Wipes streaks, settings, and notification schedule</div>
+        <button class="sbtn sbtn-red" style="padding:11px;font-size:14px;margin-bottom:0" onclick="adminClearAll()">Clear everything</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
@@ -440,9 +538,10 @@ const VERSES = [
 ];
 
 function getTodayVerse(){
-  const d=new Date();
-  const dayOfYear=Math.floor((d-new Date(d.getFullYear(),0,0))/(1000*60*60*24));
-  return VERSES[dayOfYear % VERSES.length];
+  let count=parseInt(localStorage.getItem('quran_visit_count')||'0');
+  count++;
+  localStorage.setItem('quran_visit_count',String(count));
+  return VERSES[count % VERSES.length];
 }
 
 function showQuranSplash(){
@@ -604,16 +703,49 @@ function fmtDT(ts){return new Date(ts).toLocaleString(undefined,{month:'short',d
 function stopTicker(type){if(tickers[type]){clearInterval(tickers[type]);tickers[type]=null;}}
 function isNotifOn(type){return localStorage.getItem(KEYS[type].n)==='1';}
 
-function scheduleNotif(type,msDelay){
-  if(!('Notification' in window)||Notification.permission!=='granted')return;
-  if(!navigator.serviceWorker.controller)return;
-  const body=type==='workout'?'Time to work out — keep your streak alive!':'Your 24h window is open — keep the streak going!';
-  setTimeout(function(){
-    if(!isNotifOn(type))return;
-    navigator.serviceWorker.ready.then(function(reg){
-      reg.showNotification('Streak',{body:body,icon:'./icon-192.png',badge:'./icon-192.png',tag:'streak-'+type,renotify:true,vibrate:[200,100,200]});
+function scheduleNotif(type, msDelay){
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  if(!isNotifOn(type)) return;
+  const fireAt = Date.now() + msDelay;
+  // Store fire time in localStorage so SW can pick it up
+  localStorage.setItem('notif_fire_'+type, String(fireAt));
+  // Send to SW if active
+  if(navigator.serviceWorker && navigator.serviceWorker.controller){
+    const title = 'Streak';
+    const body = type==='workout'
+      ? 'Time to work out — keep your streak alive!'
+      : 'Your 24h window is open — keep the streak going!';
+    navigator.serviceWorker.controller.postMessage({
+      type: 'SCHEDULE_NOTIF',
+      notifType: type,
+      fireAt: fireAt,
+      title: title,
+      body: body
     });
-  },msDelay);
+  }
+}
+
+function restoreScheduledNotifs(){
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  if(!navigator.serviceWorker||!navigator.serviceWorker.controller) return;
+  ['daily','workout'].forEach(function(type){
+    if(!isNotifOn(type)) return;
+    const fireAt = parseInt(localStorage.getItem('notif_fire_'+type)||'0');
+    if(!fireAt) return;
+    const rem = fireAt - Date.now();
+    if(rem <= 0) return; // already past
+    const title = 'Streak';
+    const body = type==='workout'
+      ? 'Time to work out — keep your streak alive!'
+      : 'Your 24h window is open — keep the streak going!';
+    navigator.serviceWorker.controller.postMessage({
+      type: 'SCHEDULE_NOTIF',
+      notifType: type,
+      fireAt: fireAt,
+      title: title,
+      body: body
+    });
+  });
 }
 
 function toggleNotif(type){
@@ -736,13 +868,10 @@ function renderWorkout(){
     dotsWrap.style.display='none';
   }
 
-  if(canWork){
-    showScreen('picker');
-    document.getElementById('workout-splash').style.display=s.start?'none':'block';
-    document.getElementById('workout-picker-main').style.display='block';
-  } else {
-    showScreen('locked');
-  }
+  // Always show picker - exercises always accessible
+  showScreen('picker');
+  document.getElementById('workout-splash').style.display=s.start?'none':'block';
+  document.getElementById('workout-picker-main').style.display='block';
 }
 
 function showScreen(name){
@@ -844,18 +973,30 @@ function finishWorkout(){
   stopExTimer();
   const s=load('workout');
   const now=Date.now();
-  if(!s.start){s.start=String(now);}
-  s.log.push(now);s.lastTs=now;
-  save('workout',s);
-  if(isNotifOn('workout'))scheduleNotif('workout',86400000);
-
-  showScreen('done');
-  const streak=calcStreak(s.log);
+  const canCount=s.lastTs===0||msLeft(s.lastTs)<=0;
   const r=ROUTINES[currentMuscle];
-  document.getElementById('done-sub').textContent='You completed the '+r.name+' routine. Your streak is now '+streak+' day'+(streak===1?'':'s')+'!';
-  document.getElementById('done-streak-card').style.display='block';
-  document.getElementById('done-streak-num').textContent=streak;
-  document.getElementById('done-streak-icon').textContent=streak>=14?'🏆':streak>=7?'🔥':'💪';
+
+  if(canCount){
+    // first time or 24h passed — log to streak
+    if(!s.start){s.start=String(now);}
+    s.log.push(now);s.lastTs=now;
+    save('workout',s);
+    if(isNotifOn('workout'))scheduleNotif('workout',86400000);
+    showScreen('done');
+    const streak=calcStreak(s.log);
+    document.getElementById('done-sub').textContent='You completed the '+r.name+' routine. Streak is now '+streak+' day'+(streak===1?'':'s')+'!';
+    document.getElementById('done-streak-card').style.display='block';
+    document.getElementById('done-streak-num').textContent=streak;
+    document.getElementById('done-streak-icon').textContent=streak>=14?'🏆':streak>=7?'🔥':'💪';
+  } else {
+    // within 24h — show done but don't log streak
+    const rem=msLeft(s.lastTs);
+    const h=Math.floor(rem/3600000),m=Math.floor((rem%3600000)/60000);
+    const timeStr=(h>0?h+'h ':'')+m+'m';
+    showScreen('done');
+    document.getElementById('done-sub').textContent='Great job with the '+r.name+' routine! Streak will update when your 24h window opens (in '+timeStr+').';
+    document.getElementById('done-streak-card').style.display='none';
+  }
   renderWorkout();
 }
 
@@ -911,11 +1052,18 @@ document.getElementById('workout-cancel-btn2').addEventListener('click',function
 document.getElementById('workout-confirm-btn2').addEventListener('click',function(){clearAll('workout');stopTicker('workout');document.getElementById('workout-confirm2').style.display='none';document.getElementById('workout-reset-btn2').style.display='block';renderWorkout();});
 
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').then(function(){
-    ['daily','workout'].forEach(function(type){
-      const s=load(type);
-      if(s.lastTs>0&&isNotifOn(type)){const rem=msLeft(s.lastTs);if(rem>0)scheduleNotif(type,rem);}
+  navigator.serviceWorker.register('sw.js').then(function(reg){
+    // Wait for SW to be ready then restore any scheduled notifications
+    navigator.serviceWorker.ready.then(function(){
+      restoreScheduledNotifs();
     });
+  });
+
+  // Listen for messages from SW
+  navigator.serviceWorker.addEventListener('message', function(e){
+    if(e.data && e.data.type === 'REQUEST_SCHEDULE'){
+      restoreScheduledNotifs();
+    }
   });
 }
 
@@ -923,6 +1071,116 @@ updateToggleUI();
 renderDaily();
 renderWorkout();
 showQuranSplash();
+
+// ── ADMIN ──
+const ADMIN_PASS = 'streak123';
+
+function openLoginModal(){
+  closeDrawer();
+  document.getElementById('admin-password').value='';
+  document.getElementById('login-error').style.display='none';
+  document.getElementById('login-modal').classList.add('open');
+  setTimeout(function(){document.getElementById('admin-password').focus();},200);
+}
+function closeLoginModal(){
+  document.getElementById('login-modal').classList.remove('open');
+}
+function submitLogin(){
+  const val=document.getElementById('admin-password').value;
+  if(val===ADMIN_PASS){
+    closeLoginModal();
+    openAdminPanel();
+  } else {
+    document.getElementById('login-error').style.display='block';
+    document.getElementById('admin-password').value='';
+  }
+}
+document.getElementById('admin-password').addEventListener('keydown',function(e){
+  if(e.key==='Enter') submitLogin();
+});
+
+function openAdminPanel(){
+  const perm=('Notification' in window)?Notification.permission:'unsupported';
+  const permEl=document.getElementById('admin-notif-perm');
+  permEl.textContent=perm;
+  permEl.className='admin-badge'+(perm==='granted'?'':' warn');
+  const dailyFire=localStorage.getItem('notif_fire_daily');
+  const workoutFire=localStorage.getItem('notif_fire_workout');
+  document.getElementById('admin-daily-fire').textContent=dailyFire
+    ?new Date(parseInt(dailyFire)).toLocaleString():'Not scheduled';
+  document.getElementById('admin-workout-fire').textContent=workoutFire
+    ?new Date(parseInt(workoutFire)).toLocaleString():'Not scheduled';
+  document.getElementById('admin-panel').classList.add('open');
+}
+function closeAdminPanel(){
+  document.getElementById('admin-panel').classList.remove('open');
+}
+
+function testNotif(type){
+  if(!('Notification' in window)||Notification.permission!=='granted'){
+    alert('Notifications not granted. Enable them first in the burger menu.');
+    return;
+  }
+  navigator.serviceWorker.ready.then(function(reg){
+    const body=type==='workout'
+      ?'Time to work out — keep your streak alive!'
+      :'Your 24h window is open — keep the streak going!';
+    reg.showNotification('Streak — test',{
+      body:body,
+      icon:'./icon-192.png',
+      badge:'./icon-192.png',
+      tag:'streak-test-'+type,
+      vibrate:[200,100,200],
+      requireInteraction:true
+    });
+  });
+}
+
+function testDelayedNotif(){
+  if(!('Notification' in window)||Notification.permission!=='granted'){
+    alert('Notifications not granted. Enable them first in the burger menu.');
+    return;
+  }
+  const btn=document.getElementById('test-delayed-btn');
+  const fireAt=Date.now()+10000;
+  ['daily','workout'].forEach(function(type){
+    localStorage.setItem('notif_fire_'+type,String(fireAt));
+    if(navigator.serviceWorker&&navigator.serviceWorker.controller){
+      const body=type==='workout'
+        ?'Time to work out — keep your streak alive!'
+        :'Your 24h window is open — keep the streak going!';
+      navigator.serviceWorker.controller.postMessage({
+        type:'SCHEDULE_NOTIF',
+        notifType:type,
+        fireAt:fireAt,
+        title:'Streak — test',
+        body:body
+      });
+    }
+  });
+  let count=10;
+  btn.textContent='Fires in '+count+'s...';
+  const iv=setInterval(function(){
+    count--;
+    if(count<=0){clearInterval(iv);btn.textContent='Schedule in 10s';}
+    else btn.textContent='Fires in '+count+'s...';
+  },1000);
+}
+
+function adminClearAll(){
+  ['daily','workout'].forEach(function(type){
+    clearAll(type);
+    localStorage.removeItem('notif_fire_'+type);
+    localStorage.removeItem(KEYS[type].n);
+  });
+  localStorage.removeItem('quran_visit_count');
+  stopTicker('daily');stopTicker('workout');
+  closeAdminPanel();
+  updateToggleUI();
+  renderDaily();
+  renderWorkout();
+  alert('All data cleared.');
+}
 </script>
 </body>
 </html>
