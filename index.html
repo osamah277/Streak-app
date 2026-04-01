@@ -702,39 +702,55 @@ function getTodayVerse(){
 function fetchDailyVerse(){
   const cachedDay=parseInt(localStorage.getItem('quran_api_day')||'0');
   const todayIdx=getDayIndex();
-  if(cachedDay===todayIdx && localStorage.getItem('quran_api_verse')) return; // already fetched today
+  if(cachedDay===todayIdx && localStorage.getItem('quran_api_verse')) return;
 
-  // Pick a verse number based on the day (1-6236)
   const verseNum=(todayIdx % 6236)+1;
-  // Use quran.com API v4 — free, no key needed
-  fetch('https://api.quran.com/api/v4/verses/by_key/'+getVerseKey(verseNum)+'?translations=131&fields=text_uthmani')
-    .then(function(r){return r.json();})
+  const key=getVerseKey(verseNum);
+  const parts=key.split(':');
+  const surahNum=parseInt(parts[0]);
+  const ayahNum=parseInt(parts[1]);
+  const surahName=getSurahName(surahNum);
+
+  function updateDisplay(arabic, translation, ref){
+    const verse={arabic:arabic, translation:translation, ref:ref};
+    localStorage.setItem('quran_api_verse',JSON.stringify(verse));
+    localStorage.setItem('quran_api_day',String(todayIdx));
+    const overlay=document.getElementById('quran-overlay');
+    if(overlay&&overlay.style.display!=='none'){
+      document.getElementById('quran-arabic').textContent=arabic;
+      document.getElementById('quran-translation').textContent='"'+translation+'"';
+      document.getElementById('quran-ref').textContent='— Surah '+surahName+' '+key;
+    }
+  }
+
+  // Try alquran.cloud — truly free, no API key, returns Arabic + English in one call
+  fetch('https://api.alquran.cloud/v1/ayah/'+key+'/editions/quran-uthmani,en.sahih')
+    .then(function(r){if(!r.ok)throw new Error('fail');return r.json();})
     .then(function(data){
-      const v=data.verse;
-      if(!v) return;
-      const arabic=v.text_uthmani||'';
-      const translation=v.translations&&v.translations[0]?v.translations[0].text.replace(/<[^>]*>/g,''):'';
-      const key=v.verse_key||'';
-      const parts=key.split(':');
-      const surahNum=parseInt(parts[0]);
-      const surahName=getSurahName(surahNum);
-      const verse={
-        arabic:arabic,
-        translation:translation,
-        ref:'Surah '+surahName+' '+key
-      };
-      localStorage.setItem('quran_api_verse',JSON.stringify(verse));
-      localStorage.setItem('quran_api_day',String(todayIdx));
-      // Update display if overlay is showing
-      const overlay=document.getElementById('quran-overlay');
-      if(overlay&&overlay.style.display!=='none'){
-        document.getElementById('quran-arabic').textContent=arabic;
-        document.getElementById('quran-translation').textContent='"'+translation+'"';
-        document.getElementById('quran-ref').textContent='— Surah '+surahName+' '+key;
-      }
+      if(data.code!==200||!data.data||data.data.length<2) throw new Error('bad data');
+      const arabic=data.data[0].text||'';
+      const translation=data.data[1].text||'';
+      if(!arabic||!translation) throw new Error('empty');
+      updateDisplay(arabic, translation, 'Surah '+surahName+' '+key);
     })
     .catch(function(){
-      // silently fail — local fallback already showing
+      // Fallback: try al-quran.cloud single edition
+      fetch('https://api.alquran.cloud/v1/ayah/'+key+'/en.sahih')
+        .then(function(r){return r.json();})
+        .then(function(data){
+          if(data.code!==200||!data.data) return;
+          const translation=data.data.text||'';
+          // Also fetch Arabic separately
+          fetch('https://api.alquran.cloud/v1/ayah/'+key+'/quran-uthmani')
+            .then(function(r2){return r2.json();})
+            .then(function(d2){
+              const arabic=d2.data?d2.data.text:'';
+              if(translation) updateDisplay(arabic, translation, 'Surah '+surahName+' '+key);
+            });
+        })
+        .catch(function(){
+          // All APIs failed — local fallback already showing, that is fine
+        });
     });
 }
 
@@ -1351,6 +1367,15 @@ if('serviceWorker' in navigator){
   });
 }
 
+// Clear old API cache so fresh fetch happens with new endpoint
+(function(){
+  const oldDay=parseInt(localStorage.getItem('quran_api_day')||'0');
+  const todayIdx=getDayIndex();
+  if(oldDay!==todayIdx){
+    localStorage.removeItem('quran_api_verse');
+    localStorage.removeItem('quran_api_day');
+  }
+})();
 checkWorkoutDeadline();
 updateToggleUI();
 renderDaily();
