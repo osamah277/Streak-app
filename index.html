@@ -342,6 +342,15 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
         <div id="start-workout-wrap" style="display:none">
           <button class="sbtn sbtn-white" id="start-workout-btn">Start workout</button>
         </div>
+        <div class="divider"></div>
+        <div id="workout-confirm3" style="display:none" class="confirm-box">
+          <p>Reset workout streak? Clears all entries and the timer.</p>
+          <div class="confirm-row">
+            <button class="sbtn sbtn-grey sbtn-sm" id="workout-cancel-btn3">Cancel</button>
+            <button class="sbtn sbtn-red sbtn-sm" id="workout-confirm-btn3">Yes, reset</button>
+          </div>
+        </div>
+        <button class="sbtn sbtn-grey" id="workout-reset-btn3">Reset my streak</button>
       </div>
     </div>
 
@@ -670,8 +679,11 @@ const VERSES = [
 ];
 
 function getDayIndex(){
+  // Use Eastern Time midnight as day boundary
   const d=new Date();
-  return Math.floor(d.getTime()/(1000*60*60*24));
+  const etOffset=d.toLocaleString('en-US',{timeZone:'America/New_York',hour:'numeric',hour12:false})==='24'?-4:-5;
+  const etMs=d.getTime()+(etOffset*3600000);
+  return Math.floor(etMs/(1000*60*60*24));
 }
 
 function getTodayVerse(){
@@ -1061,7 +1073,7 @@ function renderWorkout(){
     streakArea.style.display='block';
     dotsWrap.style.display='block';
     document.getElementById('workout-notif-banner').style.display=isNotifOn('workout')?'block':'none';
-    const streak=calcStreak(s.log);
+    const streak=Math.max(0,calcStreak(s.log)-1);
     document.getElementById('workout-num').textContent=streak;
     document.getElementById('workout-icon').textContent=streak>=14?'🏆':streak>=7?'🔥':'💪';
     document.getElementById('workout-started').textContent='Started '+fmtDT(parseInt(s.start));
@@ -1250,7 +1262,7 @@ function finishWorkout(){
     localStorage.removeItem('w_deadline'); // clear 2h deadline
     if(isNotifOn('workout'))scheduleNotif('workout',86400000);
     showScreen('done');
-    const streak=calcStreak(s.log);
+    const streak=Math.max(0,calcStreak(s.log)-1); // start at 0, grows after 2nd day
     document.getElementById('done-sub').textContent='You completed the '+r.name+' routine. Streak is now '+streak+' day'+(streak===1?'':'s')+'!';
     document.getElementById('done-streak-card').style.display='block';
     document.getElementById('done-streak-num').textContent=streak;
@@ -1317,6 +1329,11 @@ document.getElementById('workout-confirm-btn').addEventListener('click',function
 document.getElementById('workout-reset-btn2').addEventListener('click',function(){document.getElementById('workout-confirm2').style.display='block';document.getElementById('workout-reset-btn2').style.display='none';});
 document.getElementById('workout-cancel-btn2').addEventListener('click',function(){document.getElementById('workout-confirm2').style.display='none';document.getElementById('workout-reset-btn2').style.display='block';});
 document.getElementById('workout-confirm-btn2').addEventListener('click',function(){clearAll('workout');localStorage.removeItem('w_deadline');stopTicker('workout');document.getElementById('workout-confirm2').style.display='none';document.getElementById('workout-reset-btn2').style.display='block';renderWorkout();});
+
+// workout reset (picker screen)
+document.getElementById('workout-reset-btn3').addEventListener('click',function(){document.getElementById('workout-confirm3').style.display='block';document.getElementById('workout-reset-btn3').style.display='none';});
+document.getElementById('workout-cancel-btn3').addEventListener('click',function(){document.getElementById('workout-confirm3').style.display='none';document.getElementById('workout-reset-btn3').style.display='block';});
+document.getElementById('workout-confirm-btn3').addEventListener('click',function(){clearAll('workout');localStorage.removeItem('w_deadline');stopTicker('workout');document.getElementById('workout-confirm3').style.display='none';document.getElementById('workout-reset-btn3').style.display='block';renderWorkout();});
 
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').then(function(reg){
