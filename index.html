@@ -63,6 +63,12 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 .admin-card-sub{color:#555;font-size:12px;margin-bottom:12px}
 .admin-badge{display:inline-block;background:#1a2e1a;color:#5dca7e;border-radius:6px;padding:3px 8px;font-size:11px;margin-bottom:12px}
 .admin-badge.warn{background:#2e1a00;color:#c9a84c}
+.verse-preview{background:#000;border:0.5px solid #333;border-radius:12px;padding:14px;margin-bottom:12px}
+.verse-preview-arabic{font-size:16px;color:#fff;direction:rtl;font-family:serif;line-height:1.8;margin-bottom:8px}
+.verse-preview-translation{font-size:12px;color:#aaa;font-style:italic;margin-bottom:4px}
+.verse-preview-ref{font-size:11px;color:#c9a84c}
+.admin-select{width:100%;background:#000;border:0.5px solid #333;border-radius:10px;padding:10px 12px;color:#fff;font-size:13px;font-family:inherit;margin-bottom:10px;outline:none}
+.admin-select option{background:#111}
 .drawer-notif{padding:14px 20px;border-top:0.5px solid #1a1a1a;margin-top:6px}
 .notif-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .notif-label{color:#ccc;font-size:14px}
@@ -500,6 +506,45 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
     </div>
 
     <div class="admin-section">
+      <div class="admin-section-title">Quran verse testing</div>
+      <div class="admin-card">
+        <div class="admin-card-title">Today's verse</div>
+        <div class="admin-card-sub">Preview what verse shows today</div>
+        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:10px" onclick="adminPreviewToday()">Preview today's verse</button>
+        <div id="admin-today-verse" style="display:none" class="verse-preview">
+          <div class="verse-preview-arabic" id="atv-arabic"></div>
+          <div class="verse-preview-translation" id="atv-translation"></div>
+          <div class="verse-preview-ref" id="atv-ref"></div>
+        </div>
+        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" onclick="adminShowTodayOnScreen()">Show on splash screen</button>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Pick a specific verse</div>
+        <div class="admin-card-sub">Choose any verse to preview or show</div>
+        <select class="admin-select" id="admin-verse-select" onchange="adminPickVerse()">
+          <option value="">— Select a verse —</option>
+        </select>
+        <div id="admin-picked-verse" style="display:none" class="verse-preview">
+          <div class="verse-preview-arabic" id="apv-arabic"></div>
+          <div class="verse-preview-translation" id="apv-translation"></div>
+          <div class="verse-preview-ref" id="apv-ref"></div>
+        </div>
+        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" id="admin-show-picked-btn" onclick="adminShowPickedOnScreen()" style="display:none">Show on splash screen</button>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Random verse</div>
+        <div class="admin-card-sub">Pick a random verse and preview it</div>
+        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:10px" onclick="adminRandomVerse()">Pick random verse</button>
+        <div id="admin-random-verse" style="display:none" class="verse-preview">
+          <div class="verse-preview-arabic" id="arv-arabic"></div>
+          <div class="verse-preview-translation" id="arv-translation"></div>
+          <div class="verse-preview-ref" id="arv-ref"></div>
+        </div>
+        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" id="admin-show-random-btn" onclick="adminShowRandomOnScreen()">Show on splash screen</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
       <div class="admin-section-title">Danger zone</div>
       <div class="admin-card">
         <div class="admin-card-title">Clear all data</div>
@@ -526,9 +571,15 @@ function getDayIndex(){
 }
 
 function getTodayVerse(){
-  // Daily verse based on ET day index — changes at midnight ET
+  // Use day index as a seed to pick a random-looking verse — same all day, different each day, never sequential
   const todayIdx=getDayIndex();
-  return VERSES[todayIdx % VERSES.length];
+  // Seeded pseudo-random: mix the day index thoroughly
+  let seed=todayIdx;
+  seed=((seed>>>16)^seed)*0x45d9f3b;
+  seed=((seed>>>16)^seed)*0x45d9f3b;
+  seed=(seed>>>16)^seed;
+  const idx=Math.abs(seed) % VERSES.length;
+  return VERSES[idx];
 }
 
 function fetchDailyVerse(){/* disabled - using local verses */}
@@ -1200,6 +1251,80 @@ function openAdminPanel(){
   document.getElementById('admin-workout-fire').textContent=workoutFire
     ?new Date(parseInt(workoutFire)).toLocaleString():'Not scheduled';
   document.getElementById('admin-panel').classList.add('open');
+  // Populate verse dropdown
+  adminPopulateVerseSelect();
+}
+
+function adminPopulateVerseSelect(){
+  const sel=document.getElementById('admin-verse-select');
+  if(sel.options.length>1) return; // already populated
+  VERSES.forEach(function(v,i){
+    const opt=document.createElement('option');
+    opt.value=i;
+    opt.textContent=v.ref+' — '+v.translation.substring(0,40)+(v.translation.length>40?'...':'');
+    sel.appendChild(opt);
+  });
+}
+
+let adminPickedIdx=null;
+let adminRandomIdx=null;
+
+function adminPreviewToday(){
+  const v=getTodayVerse();
+  document.getElementById('atv-arabic').textContent=v.arabic;
+  document.getElementById('atv-translation').textContent='"'+v.translation+'"';
+  document.getElementById('atv-ref').textContent='— '+v.ref;
+  document.getElementById('admin-today-verse').style.display='block';
+}
+
+function adminShowTodayOnScreen(){
+  const v=getTodayVerse();
+  showVerseOnSplash(v);
+  closeAdminPanel();
+}
+
+function adminPickVerse(){
+  const sel=document.getElementById('admin-verse-select');
+  const idx=parseInt(sel.value);
+  if(isNaN(idx)) return;
+  adminPickedIdx=idx;
+  const v=VERSES[idx];
+  document.getElementById('apv-arabic').textContent=v.arabic;
+  document.getElementById('apv-translation').textContent='"'+v.translation+'"';
+  document.getElementById('apv-ref').textContent='— '+v.ref;
+  document.getElementById('admin-picked-verse').style.display='block';
+  document.getElementById('admin-show-picked-btn').style.display='block';
+}
+
+function adminShowPickedOnScreen(){
+  if(adminPickedIdx===null) return;
+  showVerseOnSplash(VERSES[adminPickedIdx]);
+  closeAdminPanel();
+}
+
+function adminRandomVerse(){
+  adminRandomIdx=Math.floor(Math.random()*VERSES.length);
+  const v=VERSES[adminRandomIdx];
+  document.getElementById('arv-arabic').textContent=v.arabic;
+  document.getElementById('arv-translation').textContent='"'+v.translation+'"';
+  document.getElementById('arv-ref').textContent='— '+v.ref;
+  document.getElementById('admin-random-verse').style.display='block';
+  document.getElementById('admin-show-random-btn').style.display='block';
+}
+
+function adminShowRandomOnScreen(){
+  if(adminRandomIdx===null) return;
+  showVerseOnSplash(VERSES[adminRandomIdx]);
+  closeAdminPanel();
+}
+
+function showVerseOnSplash(v){
+  document.getElementById('quran-arabic').textContent=v.arabic;
+  document.getElementById('quran-translation').textContent='"'+v.translation+'"';
+  document.getElementById('quran-ref').textContent='— '+v.ref;
+  const d=new Date();
+  document.getElementById('quran-date').textContent=d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('quran-overlay').style.display='flex';
 }
 function closeAdminPanel(){
   document.getElementById('admin-panel').classList.remove('open');
