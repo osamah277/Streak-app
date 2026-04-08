@@ -1,569 +1,1037 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr" id="html-root">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Streak">
-<title>Streak</title>
+<meta name="apple-mobile-web-app-title" content="Clean">
+<title>Clean</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:#000;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#fff;overscroll-behavior:none}
+:root{
+  --bg:#0a0a0a;
+  --bg2:#111;
+  --bg3:#1a1a1a;
+  --bg4:#222;
+  --border:#2a2a2a;
+  --text:#fff;
+  --text2:#aaa;
+  --text3:#666;
+  --gold:#c9a84c;
+  --gold2:#a07830;
+  --green:#4caf7d;
+  --red:#e05252;
+  --blue:#4a90d9;
+  --r:16px;
+  --r2:12px;
+}
+html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:var(--text);overscroll-behavior:none}
 body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height:100dvh}
-.status-bar{background:#000;display:flex;justify-content:space-between;align-items:center;padding:12px 20px 4px;height:44px;flex-shrink:0}
-.status-time{color:#fff;font-size:15px;font-weight:600}
+.screen{display:none;flex-direction:column;flex:1;overflow-y:auto}
+.screen.active{display:flex}
+
+/* ── STATUS BAR ── */
+.status-bar{background:var(--bg);display:flex;justify-content:space-between;align-items:center;padding:12px 20px 4px;height:44px;flex-shrink:0}
+.status-time{color:var(--text);font-size:15px;font-weight:600}
 .status-icons{display:flex;gap:6px;align-items:center}
-.status-icons svg{fill:#fff}
-.app-header{background:#000;padding:12px 20px 14px;border-bottom:0.5px solid #1e1e1e;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
-.app-header-title{color:#fff;font-size:18px;font-weight:600}
-.burger{background:none;border:none;cursor:pointer;padding:4px;display:flex;flex-direction:column;gap:5px}
-.burger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px}
-.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100}
-.drawer-overlay.open{display:block}
-.drawer{position:fixed;top:0;right:-260px;width:240px;height:100%;background:#111;z-index:101;transition:right 0.25s ease;padding:60px 0 40px;border-left:0.5px solid #222;overflow-y:auto}
-.drawer.open{right:0}
-.drawer-section-title{color:#555;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;padding:0 20px 10px}
-.drawer-item{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;border-bottom:0.5px solid #1a1a1a}
-.drawer-item:active{background:#1a1a1a}
-.drawer-item-icon{font-size:20px;width:28px;text-align:center}
-.drawer-item-label{color:#fff;font-size:15px;font-weight:500}
-.drawer-item-sub{color:#555;font-size:12px;margin-top:2px}
-.drawer-close{position:absolute;top:16px;right:16px;background:none;border:none;color:#555;font-size:22px;cursor:pointer;padding:4px}
-.drawer-admin-btn{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;border-top:0.5px solid #1a1a1a;margin-top:auto}
-.drawer-admin-btn:active{background:#1a1a1a}
-
-/* login modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:400;display:none;align-items:center;justify-content:center;padding:24px}
-.modal-overlay.open{display:flex}
-.modal-box{background:#111;border:0.5px solid #333;border-radius:20px;padding:28px 22px;width:100%;max-width:320px}
-.modal-title{color:#fff;font-size:18px;font-weight:600;margin-bottom:6px}
-.modal-sub{color:#555;font-size:13px;margin-bottom:20px}
-.modal-input{width:100%;background:#000;border:0.5px solid #333;border-radius:10px;padding:12px 14px;color:#fff;font-size:15px;font-family:inherit;margin-bottom:12px;outline:none}
-.modal-input:focus{border-color:#666}
-.modal-error{color:#ff6b6b;font-size:13px;margin-bottom:12px;display:none}
-.modal-row{display:flex;gap:10px}
-.modal-row .sbtn{margin-bottom:0;flex:1;padding:13px;font-size:15px}
-
-/* admin panel overlay */
-.admin-overlay{position:fixed;inset:0;background:#000;z-index:500;display:none;flex-direction:column}
-.admin-overlay.open{display:flex}
-.admin-header{background:#111;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #222;flex-shrink:0}
-.admin-title{color:#fff;font-size:16px;font-weight:600}
-.admin-close{background:none;border:none;color:#555;font-size:22px;cursor:pointer}
-.admin-body{padding:20px 16px;overflow-y:auto;flex:1}
-.admin-section{margin-bottom:24px}
-.admin-section-title{color:#555;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px}
-.admin-card{background:#111;border:0.5px solid #1e1e1e;border-radius:16px;padding:16px;margin-bottom:10px}
-.admin-card-title{color:#fff;font-size:14px;font-weight:500;margin-bottom:4px}
-.admin-card-sub{color:#555;font-size:12px;margin-bottom:12px}
-.admin-badge{display:inline-block;background:#1a2e1a;color:#5dca7e;border-radius:6px;padding:3px 8px;font-size:11px;margin-bottom:12px}
-.admin-badge.warn{background:#2e1a00;color:#c9a84c}
-.verse-preview{background:#000;border:0.5px solid #333;border-radius:12px;padding:14px;margin-bottom:12px}
-.verse-preview-arabic{font-size:16px;color:#fff;direction:rtl;font-family:serif;line-height:1.8;margin-bottom:8px}
-.verse-preview-translation{font-size:12px;color:#aaa;font-style:italic;margin-bottom:4px}
-.verse-preview-ref{font-size:11px;color:#c9a84c}
-.admin-select{width:100%;background:#000;border:0.5px solid #333;border-radius:10px;padding:10px 12px;color:#fff;font-size:13px;font-family:inherit;margin-bottom:10px;outline:none}
-.admin-select option{background:#111}
-.drawer-notif{padding:14px 20px;border-top:0.5px solid #1a1a1a;margin-top:6px}
-.notif-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.notif-label{color:#ccc;font-size:14px}
-.toggle{position:relative;width:44px;height:26px;background:#333;border-radius:13px;cursor:pointer;transition:background 0.2s;border:none;flex-shrink:0}
-.toggle.on{background:#5dca7e}
-.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left 0.2s}
-.toggle.on::after{left:21px}
-.tab-bar{display:flex;background:#000;border-bottom:0.5px solid #1e1e1e;flex-shrink:0}
-.tab{flex:1;padding:12px 8px;text-align:center;cursor:pointer;font-size:13px;color:#555;font-weight:500;border-bottom:2px solid transparent}
-.tab.active{color:#fff;border-bottom-color:#fff}
-.app-body{padding:20px 16px 32px;background:#000;flex:1;overflow-y:auto}
-.page{display:none}
-.page.active{display:block}
-
-/* shared buttons */
-.sbtn{display:block;width:100%;padding:16px;border-radius:14px;border:none;font-size:17px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity 0.1s,transform 0.1s;margin-bottom:12px;text-align:center}
-.sbtn:active{transform:scale(0.97);opacity:0.85}
-.sbtn-white{background:#fff;color:#000}
-.sbtn-grey{background:#1e1e1e;color:#fff}
-.sbtn-red{background:#c0392b;color:#fff}
-.sbtn-green{background:#5dca7e;color:#000}
-.sbtn-locked{background:#111;color:#333;cursor:not-allowed;border:1px solid #1e1e1e}
-.sbtn-locked:active{transform:none;opacity:1}
-.sbtn-sm{padding:11px 16px;font-size:15px;margin-bottom:0}
-
-/* streak card */
-.streak-card{border-radius:22px;padding:24px 20px;margin-bottom:16px;text-align:center;border:0.5px solid #1e1e1e;background:#111}
-.streak-card.workout{background:#0d1a0d}
-.streak-icon{font-size:32px;display:block;margin-bottom:8px}
-.streak-big{font-size:64px;font-weight:600;color:#fff;line-height:1}
-.streak-sub{color:#555;font-size:14px;margin-top:4px}
-.started-label{color:#333;font-size:11px;margin-top:10px}
-.status-pill{border-radius:12px;padding:11px 16px;font-size:14px;text-align:center;margin-bottom:14px}
-.pill-ready{background:#0d2e0d;color:#5dca7e;border:0.5px solid #1a5c1a}
-.pill-locked{background:#2e1f00;color:#f0a500;border:0.5px solid #5c3d00}
-.countdown-num{font-size:32px;font-weight:600;color:#fff;text-align:center;margin:4px 0;letter-spacing:0.05em}
-.countdown-lbl{font-size:12px;color:#444;text-align:center;margin-bottom:12px}
-.prog-track{height:4px;background:#1a1a1a;border-radius:2px;margin-bottom:14px;overflow:hidden}
-.prog-fill{height:100%;background:#fff;border-radius:2px;transition:width 1s linear}
-.prog-fill.green{background:#5dca7e}
-.dots-wrap{margin-bottom:16px}
-.dots-title{color:#444;font-size:12px;margin-bottom:8px;letter-spacing:0.08em;text-transform:uppercase}
-.dots-grid{display:flex;flex-wrap:wrap;gap:5px}
-.dot{width:28px;height:28px;border-radius:8px;background:#111;display:flex;align-items:center;justify-content:center;font-size:10px;color:#333;border:0.5px solid #1e1e1e}
-.dot.done{background:#fff;color:#000;border-color:#fff}
-.dot.done.green{background:#5dca7e;color:#000;border-color:#5dca7e}
-.divider{border:none;border-top:0.5px solid #1a1a1a;margin:14px 0}
-.confirm-box{background:#111;border:1.5px solid #c0392b;border-radius:16px;padding:16px;margin-bottom:12px}
-.confirm-box p{color:#ccc;font-size:14px;text-align:center;margin-bottom:14px;line-height:1.5}
-.confirm-row{display:flex;gap:10px}
-
-/* splash */
-.splash-screen{text-align:center;padding:50px 20px 30px}
-.splash-icon-big{font-size:60px;display:block;margin-bottom:16px}
-.splash-title{color:#fff;font-size:24px;font-weight:600;margin-bottom:8px}
-.splash-sub{color:#666;font-size:14px;line-height:1.6;margin-bottom:32px}
-
-/* routine picker */
-.section-label{color:#555;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px}
-.muscle-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.muscle-card{background:#111;border:0.5px solid #1e1e1e;border-radius:16px;padding:16px 12px;text-align:center;cursor:pointer;transition:border-color 0.15s,background 0.15s}
-.muscle-card:active{transform:scale(0.97)}
-.muscle-card.selected{border-color:#fff;background:#1a1a1a}
-.muscle-card-icon{font-size:28px;display:block;margin-bottom:6px}
-.muscle-card-name{color:#fff;font-size:14px;font-weight:500}
-.muscle-card-desc{color:#555;font-size:11px;margin-top:3px}
-
-/* workout active screen */
-.workout-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-.workout-back{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px}
-.workout-title{color:#fff;font-size:18px;font-weight:600}
-.workout-progress-bar{height:4px;background:#1a1a1a;border-radius:2px;margin-bottom:20px;overflow:hidden}
-.workout-progress-fill{height:100%;background:#5dca7e;border-radius:2px;transition:width 0.4s ease}
-.exercise-card{background:#111;border:0.5px solid #1e1e1e;border-radius:20px;padding:22px 18px;margin-bottom:14px}
-.exercise-num{color:#555;font-size:12px;margin-bottom:6px}
-.exercise-name{color:#fff;font-size:20px;font-weight:600;margin-bottom:6px}
-.exercise-detail{color:#888;font-size:14px;margin-bottom:16px;line-height:1.5}
-.exercise-tip{background:#0d1a0d;border-radius:10px;padding:10px 12px;font-size:12px;color:#5dca7e;line-height:1.5}
-
-/* rest / timer */
-.timer-circle{width:140px;height:140px;border-radius:50%;background:#111;border:3px solid #1e1e1e;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 20px}
-.timer-num{font-size:42px;font-weight:600;color:#fff;line-height:1}
-.timer-lbl{font-size:12px;color:#555;margin-top:4px}
-.timer-circle.active{border-color:#5dca7e}
-.timer-circle.rest{border-color:#f0a500}
-
-.done-card{background:#0d2e0d;border:0.5px solid #1a5c1a;border-radius:20px;padding:28px 20px;text-align:center;margin-bottom:16px}
-.done-icon{font-size:48px;display:block;margin-bottom:12px}
-.done-title{color:#5dca7e;font-size:22px;font-weight:600;margin-bottom:6px}
-.done-sub{color:#3a7a3a;font-size:14px;line-height:1.5}
-
-.home-bar{height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#000}
+.status-icons svg{fill:var(--text)}
+.app-header{background:var(--bg);padding:12px 20px 14px;border-bottom:0.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.app-header-title{color:var(--text);font-size:18px;font-weight:600}
+.home-bar{height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg)}
 .home-pill{width:120px;height:5px;background:#333;border-radius:3px}
-.notif-banner{background:#1a2e1a;border:0.5px solid #1a5c1a;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#5dca7e;text-align:center;display:none}
-.quran-overlay{position:fixed;inset:0;background:#000;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center}
-.quran-bismillah{font-size:26px;color:#c9a84c;margin-bottom:24px;line-height:1.5;font-family:serif}
-.quran-arabic{font-size:21px;color:#fff;line-height:1.9;margin-bottom:18px;direction:rtl;font-family:serif}
-.quran-translation{font-size:15px;color:#aaa;line-height:1.7;margin-bottom:8px;font-style:italic}
-.quran-ref{font-size:12px;color:#c9a84c;margin-bottom:10px}
-.quran-date{font-size:11px;color:#444;margin-bottom:32px}
-.quran-btn{background:#c9a84c;color:#000;border:none;border-radius:14px;padding:14px 40px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
-.quran-btn:active{opacity:0.85;transform:scale(0.97)}
-.quran-ornament{font-size:36px;margin-bottom:20px}
-.quran-actions{display:flex;gap:10px;justify-content:center;width:100%}
-.quran-btn-share{background:transparent;color:#c9a84c;border:1.5px solid #c9a84c;border-radius:14px;padding:14px 24px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
-.quran-btn-share:active{opacity:0.75}
 
-/* share card overlay */
-.share-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.share-overlay.open{display:flex}
-.share-card{width:100%;max-width:340px;background:linear-gradient(160deg,#1a1200 0%,#0d0d0d 60%,#0d1a0d 100%);border:1px solid #c9a84c;border-radius:24px;padding:32px 24px;text-align:center;position:relative}
-.share-card-ornament{font-size:28px;margin-bottom:12px;display:block}
-.share-card-bismillah{font-size:18px;color:#c9a84c;margin-bottom:16px;font-family:serif;line-height:1.5}
-.share-card-arabic{font-size:18px;color:#fff;line-height:1.9;margin-bottom:14px;direction:rtl;font-family:serif}
-.share-card-divider{width:40px;height:1px;background:#c9a84c;margin:0 auto 14px;opacity:0.5}
-.share-card-translation{font-size:14px;color:#ccc;line-height:1.7;font-style:italic;margin-bottom:10px}
-.share-card-ref{font-size:11px;color:#c9a84c;margin-bottom:16px}
-.share-card-footer{font-size:10px;color:#444;margin-top:16px;border-top:0.5px solid #222;padding-top:12px}
-.share-card-date{font-size:11px;color:#555;margin-bottom:20px}
-.share-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px;margin-top:16px}
-.share-dl-btn{background:#c9a84c;color:#000;border:none;border-radius:14px;padding:14px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
-.share-dl-btn:active{opacity:0.85}
-.share-close-btn{background:transparent;color:#666;border:none;font-size:14px;cursor:pointer;padding:8px;font-family:inherit}
+/* ── BUTTONS ── */
+.btn{display:block;width:100%;padding:16px;border-radius:var(--r);border:none;font-size:17px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity 0.1s,transform 0.1s;margin-bottom:12px;text-align:center;letter-spacing:0.01em}
+.btn:active{transform:scale(0.97);opacity:0.85}
+.btn-white{background:#fff;color:#000}
+.btn-gold{background:var(--gold);color:#000}
+.btn-grey{background:var(--bg3);color:var(--text)}
+.btn-red{background:#3a1515;color:#ff7070;border:1px solid #5a2020}
+.btn-green{background:#0d2e1a;color:var(--green);border:1px solid #1a5c2e}
+.btn-blue{background:#0d1a2e;color:var(--blue);border:1px solid #1a3a5c}
+.btn-outline{background:transparent;color:var(--text2);border:0.5px solid var(--border)}
+.btn-sm{padding:12px;font-size:15px}
+.btn-xs{padding:9px 14px;font-size:13px;border-radius:10px;margin-bottom:8px}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.card-gold{border-color:var(--gold2);background:#1a1200}
+
+/* ── LANGUAGE SCREEN ── */
+.lang-screen{padding:40px 24px;text-align:center;justify-content:center;gap:20px}
+.lang-logo{font-size:64px;margin-bottom:8px}
+.lang-title{font-size:28px;font-weight:700;color:var(--text);margin-bottom:6px}
+.lang-sub{font-size:15px;color:var(--text2);margin-bottom:32px;line-height:1.6}
+.lang-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:18px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:18px;font-weight:600;cursor:pointer;margin-bottom:12px;font-family:inherit;transition:border-color 0.2s,background 0.2s}
+.lang-btn:active{background:var(--bg3)}
+.lang-btn.selected{border-color:var(--gold);background:#1a1200}
+.lang-flag{font-size:28px}
+
+/* ── PRIVACY SCREEN ── */
+.privacy-body{padding:28px 20px;flex:1;display:flex;flex-direction:column;justify-content:center}
+.privacy-icon{font-size:52px;text-align:center;margin-bottom:20px}
+.privacy-title{font-size:22px;font-weight:700;text-align:center;margin-bottom:10px}
+.privacy-text{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:14px}
+.privacy-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--border)}
+.privacy-item:last-child{border-bottom:none}
+.privacy-item-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.privacy-item-text{font-size:14px;color:var(--text2);line-height:1.6}
+.privacy-item-text strong{color:var(--text);display:block;margin-bottom:2px}
+
+/* ── QURAN SCREEN ── */
+.quran-body{padding:28px 20px;flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.quran-bismillah{font-size:22px;color:var(--gold);margin-bottom:20px;line-height:1.6;font-family:serif}
+.quran-arabic{font-size:22px;color:var(--text);line-height:2;margin-bottom:18px;direction:rtl;font-family:serif}
+.quran-translation{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:8px;font-style:italic}
+.quran-ref{font-size:12px;color:var(--gold);margin-bottom:6px}
+.quran-date{font-size:11px;color:var(--text3);margin-bottom:32px}
+.quran-ornament{font-size:32px;margin-bottom:16px}
+.quran-skip{font-size:13px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:inherit;margin-top:8px}
+
+/* ── ADDICTION SCREEN ── */
+.addiction-body{padding:20px;flex:1}
+.addiction-title{font-size:20px;font-weight:700;margin-bottom:6px;text-align:center}
+.addiction-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:24px;line-height:1.6}
+.addiction-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.addiction-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 12px;text-align:center;cursor:pointer;transition:border-color 0.15s,background 0.15s}
+.addiction-card:active{transform:scale(0.97)}
+.addiction-card.selected{border-color:var(--gold);background:#1a1200}
+.addiction-card-icon{font-size:32px;display:block;margin-bottom:8px}
+.addiction-card-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
+.addiction-card-name-ar{font-size:13px;color:var(--text2)}
+
+/* ── HOME SCREEN ── */
+.home-body{padding:16px;flex:1}
+.timer-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:28px 20px;margin-bottom:14px;text-align:center}
+.timer-addiction-label{font-size:12px;color:var(--text3);margin-bottom:8px;letter-spacing:0.06em;text-transform:uppercase}
+.timer-big{font-size:52px;font-weight:700;color:var(--text);line-height:1;letter-spacing:-1px}
+.timer-unit{font-size:13px;color:var(--text3);margin-top:4px;margin-bottom:16px}
+.timer-msg{font-size:14px;color:var(--text2);line-height:1.7;font-style:italic;padding:12px 14px;background:var(--bg3);border-radius:10px;margin-bottom:0}
+.milestone-strip{display:flex;gap:8px;overflow-x:auto;padding:4px 0;margin-bottom:14px;scrollbar-width:none}
+.milestone-strip::-webkit-scrollbar{display:none}
+.milestone-badge{flex-shrink:0;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--text3);white-space:nowrap}
+.milestone-badge.achieved{background:#1a1200;border-color:var(--gold);color:var(--gold)}
+.urge-btn{background:#1a0d2e;color:#9b6fe0;border:1px solid #3a1a5c;margin-bottom:12px}
+.relapse-btn-wrap{margin-top:4px}
+.relapse-btn{background:transparent;color:var(--text3);border:0.5px solid var(--border);font-size:14px;padding:12px;margin-bottom:0}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r2);padding:14px;text-align:center}
+.stat-num{font-size:24px;font-weight:700;color:var(--text)}
+.stat-label{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* ── URGE SCREEN ── */
+.urge-body{padding:20px;flex:1}
+.urge-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.urge-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6}
+.tool-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;cursor:pointer}
+.tool-card:active{background:var(--bg3)}
+.tool-card-header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.tool-icon{font-size:24px;flex-shrink:0}
+.tool-name{font-size:15px;font-weight:600;color:var(--text)}
+.tool-desc{font-size:13px;color:var(--text2);line-height:1.5;padding-left:36px}
+
+/* ── BREATHING ── */
+.breath-body{padding:20px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.breath-circle{width:180px;height:180px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;transition:transform 4s ease-in-out,border-color 2s}
+.breath-circle.inhale{transform:scale(1.3);border-color:var(--blue)}
+.breath-circle.exhale{transform:scale(0.85);border-color:var(--green)}
+.breath-word{font-size:22px;font-weight:700;color:var(--text)}
+.breath-count{font-size:48px;font-weight:700;color:var(--text2);margin-bottom:8px}
+.breath-sub{font-size:14px;color:var(--text3)}
+.breath-cycles{font-size:13px;color:var(--text3);margin-top:16px}
+
+/* ── DHIKR ── */
+.dhikr-body{padding:20px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.dhikr-arabic{font-size:32px;color:var(--gold);font-family:serif;line-height:1.8;margin-bottom:8px;direction:rtl}
+.dhikr-translation{font-size:14px;color:var(--text2);margin-bottom:32px}
+.dhikr-count{font-size:80px;font-weight:700;color:var(--text);line-height:1;margin-bottom:8px}
+.dhikr-target{font-size:13px;color:var(--text3);margin-bottom:32px}
+.dhikr-tap{width:160px;height:160px;border-radius:50%;background:var(--bg3);border:3px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;margin:0 auto;transition:transform 0.1s,background 0.1s}
+.dhikr-tap:active{transform:scale(0.93);background:var(--bg4)}
+.dhikr-tap-text{font-size:15px;color:var(--text2);font-weight:600}
+
+/* ── RELAPSE SCREEN ── */
+.relapse-body{padding:28px 20px;flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.relapse-icon{font-size:52px;margin-bottom:16px}
+.relapse-title{font-size:22px;font-weight:700;margin-bottom:10px}
+.relapse-msg{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:28px}
+.relapse-hadith{background:var(--bg2);border-left:3px solid var(--gold);border-radius:0 var(--r2) var(--r2) 0;padding:14px 16px;margin-bottom:28px;text-align:left}
+.relapse-hadith-text{font-size:13px;color:var(--text2);line-height:1.7;font-style:italic}
+.relapse-hadith-ref{font-size:11px;color:var(--gold);margin-top:6px}
+
+/* ── MILESTONES SCREEN ── */
+.milestone-body{padding:20px;flex:1}
+.ms-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+.ms-card.achieved{border-color:var(--gold);background:#1a1200}
+.ms-icon{font-size:32px;flex-shrink:0}
+.ms-info{flex:1}
+.ms-name{font-size:15px;font-weight:600;color:var(--text)}
+.ms-name-ar{font-size:13px;color:var(--text2);margin-top:1px}
+.ms-time{font-size:12px;color:var(--text3);margin-top:3px}
+.ms-check{font-size:20px;flex-shrink:0}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{display:none;background:var(--bg2);border-top:0.5px solid var(--border);flex-shrink:0;padding:8px 0 4px}
+.bottom-nav.visible{display:flex}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;cursor:pointer;background:none;border:none;color:var(--text3);font-family:inherit}
+.nav-item.active{color:var(--gold)}
+.nav-icon{font-size:22px}
+.nav-label{font-size:10px;font-weight:500}
+
+/* ── RTL support ── */
+.rtl{direction:rtl;font-family:"Segoe UI",Tahoma,Arial,sans-serif}
+.rtl .privacy-item{flex-direction:row-reverse}
+.rtl .tool-desc{padding-left:0;padding-right:36px}
+.rtl .relapse-hadith{border-left:none;border-right:3px solid var(--gold);border-radius:var(--r2) 0 0 var(--r2);text-align:right}
+.rtl .ms-info{text-align:right}
+.rtl .addiction-card-name{font-size:16px}
+
+/* ── SETTINGS ── */
+.settings-body{padding:20px;flex:1}
+.settings-section{margin-bottom:24px}
+.settings-label{font-size:11px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px}
+.settings-item{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.settings-item:active{background:var(--bg3)}
+.settings-item-left{display:flex;align-items:center;gap:12px}
+.settings-item-icon{font-size:20px}
+.settings-item-text{font-size:15px;color:var(--text)}
+.settings-item-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.settings-item-arrow{color:var(--text3);font-size:14px}
 </style>
 </head>
 <body>
 
-<div class="quran-overlay" id="quran-overlay">
-  <div class="quran-ornament">&#9775;&#65039;</div>
-  <div class="quran-bismillah">&#1576;&#1616;&#1587;&#1618;&#1605;&#1616; &#1575;&#1604;&#1604;&#1607;&#1616; &#1575;&#1604;&#1585;&#1617;&#1614;&#1581;&#1618;&#1605;&#1614;&#1606;&#1616; &#1575;&#1604;&#1585;&#1617;&#1614;&#1581;&#1616;&#1610;&#1618;&#1605;&#1616;</div>
-  <div class="quran-arabic" id="quran-arabic"></div>
-  <div class="quran-translation" id="quran-translation"></div>
-  <div class="quran-ref" id="quran-ref"></div>
-  <div class="quran-date" id="quran-date"></div>
-  <div class="quran-actions">
-    <button class="quran-btn-share" onclick="openShareCard()">Share</button>
-    <button class="quran-btn" onclick="dismissQuran()">Continue</button>
-  </div>
-</div>
-
-<!-- share card overlay -->
-<div class="share-overlay" id="share-overlay">
-  <div class="share-card" id="share-card">
-    <span class="share-card-ornament">&#9775;&#65039;</span>
-    <div class="share-card-bismillah">&#1576;&#1616;&#1587;&#1618;&#1605;&#1616; &#1575;&#1604;&#1604;&#1607;&#1616; &#1575;&#1604;&#1585;&#1617;&#1614;&#1581;&#1618;&#1605;&#1614;&#1606;&#1616; &#1575;&#1604;&#1585;&#1617;&#1614;&#1581;&#1616;&#1610;&#1618;&#1605;&#1616;</div>
-    <div class="share-card-arabic" id="sc-arabic"></div>
-    <div class="share-card-divider"></div>
-    <div class="share-card-translation" id="sc-translation"></div>
-    <div class="share-card-ref" id="sc-ref"></div>
-    <div class="share-card-date" id="sc-date"></div>
-    <div class="share-card-footer">Quran Daily — streak app</div>
-  </div>
-  <div class="share-actions">
-    <button class="share-dl-btn" id="share-dl-btn">Save image to share</button>
-    <button class="share-close-btn" onclick="closeShareCard()">Cancel</button>
-  </div>
-</div>
-
-<div class="status-bar">
+<!-- STATUS BAR -->
+<div class="status-bar" id="status-bar-el">
   <span class="status-time" id="clock">9:41</span>
   <div class="status-icons">
     <svg width="16" height="12" viewBox="0 0 15 11"><rect x="0" y="3" width="3" height="8" rx="1"/><rect x="4" y="2" width="3" height="9" rx="1"/><rect x="8" y="1" width="3" height="10" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
     <svg width="15" height="12" viewBox="0 0 14 11"><path d="M7 2.5C9.2 2.5 11.2 3.4 12.6 4.9L14 3.4C12.2 1.3 9.7 0 7 0S1.8 1.3 0 3.4L1.4 4.9C2.8 3.4 4.8 2.5 7 2.5z"/><path d="M7 5.5C8.5 5.5 9.8 6.1 10.8 7.1L12.2 5.6C10.8 4.2 8.9 3.5 7 3.5S3.2 4.2 1.8 5.6L3.2 7.1C4.2 6.1 5.5 5.5 7 5.5z"/><circle cx="7" cy="9.5" r="1.5"/></svg>
-    <svg width="24" height="12" viewBox="0 0 22 11"><rect x="0" y="1" width="18" height="9" rx="2.5" stroke="#fff" stroke-width="1" fill="none"/><rect x="1.5" y="2.5" width="13" height="6" rx="1.5" fill="#fff"/><rect x="19" y="3.5" width="2" height="4" rx="1" fill="#fff"/></svg>
+    <svg width="24" height="12" viewBox="0 0 22 11"><rect x="0" y="1" width="18" height="9" rx="2.5" stroke="white" stroke-width="1" fill="none"/><rect x="1.5" y="2.5" width="13" height="6" rx="1.5" fill="white"/><rect x="19" y="3.5" width="2" height="4" rx="1" fill="white"/></svg>
   </div>
 </div>
 
-<div class="app-header">
-  <div class="app-header-title" id="header-title">Streak</div>
-  <button class="burger" id="burger-btn" aria-label="Menu"><span></span><span></span><span></span></button>
+<!-- ══════════════════════════════════
+     SCREEN 1: LANGUAGE
+════════════════════════════════════ -->
+<div class="screen active lang-screen" id="screen-lang">
+  <div class="lang-logo">🌙</div>
+  <div class="lang-title">Clean</div>
+  <div class="lang-sub">Your journey to freedom starts here<br>رحلتك نحو الحرية تبدأ هنا</div>
+  <button class="lang-btn" id="lang-en-btn" onclick="selectLang('en')">
+    <span class="lang-flag">🇺🇸</span>
+    <span>English</span>
+  </button>
+  <button class="lang-btn" id="lang-ar-btn" onclick="selectLang('ar')">
+    <span class="lang-flag">🇸🇦</span>
+    <span>العربية</span>
+  </button>
 </div>
 
-<div class="tab-bar">
-  <div class="tab active" id="tab-daily" onclick="switchTab('daily')">⚡ Daily</div>
-  <div class="tab" id="tab-workout" onclick="switchTab('workout')">💪 Workout</div>
-</div>
-
-<div class="app-body">
-
-  <!-- ── DAILY TAB ── -->
-  <div class="page active" id="page-daily">
-    <div class="notif-banner" id="daily-notif-banner">Notifications on — we'll remind you when ready</div>
-    <div id="daily-splash" class="splash-screen">
-      <span class="splash-icon-big">⚡</span>
-      <div class="splash-title">Daily streak</div>
-      <p class="splash-sub">Build a daily habit. Add one every 24 hours from when you start.</p>
-      <button class="sbtn sbtn-white" id="daily-start-btn">Start</button>
+<!-- ══════════════════════════════════
+     SCREEN 2: PRIVACY
+════════════════════════════════════ -->
+<div class="screen" id="screen-privacy">
+  <div class="privacy-body">
+    <div class="privacy-icon">🔒</div>
+    <div class="privacy-title" id="priv-title">Your Privacy is Protected</div>
+    <div class="privacy-text" id="priv-intro">Everything you share in this app stays on your device. Nothing is uploaded, shared, or stored on any server.</div>
+    <div class="privacy-item">
+      <div class="privacy-item-icon">📱</div>
+      <div class="privacy-item-text"><strong id="priv-p1-title">Stored on your phone only</strong><span id="priv-p1-text">Your progress, streak, and personal data never leave your device.</span></div>
     </div>
-    <div id="daily-main" style="display:none">
-      <div class="streak-card">
-        <span class="streak-icon" id="daily-icon">⚡</span>
-        <div class="streak-big" id="daily-num">0</div>
-        <div class="streak-sub">day streak</div>
-        <div class="started-label" id="daily-started"></div>
-      </div>
-      <div class="status-pill" id="daily-status"></div>
-      <div id="daily-locked" style="display:none">
-        <div class="countdown-num" id="daily-countdown">00:00:00</div>
-        <div class="countdown-lbl">until you can add again</div>
-        <div class="prog-track"><div class="prog-fill" id="daily-prog" style="width:0%"></div></div>
-      </div>
-      <button class="sbtn sbtn-white" id="daily-add-btn">+ Add one</button>
-      <div class="dots-wrap"><div class="dots-title">Last 30 days</div><div class="dots-grid" id="daily-dots"></div></div>
-      <div class="divider"></div>
-      <div id="daily-confirm" style="display:none" class="confirm-box">
-        <p>Reset daily streak? Clears all entries and the timer.</p>
-        <div class="confirm-row">
-          <button class="sbtn sbtn-grey sbtn-sm" id="daily-cancel-btn">Cancel</button>
-          <button class="sbtn sbtn-red sbtn-sm" id="daily-confirm-btn">Yes, reset</button>
-        </div>
-      </div>
-      <button class="sbtn sbtn-grey" id="daily-reset-btn">Reset my streak</button>
+    <div class="privacy-item">
+      <div class="privacy-item-icon">🚫</div>
+      <div class="privacy-item-text"><strong id="priv-p2-title">No accounts needed</strong><span id="priv-p2-text">No sign-up, no email, no tracking of any kind.</span></div>
+    </div>
+    <div class="privacy-item">
+      <div class="privacy-item-icon">🤝</div>
+      <div class="privacy-item-text"><strong id="priv-p3-title">Judgment-free</strong><span id="priv-p3-text">This is your safe space. No one will ever know what you are working on.</span></div>
+    </div>
+    <div class="privacy-item">
+      <div class="privacy-item-icon">🗑️</div>
+      <div class="privacy-item-text"><strong id="priv-p4-title">Delete anytime</strong><span id="priv-p4-text">You can clear all your data at any time from settings.</span></div>
+    </div>
+    <div style="margin-top:24px">
+      <button class="btn btn-gold" id="priv-btn" onclick="goToQuran()">I Understand — Continue</button>
     </div>
   </div>
+</div>
 
-  <!-- ── WORKOUT TAB ── -->
-  <div class="page" id="page-workout">
+<!-- ══════════════════════════════════
+     SCREEN 3: QURAN VERSE
+════════════════════════════════════ -->
+<div class="screen" id="screen-quran">
+  <div class="quran-body">
+    <div class="quran-ornament">☪️</div>
+    <div class="quran-bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+    <div class="quran-arabic" id="q-arabic"></div>
+    <div class="quran-translation" id="q-translation"></div>
+    <div class="quran-ref" id="q-ref"></div>
+    <div class="quran-date" id="q-date"></div>
+    <button class="btn btn-gold" id="q-continue-btn" onclick="goToAddiction()"></button>
+    <button class="quran-skip" id="q-skip-btn" onclick="goToAddiction()"></button>
+  </div>
+</div>
 
-    <!-- streak overview -->
-    <div id="workout-streak-area" style="display:none">
-      <div class="notif-banner" id="workout-notif-banner">Notifications on — we'll remind you when ready</div>
-      <div class="streak-card workout">
-        <span class="streak-icon" id="workout-icon">💪</span>
-        <div class="streak-big" id="workout-num">0</div>
-        <div class="streak-sub">workout streak</div>
-        <div class="started-label" id="workout-started"></div>
+<!-- ══════════════════════════════════
+     SCREEN 4: ADDICTION TYPE
+════════════════════════════════════ -->
+<div class="screen" id="screen-addiction">
+  <div class="addiction-body">
+    <div style="padding:8px 0 20px;text-align:center">
+      <div class="addiction-title" id="add-title">What are you working on?</div>
+      <div class="addiction-sub" id="add-sub">Choose what you want to break free from. You can change this later.</div>
+    </div>
+    <div class="addiction-grid">
+      <div class="addiction-card" onclick="selectAddiction('smoking')" id="add-smoking">
+        <span class="addiction-card-icon">🚬</span>
+        <div class="addiction-card-name" id="add-smoking-name">Smoking</div>
+        <div class="addiction-card-name-ar">التدخين</div>
       </div>
-      <div class="status-pill" id="workout-streak-status"></div>
-      <div id="workout-streak-locked" style="display:none">
-        <div class="countdown-num" id="workout-countdown">00:00:00</div>
-        <div class="countdown-lbl">until you can work out again</div>
-        <div class="prog-track"><div class="prog-fill green" id="workout-prog" style="width:0%"></div></div>
+      <div class="addiction-card" onclick="selectAddiction('masturbation')" id="add-masturbation">
+        <span class="addiction-card-icon">🛡️</span>
+        <div class="addiction-card-name" id="add-masturbation-name">Purity</div>
+        <div class="addiction-card-name-ar">الطهارة</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('social_media')" id="add-social_media">
+        <span class="addiction-card-icon">📱</span>
+        <div class="addiction-card-name" id="add-social_media-name">Social Media</div>
+        <div class="addiction-card-name-ar">التواصل الاجتماعي</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('alcohol')" id="add-alcohol">
+        <span class="addiction-card-icon">🍶</span>
+        <div class="addiction-card-name" id="add-alcohol-name">Alcohol</div>
+        <div class="addiction-card-name-ar">الكحول</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('gambling')" id="add-gambling">
+        <span class="addiction-card-icon">🎲</span>
+        <div class="addiction-card-name" id="add-gambling-name">Gambling</div>
+        <div class="addiction-card-name-ar">القمار</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('food')" id="add-food">
+        <span class="addiction-card-icon">🍔</span>
+        <div class="addiction-card-name" id="add-food-name">Overeating</div>
+        <div class="addiction-card-name-ar">الإفراط في الأكل</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('anger')" id="add-anger">
+        <span class="addiction-card-icon">😤</span>
+        <div class="addiction-card-name" id="add-anger-name">Anger</div>
+        <div class="addiction-card-name-ar">الغضب</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('procrastination')" id="add-procrastination">
+        <span class="addiction-card-icon">⏰</span>
+        <div class="addiction-card-name" id="add-procrastination-name">Procrastination</div>
+        <div class="addiction-card-name-ar">التسويف</div>
+      </div>
+    </div>
+    <button class="btn btn-gold" id="add-continue-btn" onclick="confirmAddiction()" style="display:none"></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 5: HOME (MAIN)
+════════════════════════════════════ -->
+<div class="screen" id="screen-home">
+  <div class="app-header">
+    <div class="app-header-title" id="home-header-title">Clean</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-settings')">⚙️</button>
+  </div>
+  <div class="home-body">
+    <!-- Timer Card -->
+    <div class="timer-card">
+      <div class="timer-addiction-label" id="home-addiction-label">SMOKING FREE</div>
+      <div class="timer-big" id="home-timer">00:00:00</div>
+      <div class="timer-unit" id="home-timer-unit">hours : minutes : seconds</div>
+      <div class="timer-msg" id="home-timer-msg"></div>
+    </div>
+
+    <!-- Milestones -->
+    <div class="milestone-strip" id="milestone-strip"></div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-days">0</div>
+        <div class="stat-label" id="stat-days-label">Days Clean</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-best">0</div>
+        <div class="stat-label" id="stat-best-label">Best Streak</div>
       </div>
     </div>
 
-    <!-- routine picker -->
-    <div id="workout-picker">
-      <div id="workout-splash" class="splash-screen" style="padding-top:30px">
-        <span class="splash-icon-big">💪</span>
-        <div class="splash-title">Choose a workout</div>
-        <p class="splash-sub">Pick a muscle group and we'll walk you through the exercises.</p>
-      </div>
-      <div id="workout-picker-main">
-        <div class="section-label">Choose muscle group</div>
-        <div class="muscle-grid">
-          <div class="muscle-card" onclick="selectMuscle('abs')">
-            <span class="muscle-card-icon">🔥</span>
-            <div class="muscle-card-name">Abs</div>
-            <div class="muscle-card-desc">Core & Obliques</div>
-          </div>
-          <div class="muscle-card" onclick="selectMuscle('legs')">
-            <span class="muscle-card-icon">🦵</span>
-            <div class="muscle-card-name">Legs</div>
-            <div class="muscle-card-desc">Quads, Glutes, Calves</div>
-          </div>
-          <div class="muscle-card" onclick="selectMuscle('chest')">
-            <span class="muscle-card-icon">💪</span>
-            <div class="muscle-card-name">Chest</div>
-            <div class="muscle-card-desc">Pecs & Triceps</div>
-          </div>
-          <div class="muscle-card" onclick="selectMuscle('back')">
-            <span class="muscle-card-icon">🏋️</span>
-            <div class="muscle-card-name">Back</div>
-            <div class="muscle-card-desc">Lats & Shoulders</div>
-          </div>
-          <div class="muscle-card" onclick="selectMuscle('arms')">
-            <span class="muscle-card-icon">💥</span>
-            <div class="muscle-card-name">Arms</div>
-            <div class="muscle-card-desc">Biceps & Triceps</div>
-          </div>
-          <div class="muscle-card" onclick="selectMuscle('fullbody')">
-            <span class="muscle-card-icon">⚡</span>
-            <div class="muscle-card-name">Full Body</div>
-            <div class="muscle-card-desc">Everything</div>
+    <!-- Urge Button -->
+    <button class="btn urge-btn" onclick="showScreen('screen-urge')" id="urge-btn"></button>
+
+    <!-- Relapse -->
+    <div class="relapse-btn-wrap">
+      <button class="btn relapse-btn" onclick="showScreen('screen-relapse')" id="relapse-btn"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 6: URGE TOOLS
+════════════════════════════════════ -->
+<div class="screen" id="screen-urge">
+  <div class="app-header">
+    <div class="app-header-title" id="urge-header-title">I Feel the Urge</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div class="urge-body">
+    <div class="urge-sub" id="urge-sub">You can do this. Choose a tool to help you through this moment.</div>
+    <div id="urge-tools-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 7: BREATHING EXERCISE
+════════════════════════════════════ -->
+<div class="screen" id="screen-breathing">
+  <div class="app-header">
+    <div class="app-header-title" id="breath-header">Breathing Exercise</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="stopBreathing()">✕</button>
+  </div>
+  <div class="breath-body">
+    <div class="breath-circle" id="breath-circle">
+      <div class="breath-word" id="breath-word">Ready</div>
+    </div>
+    <div class="breath-count" id="breath-count">4</div>
+    <div class="breath-sub" id="breath-sub">Breathe in slowly</div>
+    <div class="breath-cycles" id="breath-cycles">0 / 5 cycles</div>
+    <button class="btn btn-gold" style="margin-top:24px" id="breath-start-btn" onclick="startBreathing()"></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 8: DHIKR COUNTER
+════════════════════════════════════ -->
+<div class="screen" id="screen-dhikr">
+  <div class="app-header">
+    <div class="app-header-title" id="dhikr-header">Dhikr Counter</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-urge')">✕</button>
+  </div>
+  <div class="dhikr-body">
+    <div class="dhikr-arabic" id="dhikr-arabic">سُبْحَانَ اللهِ</div>
+    <div class="dhikr-translation" id="dhikr-translation">Glory be to Allah</div>
+    <div class="dhikr-count" id="dhikr-count">0</div>
+    <div class="dhikr-target" id="dhikr-target">Target: 33</div>
+    <div class="dhikr-tap" id="dhikr-tap" onclick="tapDhikr()">
+      <div class="dhikr-tap-text" id="dhikr-tap-text">Tap</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="resetDhikr()" id="dhikr-reset-btn">Reset</button>
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="nextDhikr()" id="dhikr-next-btn">Next Dhikr</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 9: RELAPSE
+════════════════════════════════════ -->
+<div class="screen" id="screen-relapse">
+  <div class="relapse-body">
+    <div class="relapse-icon">🤲</div>
+    <div class="relapse-title" id="relapse-title">It is okay. Start again.</div>
+    <div class="relapse-msg" id="relapse-msg">Every setback is a lesson. Allah loves those who repent and return. Your journey is not over — it is just beginning again.</div>
+    <div class="relapse-hadith" id="relapse-hadith-card">
+      <div class="relapse-hadith-text" id="relapse-hadith-text">"All of the children of Adam are sinners, and the best of sinners are those who repent."</div>
+      <div class="relapse-hadith-ref">— Ibn Majah</div>
+    </div>
+    <button class="btn btn-gold" onclick="confirmRelapse()" id="relapse-confirm-btn">Reset My Timer</button>
+    <button class="btn btn-outline" onclick="showScreen('screen-home')" id="relapse-cancel-btn">Not Yet — Go Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 10: MILESTONES
+════════════════════════════════════ -->
+<div class="screen" id="screen-milestones">
+  <div class="app-header">
+    <div class="app-header-title" id="ms-header-title">Milestones</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div class="milestone-body" id="milestone-body"></div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 11: SETTINGS
+════════════════════════════════════ -->
+<div class="screen" id="screen-settings">
+  <div class="app-header">
+    <div class="app-header-title" id="settings-title">Settings</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div class="settings-body">
+    <div class="settings-section">
+      <div class="settings-label" id="settings-general-label">General</div>
+      <div class="settings-item" onclick="showLangChange()">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">🌐</span>
+          <div>
+            <div class="settings-item-text" id="settings-lang-text">Language</div>
+            <div class="settings-item-sub" id="settings-lang-sub">English</div>
           </div>
         </div>
-        <div id="start-workout-wrap" style="display:none">
-          <button class="sbtn sbtn-white" id="start-workout-btn">Start workout</button>
-        </div>
-        <div class="divider"></div>
-        <div id="workout-confirm3" style="display:none" class="confirm-box">
-          <p>Reset workout streak? Clears all entries and the timer.</p>
-          <div class="confirm-row">
-            <button class="sbtn sbtn-grey sbtn-sm" id="workout-cancel-btn3">Cancel</button>
-            <button class="sbtn sbtn-red sbtn-sm" id="workout-confirm-btn3">Yes, reset</button>
+        <span class="settings-item-arrow">›</span>
+      </div>
+      <div class="settings-item" onclick="showAddictionChange()">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">🎯</span>
+          <div>
+            <div class="settings-item-text" id="settings-addiction-text">My Goal</div>
+            <div class="settings-item-sub" id="settings-addiction-sub">Smoking</div>
           </div>
         </div>
-        <button class="sbtn sbtn-grey" id="workout-reset-btn3">Reset my streak</button>
+        <span class="settings-item-arrow">›</span>
       </div>
     </div>
-
-    <!-- active workout -->
-    <div id="workout-active" style="display:none">
-      <div class="workout-header">
-        <button class="workout-back" id="workout-back-btn">←</button>
-        <div class="workout-title" id="workout-active-title">Abs</div>
-      </div>
-      <div class="workout-progress-bar"><div class="workout-progress-fill" id="workout-prog-fill" style="width:0%"></div></div>
-      <div id="workout-exercise-area"></div>
-      <div id="workout-nav-btns" style="display:flex;gap:10px">
-        <button class="sbtn sbtn-grey sbtn-sm" id="prev-btn" style="flex:1" onclick="prevExercise()">← Prev</button>
-        <button class="sbtn sbtn-white sbtn-sm" id="next-btn" style="flex:1" onclick="nextExercise()">Next →</button>
-      </div>
-    </div>
-
-    <!-- done screen -->
-    <div id="workout-done" style="display:none">
-      <div class="done-card">
-        <span class="done-icon">🏆</span>
-        <div class="done-title">Workout complete!</div>
-        <div class="done-sub" id="done-sub">Great job finishing your workout.</div>
-      </div>
-      <div class="streak-card workout" id="done-streak-card" style="display:none">
-        <span class="streak-icon" id="done-streak-icon">💪</span>
-        <div class="streak-big" id="done-streak-num">1</div>
-        <div class="streak-sub">workout streak</div>
-      </div>
-      <button class="sbtn sbtn-white" onclick="goPickerFromDone()">Do another workout</button>
-      <div class="divider"></div>
-      <div id="workout-confirm" style="display:none" class="confirm-box">
-        <p>Reset workout streak? Clears all entries and the timer.</p>
-        <div class="confirm-row">
-          <button class="sbtn sbtn-grey sbtn-sm" id="workout-cancel-btn">Cancel</button>
-          <button class="sbtn sbtn-red sbtn-sm" id="workout-confirm-btn">Yes, reset</button>
+    <div class="settings-section">
+      <div class="settings-label" id="settings-data-label">Data</div>
+      <div class="settings-item" onclick="showMilestones()">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">🏆</span>
+          <div>
+            <div class="settings-item-text" id="settings-ms-text">View Milestones</div>
+          </div>
         </div>
+        <span class="settings-item-arrow">›</span>
       </div>
-      <button class="sbtn sbtn-grey" id="workout-reset-btn">Reset my streak</button>
-    </div>
-
-    <!-- locked screen (already worked out) -->
-    <div id="workout-locked-screen" style="display:none">
-      <div class="divider"></div>
-      <div id="workout-confirm2" style="display:none" class="confirm-box">
-        <p>Reset workout streak? Clears all entries and the timer.</p>
-        <div class="confirm-row">
-          <button class="sbtn sbtn-grey sbtn-sm" id="workout-cancel-btn2">Cancel</button>
-          <button class="sbtn sbtn-red sbtn-sm" id="workout-confirm-btn2">Yes, reset</button>
+      <div class="settings-item" onclick="confirmClearData()">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">🗑️</span>
+          <div>
+            <div class="settings-item-text" style="color:var(--red)" id="settings-clear-text">Clear All Data</div>
+          </div>
         </div>
+        <span class="settings-item-arrow">›</span>
       </div>
-      <button class="sbtn sbtn-grey" id="workout-reset-btn2">Reset my streak</button>
     </div>
+    <div style="text-align:center;padding:20px 0;color:var(--text3);font-size:12px">Clean v1.0 — Everything stays on your device</div>
+  </div>
+</div>
 
-    <div class="dots-wrap" id="workout-dots-wrap" style="display:none">
-      <div class="dots-title">Last 30 days</div>
-      <div class="dots-grid" id="workout-dots"></div>
-    </div>
-
-  </div><!-- end workout page -->
-
-</div><!-- end app-body -->
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottom-nav">
+  <button class="nav-item active" id="nav-home" onclick="navTo('home')">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label" id="nav-home-label">Home</span>
+  </button>
+  <button class="nav-item" id="nav-urge" onclick="navTo('urge')">
+    <span class="nav-icon">🛡️</span>
+    <span class="nav-label" id="nav-urge-label">Urge Help</span>
+  </button>
+  <button class="nav-item" id="nav-milestones" onclick="navTo('milestones')">
+    <span class="nav-icon">🏆</span>
+    <span class="nav-label" id="nav-ms-label">Progress</span>
+  </button>
+  <button class="nav-item" id="nav-settings" onclick="navTo('settings')">
+    <span class="nav-icon">⚙️</span>
+    <span class="nav-label" id="nav-settings-label">Settings</span>
+  </button>
+</div>
 
 <div class="home-bar"><div class="home-pill"></div></div>
 
-<!-- DRAWER -->
-<div class="drawer-overlay" id="drawer-overlay"></div>
-<div class="drawer" id="drawer">
-  <button class="drawer-close" id="drawer-close">✕</button>
-  <div class="drawer-section-title">Streaks</div>
-  <div class="drawer-item" onclick="switchTab('daily');closeDrawer()">
-    <span class="drawer-item-icon">⚡</span>
-    <div><div class="drawer-item-label">Daily</div><div class="drawer-item-sub">Your everyday habit</div></div>
-  </div>
-  <div class="drawer-item" onclick="switchTab('workout');closeDrawer()">
-    <span class="drawer-item-icon">💪</span>
-    <div><div class="drawer-item-label">Workout</div><div class="drawer-item-sub">Routines + streak</div></div>
-  </div>
-  <div class="drawer-notif">
-    <div class="drawer-section-title" style="padding:0 0 10px">Notifications</div>
-    <div class="notif-row">
-      <span class="notif-label">⚡ Daily reminder</span>
-      <button class="toggle" id="toggle-daily" onclick="toggleNotif('daily')"></button>
-    </div>
-    <div class="notif-row">
-      <span class="notif-label">💪 Workout reminder</span>
-      <button class="toggle" id="toggle-workout" onclick="toggleNotif('workout')"></button>
-    </div>
-  </div>
-  <div class="drawer-admin-btn" onclick="openLoginModal()">
-    <span class="drawer-item-icon" style="font-size:16px">🔐</span>
-    <div><div class="drawer-item-label" style="font-size:13px;color:#555">Admin</div></div>
-  </div>
-</div>
-
-<!-- Login Modal -->
-<div class="modal-overlay" id="login-modal">
-  <div class="modal-box">
-    <div class="modal-title">Admin login</div>
-    <div class="modal-sub">Testing & notification tools</div>
-    <input class="modal-input" type="password" id="admin-password" placeholder="Password" />
-    <div class="modal-error" id="login-error">Wrong password. Try again.</div>
-    <div class="modal-row">
-      <button class="sbtn sbtn-grey" onclick="closeLoginModal()">Cancel</button>
-      <button class="sbtn sbtn-white" onclick="submitLogin()">Login</button>
-    </div>
-  </div>
-</div>
-
-<!-- Admin Panel -->
-<div class="admin-overlay" id="admin-panel">
-  <div class="admin-header">
-    <div class="admin-title">Admin panel</div>
-    <button class="admin-close" onclick="closeAdminPanel()">✕</button>
-  </div>
-  <div class="admin-body">
-
-    <div class="admin-section">
-      <div class="admin-section-title">Notification testing</div>
-      <div class="admin-card">
-        <div class="admin-card-title">Test daily notification</div>
-        <div class="admin-card-sub">Fires a notification right now as if 24h passed on daily streak</div>
-        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" onclick="testNotif('daily')">Send test notification</button>
-      </div>
-      <div class="admin-card">
-        <div class="admin-card-title">Test workout notification</div>
-        <div class="admin-card-sub">Fires a notification right now as if 24h passed on workout streak</div>
-        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" onclick="testNotif('workout')">Send test notification</button>
-      </div>
-      <div class="admin-card">
-        <div class="admin-card-title">Test both in 10 seconds</div>
-        <div class="admin-card-sub">Schedules both notifications to fire in 10 seconds — close the app and wait</div>
-        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" id="test-delayed-btn" onclick="testDelayedNotif()">Schedule in 10s</button>
-      </div>
-    </div>
-
-    <div class="admin-section">
-      <div class="admin-section-title">Notification status</div>
-      <div class="admin-card">
-        <div class="admin-card-title">Permission</div>
-        <div id="admin-notif-perm" class="admin-badge">Checking...</div>
-        <div class="admin-card-title" style="margin-top:8px">Daily fires at</div>
-        <div id="admin-daily-fire" style="color:#888;font-size:12px;margin-top:2px">—</div>
-        <div class="admin-card-title" style="margin-top:8px">Workout fires at</div>
-        <div id="admin-workout-fire" style="color:#888;font-size:12px;margin-top:2px">—</div>
-      </div>
-    </div>
-
-    <div class="admin-section">
-      <div class="admin-section-title">Quran verse testing</div>
-      <div class="admin-card">
-        <div class="admin-card-title">Today's verse</div>
-        <div class="admin-card-sub">Preview what verse shows today</div>
-        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:10px" onclick="adminPreviewToday()">Preview today's verse</button>
-        <div id="admin-today-verse" style="display:none" class="verse-preview">
-          <div class="verse-preview-arabic" id="atv-arabic"></div>
-          <div class="verse-preview-translation" id="atv-translation"></div>
-          <div class="verse-preview-ref" id="atv-ref"></div>
-        </div>
-        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" onclick="adminShowTodayOnScreen()">Show on splash screen</button>
-      </div>
-      <div class="admin-card">
-        <div class="admin-card-title">Pick a specific verse</div>
-        <div class="admin-card-sub">Choose any verse to preview or show</div>
-        <select class="admin-select" id="admin-verse-select" onchange="adminPickVerse()">
-          <option value="">— Select a verse —</option>
-        </select>
-        <div id="admin-picked-verse" style="display:none" class="verse-preview">
-          <div class="verse-preview-arabic" id="apv-arabic"></div>
-          <div class="verse-preview-translation" id="apv-translation"></div>
-          <div class="verse-preview-ref" id="apv-ref"></div>
-        </div>
-        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" id="admin-show-picked-btn" onclick="adminShowPickedOnScreen()" style="display:none">Show on splash screen</button>
-      </div>
-      <div class="admin-card">
-        <div class="admin-card-title">Random verse</div>
-        <div class="admin-card-sub">Pick a random verse and preview it</div>
-        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:10px" onclick="adminRandomVerse()">Pick random verse</button>
-        <div id="admin-random-verse" style="display:none" class="verse-preview">
-          <div class="verse-preview-arabic" id="arv-arabic"></div>
-          <div class="verse-preview-translation" id="arv-translation"></div>
-          <div class="verse-preview-ref" id="arv-ref"></div>
-        </div>
-        <button class="sbtn sbtn-white" style="padding:11px;font-size:14px;margin-bottom:0" id="admin-show-random-btn" onclick="adminShowRandomOnScreen()">Show on splash screen</button>
-      </div>
-    </div>
-
-    <div class="admin-section">
-      <div class="admin-section-title">Danger zone</div>
-      <div class="admin-card">
-        <div class="admin-card-title">Clear all data</div>
-        <div class="admin-card-sub">Wipes streaks, settings, and notification schedule</div>
-        <button class="sbtn sbtn-red" style="padding:11px;font-size:14px;margin-bottom:0" onclick="adminClearAll()">Clear everything</button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
 <script src="verses.js"></script>
-
 <script>
 
-/* VERSES loaded from verses.js */
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+const S = {
+  get lang(){ return localStorage.getItem('cl_lang')||null },
+  set lang(v){ localStorage.setItem('cl_lang',v) },
+  get addiction(){ return localStorage.getItem('cl_addiction')||null },
+  set addiction(v){ localStorage.setItem('cl_addiction',v) },
+  get startTs(){ return parseInt(localStorage.getItem('cl_start')||'0') },
+  set startTs(v){ localStorage.setItem('cl_start',String(v)) },
+  get bestMs(){ return parseInt(localStorage.getItem('cl_best')||'0') },
+  set bestMs(v){ localStorage.setItem('cl_best',String(v)) },
+  get relapseCount(){ return parseInt(localStorage.getItem('cl_relapses')||'0') },
+  set relapseCount(v){ localStorage.setItem('cl_relapses',String(v)) },
+  get onboarded(){ return localStorage.getItem('cl_onboarded')==='1' },
+  set onboarded(v){ localStorage.setItem('cl_onboarded',v?'1':'0') },
+};
 
+let timerInterval = null;
+let breathInterval = null;
+let dhikrIdx = 0;
+let dhikrCount = 0;
+let breathRunning = false;
+let breathCycles = 0;
+let selectedAddiction = null;
+let tempSelectedAddiction = null;
+
+// ═══════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════
+const T = {
+  en: {
+    privTitle:'Your Privacy is Protected',
+    privIntro:'Everything you share in this app stays on your device. Nothing is uploaded, shared, or stored on any server.',
+    privP1Title:'Stored on your phone only',
+    privP1Text:'Your progress, streak, and personal data never leave your device.',
+    privP2Title:'No accounts needed',
+    privP2Text:'No sign-up, no email, no tracking of any kind.',
+    privP3Title:'Judgment-free',
+    privP3Text:'This is your safe space. No one will ever know what you are working on.',
+    privP4Title:'Delete anytime',
+    privP4Text:'You can clear all your data at any time from settings.',
+    privBtn:'I Understand — Continue',
+    qContinue:'Begin My Journey',
+    qSkip:'Skip for now',
+    addTitle:'What are you working on?',
+    addSub:'Choose what you want to break free from. You can change this later.',
+    addContinue:'Start My Journey',
+    urgeHeader:'I Feel the Urge',
+    urgeSub:'You can do this. Choose a tool to help you through this moment.',
+    urgeBtn:'💜 I Feel an Urge — Help Me',
+    relapseBtn:'I Slipped...',
+    breathHeader:'Breathing Exercise',
+    breathStart:'Start Breathing',
+    breathStop:'Stop',
+    dhikrHeader:'Dhikr Counter',
+    dhikrReset:'Reset',
+    dhikrNext:'Next Dhikr',
+    dhikrTap:'Tap',
+    relapseTitle:'It is okay. Start again.',
+    relapseMsg:'Every setback is a lesson. Allah loves those who repent and return. Your journey is not over — it is just beginning again.',
+    relapseConfirm:'Reset My Timer',
+    relapseCancel:'Not Yet — Go Back',
+    msHeader:'Milestones',
+    settingsTitle:'Settings',
+    settingsGeneral:'General',
+    settingsLang:'Language',
+    settingsLangSub:'English',
+    settingsGoal:'My Goal',
+    settingsData:'Data',
+    settingsMs:'View Milestones',
+    settingsClear:'Clear All Data',
+    navHome:'Home',
+    navUrge:'Urge Help',
+    navMs:'Progress',
+    navSettings:'Settings',
+    statDays:'Days Clean',
+    statBest:'Best Streak',
+    timerUnits:'hours : minutes : seconds',
+    addictions:{
+      smoking:{name:'Smoking', label:'SMOKING FREE'},
+      masturbation:{name:'Purity', label:'STAYING PURE'},
+      social_media:{name:'Social Media', label:'SCREEN FREE'},
+      alcohol:{name:'Alcohol', label:'ALCOHOL FREE'},
+      gambling:{name:'Gambling', label:'GAMBLING FREE'},
+      food:{name:'Overeating', label:'MINDFUL EATING'},
+      anger:{name:'Anger', label:'STAYING CALM'},
+      procrastination:{name:'Procrastination', label:'TAKING ACTION'},
+    },
+    milestones:[
+      {key:'1h', name:'First Hour', time:'1 hour'},
+      {key:'3h', name:'Three Hours', time:'3 hours'},
+      {key:'12h', name:'Half a Day', time:'12 hours'},
+      {key:'1d', name:'One Full Day', time:'24 hours'},
+      {key:'3d', name:'Three Days', time:'3 days'},
+      {key:'1w', name:'One Week', time:'1 week'},
+      {key:'2w', name:'Two Weeks', time:'2 weeks'},
+      {key:'1m', name:'One Month', time:'1 month'},
+      {key:'3m', name:'Three Months', time:'3 months'},
+      {key:'6m', name:'Six Months', time:'6 months'},
+      {key:'1y', name:'One Year', time:'1 year'},
+    ],
+    msAr:{
+      '1h':'أول ساعة','3h':'ثلاث ساعات','12h':'نصف يوم','1d':'يوم كامل',
+      '3d':'ثلاثة أيام','1w':'أسبوع','2w':'أسبوعان','1m':'شهر',
+      '3m':'ثلاثة أشهر','6m':'ستة أشهر','1y':'سنة'
+    },
+    encouragements:[
+      "The Prophet ﷺ said: 'Whoever restrains his anger, Allah will conceal his faults.' Stay strong.",
+      "Every moment clean is a victory. Allah sees your struggle and your strength.",
+      "You chose your future self today. That is courage.",
+      "The nafs pushes toward desires, but the believer pushes back. You are doing that right now.",
+      "Allah never burdens a soul beyond what it can bear. You can bear this.",
+      "One step at a time. One hour at a time. You are doing it.",
+      "Your struggle is not weakness — it is the beginning of real strength.",
+      "The angels record your effort, not just your outcome.",
+      "This urge will pass. It always does. Hold on.",
+      "You are building the best version of yourself, one clean moment at a time.",
+    ],
+    urgeTools:{
+      smoking:[
+        {icon:'🫁', name:'Deep Breathing', desc:'5 minutes of slow breathing to calm the craving.', screen:'screen-breathing'},
+        {icon:'💧', name:'Drink Water', desc:'Sip cold water slowly. It reduces cravings physically.', screen:null, action:'waterTip'},
+        {icon:'📿', name:'Dhikr Counter', desc:'Occupy your hands and mind with the remembrance of Allah.', screen:'screen-dhikr'},
+        {icon:'🚶', name:'Walk It Off', desc:'Take a 5-minute walk. Movement breaks the craving cycle.', screen:null, action:'walkTip'},
+        {icon:'📖', name:'Read Quran', desc:'Open the Quran app or recite what you know by heart.', screen:null, action:'quranTip'},
+      ],
+      masturbation:[
+        {icon:'🫁', name:'Deep Breathing', desc:'Calm your body with slow, controlled breathing.', screen:'screen-breathing'},
+        {icon:'🛁', name:'Make Wudu', desc:'Perform ablution. It purifies and redirects your focus.', screen:null, action:'wuduTip'},
+        {icon:'📿', name:'Dhikr Counter', desc:'Replace the urge with the remembrance of Allah.', screen:'screen-dhikr'},
+        {icon:'🏃', name:'Physical Activity', desc:'Do 20 push-ups or jumping jacks immediately.', screen:null, action:'exerciseTip'},
+        {icon:'🌐', name:'Change Environment', desc:'Leave the room or space you are in right now.', screen:null, action:'envTip'},
+        {icon:'🤲', name:'Make Dua', desc:'Ask Allah for help. He is always near.', screen:null, action:'duaTip'},
+      ],
+      social_media:[
+        {icon:'⏱️', name:'5 Minute Rule', desc:'Set a timer. No phone for the next 5 minutes.', screen:null, action:'timerTip'},
+        {icon:'📿', name:'Dhikr Counter', desc:'Replace scrolling with remembrance.', screen:'screen-dhikr'},
+        {icon:'📖', name:'Read Something Real', desc:'Pick up a book, any book, and read one page.', screen:null, action:'readTip'},
+        {icon:'🫁', name:'Breathe', desc:'Your brain needs rest, not more stimulation.', screen:'screen-breathing'},
+        {icon:'✍️', name:'Journal', desc:'Write down one thought, feeling, or gratitude.', screen:null, action:'journalTip'},
+      ],
+      alcohol:[
+        {icon:'💧', name:'Drink Water', desc:'Hydrate. The craving often passes within minutes.', screen:null, action:'waterTip'},
+        {icon:'🫁', name:'Deep Breathing', desc:'Calm the nervous system that is driving the craving.', screen:'screen-breathing'},
+        {icon:'📿', name:'Dhikr', desc:'The remembrance of Allah is the greatest shield.', screen:'screen-dhikr'},
+        {icon:'📞', name:'Call Someone', desc:'Call a friend or family member. Connection helps.', screen:null, action:'callTip'},
+        {icon:'🤲', name:'Make Dua', desc:'You are not alone in this. Allah hears you.', screen:null, action:'duaTip'},
+      ],
+      gambling:[
+        {icon:'✍️', name:'Write It Down', desc:'Write what you would lose if you gamble right now.', screen:null, action:'writeLossTip'},
+        {icon:'🫁', name:'Breathe', desc:'The urge feels urgent but it will pass in minutes.', screen:'screen-breathing'},
+        {icon:'📿', name:'Dhikr', desc:'Occupy your mind with something meaningful.', screen:'screen-dhikr'},
+        {icon:'📞', name:'Talk to Someone', desc:'Tell someone you trust what you are feeling.', screen:null, action:'callTip'},
+      ],
+      food:[
+        {icon:'💧', name:'Drink Water First', desc:'Wait 10 minutes after drinking water before deciding.', screen:null, action:'waterTip'},
+        {icon:'🫁', name:'Breathe', desc:'Emotional eating starts in the mind. Slow down.', screen:'screen-breathing'},
+        {icon:'🚶', name:'Walk', desc:'A short walk resets your hunger signals.', screen:null, action:'walkTip'},
+        {icon:'📿', name:'Dhikr', desc:'Fill the emptiness with what truly satisfies.', screen:'screen-dhikr'},
+      ],
+      anger:[
+        {icon:'🫁', name:'4-7-8 Breathing', desc:'Inhale 4s, hold 7s, exhale 8s. Do it 3 times.', screen:'screen-breathing'},
+        {icon:'💧', name:'Cold Water', desc:'Splash cold water on your face or drink cold water.', screen:null, action:'coldWaterTip'},
+        {icon:'🤲', name:'Say Astaghfirullah', desc:'The Prophet ﷺ commanded us to seek refuge from anger.', screen:'screen-dhikr'},
+        {icon:'🚶', name:'Walk Away', desc:'Leave the situation for at least 2 minutes.', screen:null, action:'walkTip'},
+        {icon:'📖', name:'Recall the Hadith', desc:'"The strong man is not the one who wrestles, but the one who controls himself in anger."', screen:null, action:'angerTip'},
+      ],
+      procrastination:[
+        {icon:'⏱️', name:'2-Minute Rule', desc:'Just start for 2 minutes. Only 2 minutes.', screen:null, action:'twoMinTip'},
+        {icon:'✍️', name:'Write One Task', desc:'Write down the single next action you need to take.', screen:null, action:'taskTip'},
+        {icon:'🫁', name:'Breathe & Focus', desc:'Clear your mind before starting.', screen:'screen-breathing'},
+        {icon:'📿', name:'Dhikr for Clarity', desc:'بِسْمِ اللهِ — Begin with the name of Allah.', screen:'screen-dhikr'},
+      ],
+    },
+    toolTips:{
+      waterTip:'Drink a full glass of water slowly. Cravings often pass within 10-15 minutes.',
+      wuduTip:'Make wudu now. The act of purification helps break the cycle of temptation. The Prophet ﷺ said: "When one of you is angry, let him make wudu."',
+      walkTip:'Stand up and walk for 5 minutes — outside if possible. Physical movement disrupts the craving signal in your brain.',
+      exerciseTip:'Do 20 push-ups or 30 jumping jacks right now. The physical exertion redirects your energy and releases endorphins.',
+      envTip:'Change your location immediately. Go to a different room, go outside, or go to the masjid.',
+      duaTip:'Say: "اللهم إني أعوذ بك من الشيطان الرجيم" — "O Allah, I seek refuge in You from the accursed devil." Say it 3 times.',
+      quranTip:'Open to any surah and read. Even one ayah changes your mental state.',
+      callTip:'Call someone you trust right now. You do not have to talk about the addiction — just connect.',
+      journalTip:'Write: "Right now I feel ____ and I choose ____." Naming your feeling reduces its power.',
+      readTip:'Read one page of any book. It exercises the same brain circuits that scrolling wastes.',
+      writeLossTip:'Write: "If I do this, I will lose ____." Be specific. Money, trust, peace.',
+      coldWaterTip:'Splash cold water on your face. It activates your dive reflex and slows your heart rate.',
+      angerTip:'"The strong man is not the one who wrestles, but the one who controls himself when angry." — Bukhari & Muslim',
+      twoMinTip:'Set a timer for 2 minutes and just begin the task. You will almost always continue.',
+      taskTip:'What is the very next physical action needed? Write it. Then do only that.',
+      timerTip:'Put your phone face down and set a timer for 5 minutes. You can check it after — but only after.',
+    },
+  },
+  ar: {
+    privTitle:'خصوصيتك محمية',
+    privIntro:'كل ما تشاركه في هذا التطبيق يبقى على جهازك. لا يُرفع شيء ولا يُشارك ولا يُخزَّن على أي خادم.',
+    privP1Title:'محفوظ على هاتفك فقط',
+    privP1Text:'تقدمك واستمراريتك وبياناتك الشخصية لا تغادر جهازك أبدًا.',
+    privP2Title:'لا حاجة لحسابات',
+    privP2Text:'لا تسجيل، لا بريد إلكتروني، لا تتبع من أي نوع.',
+    privP3Title:'بلا حكم أو إدانة',
+    privP3Text:'هذا مكانك الآمن. لن يعلم أحد أبدًا بما تعمل عليه.',
+    privP4Title:'احذف في أي وقت',
+    privP4Text:'يمكنك مسح جميع بياناتك في أي وقت من الإعدادات.',
+    privBtn:'فهمت — تابع',
+    qContinue:'ابدأ رحلتي',
+    qSkip:'تخطى الآن',
+    addTitle:'ما الذي تعمل عليه؟',
+    addSub:'اختر ما تريد التحرر منه. يمكنك التغيير لاحقًا.',
+    addContinue:'ابدأ رحلتي',
+    urgeHeader:'أشعر بالإغراء',
+    urgeSub:'أنت قادر على هذا. اختر أداة لمساعدتك في هذه اللحظة.',
+    urgeBtn:'💜 أشعر بإغراء — ساعدني',
+    relapseBtn:'وقعت...',
+    breathHeader:'تمرين التنفس',
+    breathStart:'ابدأ التنفس',
+    breathStop:'توقف',
+    dhikrHeader:'عداد الذكر',
+    dhikrReset:'إعادة',
+    dhikrNext:'الذكر التالي',
+    dhikrTap:'اضغط',
+    relapseTitle:'لا بأس. ابدأ من جديد.',
+    relapseMsg:'كل تراجع درس. الله يحب التوابين والعائدين إليه. رحلتك لم تنتهِ — بل بدأت من جديد فحسب.',
+    relapseConfirm:'إعادة ضبط المؤقت',
+    relapseCancel:'ليس بعد — عد للخلف',
+    msHeader:'الإنجازات',
+    settingsTitle:'الإعدادات',
+    settingsGeneral:'عام',
+    settingsLang:'اللغة',
+    settingsLangSub:'العربية',
+    settingsGoal:'هدفي',
+    settingsData:'البيانات',
+    settingsMs:'عرض الإنجازات',
+    settingsClear:'مسح كل البيانات',
+    navHome:'الرئيسية',
+    navUrge:'مساعدة',
+    navMs:'تقدم',
+    navSettings:'إعدادات',
+    statDays:'أيام نظيفة',
+    statBest:'أفضل سجل',
+    timerUnits:'ساعات : دقائق : ثواني',
+    addictions:{
+      smoking:{name:'التدخين', label:'خالٍ من التدخين'},
+      masturbation:{name:'الطهارة', label:'محافظ على الطهارة'},
+      social_media:{name:'التواصل الاجتماعي', label:'خالٍ من الشاشات'},
+      alcohol:{name:'الكحول', label:'خالٍ من الكحول'},
+      gambling:{name:'القمار', label:'خالٍ من القمار'},
+      food:{name:'الإفراط في الأكل', label:'أكل واعٍ'},
+      anger:{name:'الغضب', label:'محافظ على الهدوء'},
+      procrastination:{name:'التسويف', label:'يتخذ الإجراء'},
+    },
+    milestones:[
+      {key:'1h', name:'الساعة الأولى', time:'ساعة واحدة'},
+      {key:'3h', name:'ثلاث ساعات', time:'٣ ساعات'},
+      {key:'12h', name:'نصف يوم', time:'١٢ ساعة'},
+      {key:'1d', name:'يوم كامل', time:'٢٤ ساعة'},
+      {key:'3d', name:'ثلاثة أيام', time:'٣ أيام'},
+      {key:'1w', name:'أسبوع كامل', time:'أسبوع'},
+      {key:'2w', name:'أسبوعان', time:'أسبوعان'},
+      {key:'1m', name:'شهر كامل', time:'شهر'},
+      {key:'3m', name:'ثلاثة أشهر', time:'٣ أشهر'},
+      {key:'6m', name:'ستة أشهر', time:'٦ أشهر'},
+      {key:'1y', name:'سنة كاملة', time:'سنة'},
+    ],
+    msAr:{
+      '1h':'أول ساعة','3h':'ثلاث ساعات','12h':'نصف يوم','1d':'يوم كامل',
+      '3d':'ثلاثة أيام','1w':'أسبوع','2w':'أسبوعان','1m':'شهر',
+      '3m':'ثلاثة أشهر','6m':'ستة أشهر','1y':'سنة'
+    },
+    encouragements:[
+      'قال النبي ﷺ: «مَن كَظَمَ غَيظًا وهو قادر على إنفاذه، دعاه الله على رؤوس الخلائق.» كن قويًا.',
+      'كل لحظة نظيفة انتصار. الله يرى كفاحك وقوتك.',
+      'اخترت نفسك المستقبلية اليوم. هذه شجاعة حقيقية.',
+      'النفس تأمر بالسوء، لكن المؤمن يقاومها. أنت تفعل ذلك الآن.',
+      'الله لا يكلف نفسًا إلا وسعها. أنت تستطيع تحمل هذا.',
+      'خطوة واحدة في كل مرة. ساعة واحدة في كل مرة. أنت تفعل ذلك.',
+      'كفاحك ليس ضعفًا — هو بداية القوة الحقيقية.',
+      'الملائكة تسجل جهدك، ليس نتيجتك فحسب.',
+      'هذا الإغراء سيمر. دائمًا يمر. تمسك.',
+      'أنت تبني أفضل نسخة من نفسك، لحظة نظيفة واحدة في كل مرة.',
+    ],
+    urgeTools:{
+      smoking:[
+        {icon:'🫁', name:'تنفس عميق', desc:'خمس دقائق من التنفس البطيء لتهدئة الشهوة.', screen:'screen-breathing'},
+        {icon:'💧', name:'اشرب ماء', desc:'ارتشف الماء البارد ببطء. يقلل الشهوة جسديًا.', screen:null, action:'waterTip'},
+        {icon:'📿', name:'عداد الذكر', desc:'اشغل يديك وعقلك بذكر الله.', screen:'screen-dhikr'},
+        {icon:'🚶', name:'تمشَّ', desc:'خذ نزهة خمس دقائق. الحركة تكسر دورة الشهوة.', screen:null, action:'walkTip'},
+        {icon:'📖', name:'اقرأ القرآن', desc:'افتح تطبيق القرآن أو اتلُ ما تحفظ من قلبك.', screen:null, action:'quranTip'},
+      ],
+      masturbation:[
+        {icon:'🫁', name:'تنفس عميق', desc:'هدئ جسمك بالتنفس البطيء المنتظم.', screen:'screen-breathing'},
+        {icon:'🛁', name:'توضأ الآن', desc:'أدِّ الوضوء. يطهرك ويعيد توجيه تركيزك.', screen:null, action:'wuduTip'},
+        {icon:'📿', name:'عداد الذكر', desc:'استبدل الشهوة بذكر الله.', screen:'screen-dhikr'},
+        {icon:'🏃', name:'نشاط بدني', desc:'اعمل 20 ضغطة أو قفزة الآن فورًا.', screen:null, action:'exerciseTip'},
+        {icon:'🌐', name:'غيّر بيئتك', desc:'غادر الغرفة أو المكان الذي أنت فيه الآن.', screen:null, action:'envTip'},
+        {icon:'🤲', name:'اد الدعاء', desc:'اطلب من الله المساعدة. هو دائمًا قريب.', screen:null, action:'duaTip'},
+      ],
+      social_media:[
+        {icon:'⏱️', name:'قاعدة الخمس دقائق', desc:'ضع مؤقتًا. لا هاتف للخمس دقائق القادمة.', screen:null, action:'timerTip'},
+        {icon:'📿', name:'عداد الذكر', desc:'استبدل التصفح بالذكر.', screen:'screen-dhikr'},
+        {icon:'📖', name:'اقرأ شيئًا حقيقيًا', desc:'التقط كتابًا وأقرأ صفحة واحدة.', screen:null, action:'readTip'},
+        {icon:'🫁', name:'تنفس', desc:'عقلك يحتاج راحة لا تحفيزًا أكثر.', screen:'screen-breathing'},
+        {icon:'✍️', name:'سجّل', desc:'اكتب فكرة أو شعورًا أو شكرًا واحدًا.', screen:null, action:'journalTip'},
+      ],
+      alcohol:[
+        {icon:'💧', name:'اشرب ماء', desc:'رطّب نفسك. كثيرًا ما يمر الشوق في دقائق.', screen:null, action:'waterTip'},
+        {icon:'🫁', name:'تنفس عميق', desc:'هدئ الجهاز العصبي الذي يقود الشهوة.', screen:'screen-breathing'},
+        {icon:'📿', name:'ذكر الله', desc:'ذكر الله هو أعظم درع.', screen:'screen-dhikr'},
+        {icon:'📞', name:'اتصل بأحد', desc:'اتصل بصديق أو أحد أفراد العائلة. التواصل يساعد.', screen:null, action:'callTip'},
+        {icon:'🤲', name:'ادعُ الله', desc:'لست وحدك في هذا. الله يسمعك.', screen:null, action:'duaTip'},
+      ],
+      gambling:[
+        {icon:'✍️', name:'اكتب ما ستخسره', desc:'اكتب ما الذي ستخسره إن قمرت الآن.', screen:null, action:'writeLossTip'},
+        {icon:'🫁', name:'تنفس', desc:'الشهوة تبدو ملحة لكنها ستمر في دقائق.', screen:'screen-breathing'},
+        {icon:'📿', name:'ذكر', desc:'اشغل عقلك بشيء ذي معنى.', screen:'screen-dhikr'},
+        {icon:'📞', name:'تحدث مع أحد', desc:'أخبر شخصًا تثق به بما تشعر به.', screen:null, action:'callTip'},
+      ],
+      food:[
+        {icon:'💧', name:'اشرب ماء أولًا', desc:'انتظر عشر دقائق بعد شرب الماء قبل أي قرار.', screen:null, action:'waterTip'},
+        {icon:'🫁', name:'تنفس', desc:'الأكل العاطفي يبدأ في العقل. تمهل.', screen:'screen-breathing'},
+        {icon:'🚶', name:'امشِ', desc:'نزهة قصيرة تعيد ضبط إشارات الجوع.', screen:null, action:'walkTip'},
+        {icon:'📿', name:'ذكر', desc:'أملأ الفراغ بما يُشبع حقًا.', screen:'screen-dhikr'},
+      ],
+      anger:[
+        {icon:'🫁', name:'تنفس 4-7-8', desc:'شهيق 4 ثوانٍ، حبس 7، زفير 8. افعلها 3 مرات.', screen:'screen-breathing'},
+        {icon:'💧', name:'ماء بارد', desc:'رش ماء باردًا على وجهك أو اشربه.', screen:null, action:'coldWaterTip'},
+        {icon:'🤲', name:'قل أعوذ بالله', desc:'أمر النبي ﷺ باللجوء إلى الله عند الغضب.', screen:'screen-dhikr'},
+        {icon:'🚶', name:'ابتعد', desc:'غادر الموقف لمدة دقيقتين على الأقل.', screen:null, action:'walkTip'},
+        {icon:'📖', name:'تذكر الحديث', desc:'«ليس الشديد بالصُّرَعة، إنما الشديد الذي يملك نفسه عند الغضب.»', screen:null, action:'angerTip'},
+      ],
+      procrastination:[
+        {icon:'⏱️', name:'قاعدة الدقيقتين', desc:'ابدأ لمدة دقيقتين فقط. دقيقتان فقط.', screen:null, action:'twoMinTip'},
+        {icon:'✍️', name:'اكتب مهمة واحدة', desc:'اكتب الخطوة الفعلية التالية التي تحتاج اتخاذها.', screen:null, action:'taskTip'},
+        {icon:'🫁', name:'تنفس وركّز', desc:'صفِّ ذهنك قبل البدء.', screen:'screen-breathing'},
+        {icon:'📿', name:'ذكر للوضوح', desc:'بِسْمِ اللهِ — ابدأ بذكر اسم الله.', screen:'screen-dhikr'},
+      ],
+    },
+    toolTips:{
+      waterTip:'اشرب كأسًا كاملًا من الماء ببطء. غالبًا تمر الشهوات في ١٠-١٥ دقيقة.',
+      wuduTip:'توضأ الآن. فعل الطهارة يساعد على كسر دورة الإغراء. قال النبي ﷺ: «إذا غضب أحدكم فليتوضأ.»',
+      walkTip:'قم وامشِ لمدة ٥ دقائق — في الخارج إن أمكن. الحركة الجسدية تعطّل إشارة الشهوة في عقلك.',
+      exerciseTip:'اعمل ٢٠ ضغطة أو ٣٠ قفزة الآن فورًا. يعيد توجيه طاقتك ويطلق الإندورفين.',
+      envTip:'غيّر مكانك فورًا. انتقل إلى غرفة أخرى، أو اخرج، أو اذهب للمسجد.',
+      duaTip:'قل: «اللهم إني أعوذ بك من الشيطان الرجيم» — قلها ٣ مرات.',
+      quranTip:'افتح أي سورة واقرأ. حتى آية واحدة تغير حالتك الذهنية.',
+      callTip:'اتصل بشخص تثق به الآن. لا يجب أن تتحدث عن الإدمان — فقط تواصل.',
+      journalTip:'اكتب: «أشعر الآن بـ ____ وأختار ____». تسمية مشاعرك يقلل من قوتها.',
+      readTip:'اقرأ صفحة من أي كتاب. يمرن نفس الدوائر الدماغية التي يهدرها التصفح.',
+      writeLossTip:'اكتب: «إن فعلت هذا سأخسر ____». كن محددًا. مال، ثقة، سلام نفسي.',
+      coldWaterTip:'رش ماء باردًا على وجهك. يُنشّط رد فعل الغوص ويبطئ ضربات قلبك.',
+      angerTip:'«ليس الشديد بالصُّرَعة، إنما الشديد الذي يملك نفسه عند الغضب.» — البخاري ومسلم',
+      twoMinTip:'ضع مؤقتًا لدقيقتين وابدأ المهمة. ستستمر تلقائيًا في جميع الأحوال تقريبًا.',
+      taskTip:'ما هي الخطوة الجسدية التالية التي تحتاجها؟ اكتبها. ثم افعل تلك الخطوة فقط.',
+      timerTip:'ضع هاتفك وجهًا للأسفل وضع مؤقتًا لـ٥ دقائق. يمكنك التحقق منه بعدها — لكن بعدها فقط.',
+    },
+  }
+};
+
+const DHIKRS = [
+  {ar:'سُبْحَانَ اللهِ', en:'Glory be to Allah', target:33},
+  {ar:'الحَمْدُ للهِ', en:'All praise is due to Allah', target:33},
+  {ar:'اللهُ أَكْبَر', en:'Allah is the Greatest', target:34},
+  {ar:'لَا إِلَهَ إِلَّا اللهُ', en:'There is no god but Allah', target:100},
+  {ar:'أَسْتَغْفِرُ اللهَ', en:'I seek forgiveness from Allah', target:100},
+  {ar:'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ', en:'There is no power except with Allah', target:100},
+  {ar:'صَلِّ اللهُ عَلَيْهِ وَسَلَّمَ', en:'May Allah send peace upon the Prophet ﷺ', target:100},
+];
+
+const MILESTONE_MS = {
+  '1h':3600000, '3h':10800000, '12h':43200000,
+  '1d':86400000, '3d':259200000, '1w':604800000,
+  '2w':1209600000, '1m':2592000000, '3m':7776000000,
+  '6m':15552000000, '1y':31536000000
+};
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function t(key){ return (T[S.lang||'en']||T.en)[key] || key; }
+function ta(type, key){ return ((T[S.lang||'en']||T.en).addictions||{})[type]?.[key] || ''; }
+function isRTL(){ return S.lang==='ar'; }
+
+function setDir(){
+  const root=document.getElementById('html-root');
+  if(isRTL()){root.setAttribute('dir','rtl');root.classList.add('rtl');}
+  else{root.setAttribute('dir','ltr');root.classList.remove('rtl');}
+}
+
+function updateClock(){
+  const now=new Date(),h=now.getHours()%12||12,m=String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent=h+':'+m;
+}
+updateClock();setInterval(updateClock,10000);
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){el.classList.add('active'); el.scrollTop=0;}
+  const mainScreens=['screen-home','screen-urge','screen-milestones','screen-settings'];
+  const nav=document.getElementById('bottom-nav');
+  nav.classList.toggle('visible', mainScreens.includes(id));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navMap={'screen-home':'nav-home','screen-urge':'nav-urge','screen-milestones':'nav-milestones','screen-settings':'nav-settings'};
+  if(navMap[id]) document.getElementById(navMap[id]).classList.add('active');
+}
+
+function navTo(key){
+  const map={home:'screen-home',urge:'screen-urge',milestones:'screen-milestones',settings:'screen-settings'};
+  if(key==='milestones') buildMilestones();
+  showScreen(map[key]);
+}
+
+// ═══════════════════════════════════════
+// LANGUAGE
+// ═══════════════════════════════════════
+function selectLang(lang){
+  S.lang=lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('lang-'+lang+'-btn').classList.add('selected');
+  setDir();
+  setTimeout(function(){
+    applyTranslations();
+    showScreen('screen-privacy');
+  },200);
+}
+
+function applyTranslations(){
+  const l=S.lang||'en';
+  const tr=T[l];
+  setDir();
+  document.getElementById('priv-title').textContent=tr.privTitle;
+  document.getElementById('priv-intro').textContent=tr.privIntro;
+  document.getElementById('priv-p1-title').textContent=tr.privP1Title;
+  document.getElementById('priv-p1-text').textContent=tr.privP1Text;
+  document.getElementById('priv-p2-title').textContent=tr.privP2Title;
+  document.getElementById('priv-p2-text').textContent=tr.privP2Text;
+  document.getElementById('priv-p3-title').textContent=tr.privP3Title;
+  document.getElementById('priv-p3-text').textContent=tr.privP3Text;
+  document.getElementById('priv-p4-title').textContent=tr.privP4Title;
+  document.getElementById('priv-p4-text').textContent=tr.privP4Text;
+  document.getElementById('priv-btn').textContent=tr.privBtn;
+  document.getElementById('q-continue-btn').textContent=tr.qContinue;
+  document.getElementById('q-skip-btn').textContent=tr.qSkip;
+  document.getElementById('add-title').textContent=tr.addTitle;
+  document.getElementById('add-sub').textContent=tr.addSub;
+  document.getElementById('add-continue-btn').textContent=tr.addContinue;
+  document.getElementById('urge-header-title').textContent=tr.urgeHeader;
+  document.getElementById('urge-sub').textContent=tr.urgeSub;
+  document.getElementById('urge-btn').textContent=tr.urgeBtn;
+  document.getElementById('relapse-btn').textContent=tr.relapseBtn;
+  document.getElementById('breath-header').textContent=tr.breathHeader;
+  document.getElementById('breath-start-btn').textContent=tr.breathStart;
+  document.getElementById('dhikr-header').textContent=tr.dhikrHeader;
+  document.getElementById('dhikr-reset-btn').textContent=tr.dhikrReset;
+  document.getElementById('dhikr-next-btn').textContent=tr.dhikrNext;
+  document.getElementById('dhikr-tap-text').textContent=tr.dhikrTap;
+  document.getElementById('relapse-title').textContent=tr.relapseTitle;
+  document.getElementById('relapse-msg').textContent=tr.relapseMsg;
+  document.getElementById('relapse-confirm-btn').textContent=tr.relapseConfirm;
+  document.getElementById('relapse-cancel-btn').textContent=tr.relapseCancel;
+  document.getElementById('ms-header-title').textContent=tr.msHeader;
+  document.getElementById('settings-title').textContent=tr.settingsTitle;
+  document.getElementById('settings-general-label').textContent=tr.settingsGeneral;
+  document.getElementById('settings-lang-text').textContent=tr.settingsLang;
+  document.getElementById('settings-lang-sub').textContent=tr.settingsLangSub;
+  document.getElementById('settings-addiction-text').textContent=tr.settingsGoal;
+  document.getElementById('settings-data-label').textContent=tr.settingsData;
+  document.getElementById('settings-ms-text').textContent=tr.settingsMs;
+  document.getElementById('settings-clear-text').textContent=tr.settingsClear;
+  document.getElementById('nav-home-label').textContent=tr.navHome;
+  document.getElementById('nav-urge-label').textContent=tr.navUrge;
+  document.getElementById('nav-ms-label').textContent=tr.navMs;
+  document.getElementById('nav-settings-label').textContent=tr.navSettings;
+  document.getElementById('stat-days-label').textContent=tr.statDays;
+  document.getElementById('stat-best-label').textContent=tr.statBest;
+  document.getElementById('home-timer-unit').textContent=tr.timerUnits;
+  // Update addiction name labels
+  Object.keys(tr.addictions).forEach(function(k){
+    const el=document.getElementById('add-'+k+'-name');
+    if(el) el.textContent=tr.addictions[k].name;
+  });
+  if(S.addiction) updateHomeAddictionLabel();
+  updateDhikr();
+}
+
+// ═══════════════════════════════════════
+// QURAN VERSE
+// ═══════════════════════════════════════
 function getDayIndex(){
-  // Use Eastern Time midnight as day boundary
   const d=new Date();
   const etOffset=d.toLocaleString('en-US',{timeZone:'America/New_York',hour:'numeric',hour12:false})==='24'?-4:-5;
   const etMs=d.getTime()+(etOffset*3600000);
@@ -571,830 +1039,373 @@ function getDayIndex(){
 }
 
 function getTodayVerse(){
-  // Use day index as a seed to pick a random-looking verse — same all day, different each day, never sequential
+  if(typeof VERSES==='undefined'||!VERSES||!VERSES.length) return {arabic:'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ', translation:'In the name of Allah, the Most Gracious, the Most Merciful.', ref:'Surah Al-Fatihah 1:1'};
   const todayIdx=getDayIndex();
-  // Seeded pseudo-random: mix the day index thoroughly
   let seed=todayIdx;
   seed=((seed>>>16)^seed)*0x45d9f3b;
   seed=((seed>>>16)^seed)*0x45d9f3b;
   seed=(seed>>>16)^seed;
-  const idx=Math.abs(seed) % VERSES.length;
-  return VERSES[idx];
+  return VERSES[Math.abs(seed)%VERSES.length];
 }
 
-function fetchDailyVerse(){/* disabled - using local verses */}
-
-function getVerseKey(globalNum){
-  const counts=[7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,13,28,57,15,16,11,7,11,10,9,25,36,5,20,6,6,3,7];
-  let sum=0;
-  for(let i=0;i<counts.length;i++){
-    if(globalNum<=sum+counts[i]){
-      return (i+1)+':'+(globalNum-sum);
-    }
-    sum+=counts[i];
-  }
-  return '1:1';
-}
-
-function getSurahName(n){
-  const names=['Al-Fatihah','Al-Baqarah','Aal-Imran','An-Nisa','Al-Maidah','Al-Anam','Al-Araf','Al-Anfal','At-Tawbah','Yunus','Hud','Yusuf','Ar-Rad','Ibrahim','Al-Hijr','An-Nahl','Al-Isra','Al-Kahf','Maryam','Taha','Al-Anbiya','Al-Hajj','Al-Muminun','An-Nur','Al-Furqan','Ash-Shuara','An-Naml','Al-Qasas','Al-Ankabut','Ar-Rum','Luqman','As-Sajdah','Al-Ahzab','Saba','Fatir','Ya-Sin','As-Saffat','Sad','Az-Zumar','Ghafir','Fussilat','Ash-Shura','Az-Zukhruf','Ad-Dukhan','Al-Jathiyah','Al-Ahqaf','Muhammad','Al-Fath','Al-Hujurat','Qaf','Adh-Dhariyat','At-Tur','An-Najm','Al-Qamar','Ar-Rahman','Al-Waqiah','Al-Hadid','Al-Mujadila','Al-Hashr','Al-Mumtahanah','As-Saf','Al-Jumuah','Al-Munafiqun','At-Taghabun','At-Talaq','At-Tahrim','Al-Mulk','Al-Qalam','Al-Haqqah','Al-Maarij','Nuh','Al-Jinn','Al-Muzzammil','Al-Muddathir','Al-Qiyamah','Al-Insan','Al-Mursalat','An-Naba','An-Naziat','Abasa','At-Takwir','Al-Infitar','Al-Mutaffifin','Al-Inshiqaq','Al-Buruj','At-Tariq','Al-Ala','Al-Ghashiyah','Al-Fajr','Al-Balad','Ash-Shams','Al-Layl','Ad-Duha','Ash-Sharh','At-Tin','Al-Alaq','Al-Qadr','Al-Bayyinah','Az-Zalzalah','Al-Adiyat','Al-Qariah','At-Takathur','Al-Asr','Al-Humazah','Al-Fil','Quraysh','Al-Maun','Al-Kawthar','Al-Kafirun','An-Nasr','Al-Masad','Al-Ikhlas','Al-Falaq','An-Nas'];
-  return names[n-1]||'Unknown';
-}
-
-function showQuranSplash(){
-  // Show local verse immediately
+function showQuranVerse(){
   const v=getTodayVerse();
-  document.getElementById('quran-arabic').textContent=v.arabic;
-  document.getElementById('quran-translation').textContent='"'+v.translation+'"';
-  document.getElementById('quran-ref').textContent='— '+v.ref;
+  document.getElementById('q-arabic').textContent=v.arabic;
+  document.getElementById('q-translation').textContent='"'+v.translation+'"';
+  document.getElementById('q-ref').textContent='— '+v.ref;
   const d=new Date();
-  document.getElementById('quran-date').textContent=d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  document.getElementById('quran-overlay').style.display='flex';
-  // Then try to fetch a better verse from API in background
-  fetchDailyVerse();
+  document.getElementById('q-date').textContent=d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
 
-function dismissQuran(){
-  document.getElementById('quran-overlay').style.display='none';
+// ═══════════════════════════════════════
+// ADDICTION
+// ═══════════════════════════════════════
+function selectAddiction(type){
+  document.querySelectorAll('.addiction-card').forEach(c=>c.classList.remove('selected'));
+  const el=document.getElementById('add-'+type);
+  if(el) el.classList.add('selected');
+  selectedAddiction=type;
+  document.getElementById('add-continue-btn').style.display='block';
 }
 
-function openShareCard(){
-  // Use whatever is currently displayed in the quran overlay
-  const arabic=document.getElementById('quran-arabic').textContent;
-  const translation=document.getElementById('quran-translation').textContent;
-  const ref=document.getElementById('quran-ref').textContent;
-  document.getElementById('sc-arabic').textContent=arabic;
-  document.getElementById('sc-translation').textContent=translation;
-  document.getElementById('sc-ref').textContent=ref;
-  const d=new Date();
-  document.getElementById('sc-date').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-  document.getElementById('share-overlay').classList.add('open');
+function confirmAddiction(){
+  if(!selectedAddiction) return;
+  S.addiction=selectedAddiction;
+  if(!S.startTs) S.startTs=Date.now();
+  S.onboarded=true;
+  applyTranslations();
+  buildUrgeTools();
+  startTimer();
+  buildMilestoneStrip();
+  buildMilestones();
+  updateStats();
+  showScreen('screen-home');
 }
 
-function closeShareCard(){
-  document.getElementById('share-overlay').classList.remove('open');
+function updateHomeAddictionLabel(){
+  const add=S.addiction;
+  if(!add) return;
+  const tr=T[S.lang||'en'];
+  const label=(tr.addictions[add]||{}).label||add.toUpperCase();
+  document.getElementById('home-addiction-label').textContent=label;
+  document.getElementById('settings-addiction-sub').textContent=(tr.addictions[add]||{}).name||add;
 }
 
-document.addEventListener('DOMContentLoaded',function(){
-  document.getElementById('share-dl-btn').addEventListener('click',function(){
-    var btn=document.getElementById('share-dl-btn');
-    btn.textContent='Saving...';
-    var script=document.createElement('script');
-    script.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    script.onload=function(){
-      html2canvas(document.getElementById('share-card'),{
-        backgroundColor:null,
-        scale:3,
-        useCORS:true,
-        logging:false
-      }).then(function(canvas){
-        var link=document.createElement('a');
-        link.download='quran-verse-'+new Date().toISOString().slice(0,10)+'.png';
-        link.href=canvas.toDataURL('image/png');
-        link.click();
-        btn.textContent='Save image to share';
-      }).catch(function(){
-        btn.textContent='Save image to share';
-        alert('Could not save image. Try a screenshot instead.');
-      });
-    };
-    script.onerror=function(){
-      btn.textContent='Save image to share';
-      alert('Could not load image tool. Try taking a screenshot instead.');
-    };
-    document.head.appendChild(script);
+// ═══════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════
+function startTimer(){
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval=setInterval(updateTimer,1000);
+  updateTimer();
+}
+
+function updateTimer(){
+  const elapsed=S.startTs?Date.now()-S.startTs:0;
+  if(elapsed<0){S.startTs=Date.now();return;}
+  const h=Math.floor(elapsed/3600000);
+  const m=Math.floor((elapsed%3600000)/60000);
+  const s=Math.floor((elapsed%60000)/1000);
+  document.getElementById('home-timer').textContent=
+    String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  const days=Math.floor(elapsed/86400000);
+  document.getElementById('stat-days').textContent=days;
+  const bestDays=Math.floor(S.bestMs/86400000);
+  document.getElementById('stat-best').textContent=bestDays;
+  updateEncouragement(elapsed);
+  updateMilestoneStrip(elapsed);
+}
+
+function updateEncouragement(elapsed){
+  const msgs=T[S.lang||'en'].encouragements;
+  const idx=Math.floor(elapsed/3600000)%msgs.length;
+  document.getElementById('home-timer-msg').textContent=msgs[idx];
+}
+
+// ═══════════════════════════════════════
+// MILESTONES
+// ═══════════════════════════════════════
+function buildMilestoneStrip(){
+  const strip=document.getElementById('milestone-strip');
+  strip.innerHTML='';
+  const ms=T[S.lang||'en'].milestones;
+  ms.forEach(function(m){
+    const el=document.createElement('div');
+    el.className='milestone-badge';
+    el.id='ms-strip-'+m.key;
+    el.textContent=m.name;
+    strip.appendChild(el);
   });
-});
-
-const ROUTINES = {
-  abs: {
-    name:'Abs', icon:'🔥',
-    exercises:[
-      {name:'Crunches', type:'reps', reps:'3 sets of 20', tip:'Keep your lower back pressed to the floor. Exhale as you crunch up.'},
-      {name:'Plank', type:'timer', seconds:45, tip:'Keep your body in a straight line. Squeeze your core the entire time.'},
-      {name:'Bicycle Crunches', type:'reps', reps:'3 sets of 16', tip:'Opposite elbow to opposite knee. Slow and controlled.'},
-      {name:'Leg Raises', type:'reps', reps:'3 sets of 15', tip:'Keep legs straight, lower them slowly without touching the floor.'},
-      {name:'Side Plank (Left)', type:'timer', seconds:30, tip:'Stack your feet or stagger them. Keep hips lifted.'},
-      {name:'Side Plank (Right)', type:'timer', seconds:30, tip:'Switch sides. Keep breathing steadily.'},
-      {name:'Mountain Climbers', type:'timer', seconds:40, tip:'Fast pace — drive knees to chest alternately. Keep hips down.'},
-    ]
-  },
-  legs: {
-    name:'Legs', icon:'🦵',
-    exercises:[
-      {name:'Bodyweight Squats', type:'reps', reps:'4 sets of 15', tip:'Feet shoulder-width apart. Push knees out, chest up. Go to parallel or below.'},
-      {name:'Reverse Lunges', type:'reps', reps:'3 sets of 12 each leg', tip:'Step back and lower your back knee to just above the floor. Keep front knee behind toes.'},
-      {name:'Glute Bridges', type:'reps', reps:'3 sets of 20', tip:'Squeeze your glutes hard at the top. Hold for 1 second each rep.'},
-      {name:'Wall Sit', type:'timer', seconds:45, tip:'Thighs parallel to the floor. Keep your back flat against the wall.'},
-      {name:'Jump Squats', type:'reps', reps:'3 sets of 10', tip:'Land softly, absorb the landing through your hips and knees.'},
-      {name:'Calf Raises', type:'reps', reps:'3 sets of 25', tip:'Use a step for full range of motion. Slow on the way down.'},
-      {name:'Standing Rest', type:'timer', seconds:60, tip:'Shake out your legs. Walk in place to keep blood flowing.'},
-    ]
-  },
-  chest: {
-    name:'Chest', icon:'💪',
-    exercises:[
-      {name:'Push-Ups', type:'reps', reps:'4 sets of 15', tip:'Hands slightly wider than shoulders. Lower your chest to just above the floor.'},
-      {name:'Wide Push-Ups', type:'reps', reps:'3 sets of 12', tip:'Wider grip targets more chest. Keep elbows at 45°.'},
-      {name:'Diamond Push-Ups', type:'reps', reps:'3 sets of 10', tip:'Hands form a diamond shape. Great for inner chest and triceps.'},
-      {name:'Decline Push-Ups', type:'reps', reps:'3 sets of 10', tip:'Feet elevated on a chair. Targets upper chest.'},
-      {name:'Push-Up Hold', type:'timer', seconds:30, tip:'Hold at the bottom of a push-up. Feel the chest engage fully.'},
-      {name:'Chest Squeeze', type:'timer', seconds:20, tip:'Press both palms together in front of chest as hard as you can.'},
-    ]
-  },
-  back: {
-    name:'Back', icon:'🏋️',
-    exercises:[
-      {name:'Superman Hold', type:'timer', seconds:40, tip:'Lie face down, lift arms and legs off the floor. Squeeze your back at the top.'},
-      {name:'Reverse Snow Angels', type:'reps', reps:'3 sets of 15', tip:'Lie face down, arms at sides. Sweep arms overhead and back. Keep them off the floor.'},
-      {name:'Prone Y Raise', type:'reps', reps:'3 sets of 12', tip:'Arms make a Y shape above your head. Squeeze shoulder blades together.'},
-      {name:'Bird Dog (Left)', type:'reps', reps:'3 sets of 10', tip:'On hands and knees — extend opposite arm and leg. Hold 2 seconds.'},
-      {name:'Bird Dog (Right)', type:'reps', reps:'3 sets of 10', tip:'Switch sides. Keep your core braced and hips level.'},
-      {name:'Wall Angels', type:'reps', reps:'3 sets of 10', tip:'Stand against a wall, slide arms up and down like a snow angel. Keep contact throughout.'},
-    ]
-  },
-  arms: {
-    name:'Arms', icon:'💥',
-    exercises:[
-      {name:'Push-Ups', type:'reps', reps:'3 sets of 15', tip:'Standard push-ups warm up the triceps and chest.'},
-      {name:'Diamond Push-Ups', type:'reps', reps:'3 sets of 12', tip:'Diamond hand position isolates triceps more. Go slow.'},
-      {name:'Tricep Dips', type:'reps', reps:'3 sets of 15', tip:'Use a chair. Keep elbows pointing back, not out.'},
-      {name:'Bicep Curl Hold', type:'timer', seconds:30, tip:'If you have anything weighted (bag, bottle) curl to 90° and hold. Feel the burn.'},
-      {name:'Plank Shoulder Taps', type:'reps', reps:'3 sets of 20 total', tip:'In a plank, tap each shoulder alternately. Keep hips still.'},
-      {name:'Arm Circles', type:'timer', seconds:30, tip:'20 seconds forward, 10 seconds backward. Burn out the shoulders.'},
-    ]
-  },
-  fullbody: {
-    name:'Full Body', icon:'⚡',
-    exercises:[
-      {name:'Jumping Jacks', type:'timer', seconds:45, tip:'Warm up the whole body. Keep a steady rhythm.'},
-      {name:'Bodyweight Squats', type:'reps', reps:'3 sets of 15', tip:'Full range of motion. Chest up, knees out.'},
-      {name:'Push-Ups', type:'reps', reps:'3 sets of 12', tip:'Keep a straight line from head to heels.'},
-      {name:'Reverse Lunges', type:'reps', reps:'2 sets of 10 each leg', tip:'Controlled movement. Keep front knee behind toes.'},
-      {name:'Plank', type:'timer', seconds:40, tip:'Squeeze everything — abs, glutes, quads.'},
-      {name:'Burpees', type:'reps', reps:'3 sets of 8', tip:'Squat down, kick back, push-up, jump up. Full extension at the top.'},
-      {name:'Mountain Climbers', type:'timer', seconds:40, tip:'Fast pace for cardio. Keep hips level.'},
-      {name:'Cool Down Stretch', type:'timer', seconds:60, tip:'Slow breathing. Stretch quads, hamstrings, chest, and shoulders.'},
-    ]
-  }
-};
-
-const KEYS={daily:{s:'d_start',l:'d_log',t:'d_last',n:'d_notif'},workout:{s:'w_start',l:'w_log',t:'w_last',n:'w_notif',dl:'w_deadline'}};
-const tickers={daily:null,workout:null};
-let exTimer=null;
-let currentMuscle=null;
-let currentExIdx=0;
-let exCountdown=0;
-let exInterval=null;
-
-function load(type){const k=KEYS[type];try{return{start:localStorage.getItem(k.s),log:JSON.parse(localStorage.getItem(k.l)||'[]'),lastTs:parseInt(localStorage.getItem(k.t)||'0')};}catch(e){return{start:null,log:[],lastTs:0};}}
-function save(type,s){const k=KEYS[type];try{localStorage.setItem(k.s,s.start);localStorage.setItem(k.l,JSON.stringify(s.log));localStorage.setItem(k.t,String(s.lastTs));}catch(e){}}
-function clearAll(type){const k=KEYS[type];try{localStorage.removeItem(k.s);localStorage.removeItem(k.l);localStorage.removeItem(k.t);}catch(e){}}
-function msLeft(t){return Math.max(0,t+86400000-Date.now());}
-
-function checkWorkoutDeadline(){
-  // If a 2h deadline was set and it has passed without a workout, reset streak
-  const dl=localStorage.getItem('w_deadline');
-  if(!dl) return;
-  const deadlineTs=parseInt(dl);
-  if(Date.now()<deadlineTs) return; // deadline not passed yet
-  // deadline passed — check if user worked out after the deadline was set
-  const s=load('workout');
-  const dlSetAt=deadlineTs-7200000; // deadline = lastTs + 24h + 2h, set when 24h unlocks
-  // if no log entry after dlSetAt means they missed the window
-  const workedOutAfter=s.log.some(function(ts){return ts>dlSetAt;});
-  if(!workedOutAfter && s.log.length>0){
-    // Reset streak — clear log and start but keep settings
-    const n=localStorage.getItem(KEYS.workout.n);
-    clearAll('workout');
-    if(n) localStorage.setItem(KEYS.workout.n,n);
-  }
-  localStorage.removeItem('w_deadline');
 }
-function fmt(ms){const t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
-function toDay(ts){const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function calcStreak(log){
-  if(!log.length)return 0;
-  const days=[...new Set(log.map(toDay))].sort();
-  const td=toDay(Date.now()),yd=toDay(Date.now()-86400000);
-  if(days[days.length-1]!==td&&days[days.length-1]!==yd)return 0;
-  let streak=0,check=new Date(days[days.length-1]+'T12:00:00');
-  for(let i=days.length-1;i>=0;i--){const d=new Date(days[i]+'T12:00:00');if(Math.abs(d-check)<129600000){streak++;check=new Date(d);check.setDate(check.getDate()-1);}else break;}
-  return streak;
-}
-function fmtDT(ts){return new Date(ts).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});}
-function stopTicker(type){if(tickers[type]){clearInterval(tickers[type]);tickers[type]=null;}}
-function isNotifOn(type){return localStorage.getItem(KEYS[type].n)==='1';}
 
-function scheduleNotif(type, msDelay){
-  if(!('Notification' in window)||Notification.permission!=='granted') return;
-  if(!isNotifOn(type)) return;
-  const fireAt = Date.now() + msDelay;
-  // Store fire time in localStorage so SW can pick it up
-  localStorage.setItem('notif_fire_'+type, String(fireAt));
-  // Send to SW if active
-  if(navigator.serviceWorker && navigator.serviceWorker.controller){
-    const title = 'Streak';
-    const body = type==='workout'
-      ? 'Time to work out — keep your streak alive!'
-      : 'Your 24h window is open — keep the streak going!';
-    navigator.serviceWorker.controller.postMessage({
-      type: 'SCHEDULE_NOTIF',
-      notifType: type,
-      fireAt: fireAt,
-      title: title,
-      body: body
+function updateMilestoneStrip(elapsed){
+  const ms=T[S.lang||'en'].milestones;
+  ms.forEach(function(m){
+    const el=document.getElementById('ms-strip-'+m.key);
+    if(el) el.classList.toggle('achieved',elapsed>=MILESTONE_MS[m.key]);
+  });
+}
+
+function buildMilestones(){
+  const body=document.getElementById('milestone-body');
+  body.innerHTML='';
+  const elapsed=S.startTs?Date.now()-S.startTs:0;
+  const ms=T[S.lang||'en'].milestones;
+  ms.forEach(function(m){
+    const achieved=elapsed>=MILESTONE_MS[m.key];
+    const card=document.createElement('div');
+    card.className='ms-card'+(achieved?' achieved':'');
+    const icons={'1h':'⏰','3h':'⌛','12h':'🌙','1d':'☀️','3d':'💪','1w':'🌟','2w':'✨','1m':'🥇','3m':'🏆','6m':'💎','1y':'👑'};
+    card.innerHTML='<div class="ms-icon">'+icons[m.key]+'</div><div class="ms-info"><div class="ms-name">'+m.name+'</div><div class="ms-time">'+m.time+'</div></div><div class="ms-check">'+(achieved?'✅':'○')+'</div>';
+    body.appendChild(card);
+  });
+}
+
+function updateStats(){
+  const elapsed=S.startTs?Date.now()-S.startTs:0;
+  if(elapsed>S.bestMs) S.bestMs=elapsed;
+  document.getElementById('stat-days').textContent=Math.floor(elapsed/86400000);
+  document.getElementById('stat-best').textContent=Math.floor(S.bestMs/86400000);
+}
+
+// ═══════════════════════════════════════
+// URGE TOOLS
+// ═══════════════════════════════════════
+function buildUrgeTools(){
+  const add=S.addiction||'smoking';
+  const lang=S.lang||'en';
+  const tools=(T[lang].urgeTools||{})[add]||[];
+  const list=document.getElementById('urge-tools-list');
+  list.innerHTML='';
+  tools.forEach(function(tool){
+    const card=document.createElement('div');
+    card.className='tool-card';
+    card.innerHTML='<div class="tool-card-header"><span class="tool-icon">'+tool.icon+'</span><span class="tool-name">'+tool.name+'</span></div><div class="tool-desc">'+tool.desc+'</div>';
+    card.addEventListener('click',function(){
+      if(tool.screen){
+        if(tool.screen==='screen-dhikr') setupDhikrForAddiction();
+        showScreen(tool.screen);
+      } else if(tool.action){
+        showToolTip(tool.action);
+      }
     });
-  }
-}
-
-function restoreScheduledNotifs(){
-  if(!('Notification' in window)||Notification.permission!=='granted') return;
-  if(!navigator.serviceWorker||!navigator.serviceWorker.controller) return;
-  ['daily','workout'].forEach(function(type){
-    if(!isNotifOn(type)) return;
-    const fireAt = parseInt(localStorage.getItem('notif_fire_'+type)||'0');
-    if(!fireAt) return;
-    const rem = fireAt - Date.now();
-    if(rem <= 0) return; // already past
-    const title = 'Streak';
-    const body = type==='workout'
-      ? 'Time to work out — keep your streak alive!'
-      : 'Your 24h window is open — keep the streak going!';
-    navigator.serviceWorker.controller.postMessage({
-      type: 'SCHEDULE_NOTIF',
-      notifType: type,
-      fireAt: fireAt,
-      title: title,
-      body: body
-    });
+    list.appendChild(card);
   });
 }
 
-function toggleNotif(type){
-  if(!('Notification' in window)){alert('Notifications not supported.');return;}
-  if(isNotifOn(type)){localStorage.setItem(KEYS[type].n,'0');updateToggleUI();return;}
-  Notification.requestPermission().then(function(perm){
-    if(perm==='granted'){
-      localStorage.setItem(KEYS[type].n,'1');updateToggleUI();
-      const s=load(type);if(s.lastTs>0){const rem=msLeft(s.lastTs);if(rem>0)scheduleNotif(type,rem);}
-    } else {
-      alert('Please enable notifications for this site in your browser settings.');
-    }
-  });
+function showToolTip(action){
+  const lang=S.lang||'en';
+  const tip=(T[lang].toolTips||{})[action]||'';
+  if(!tip) return;
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:24px';
+  const box=document.createElement('div');
+  box.style.cssText='background:#111;border:0.5px solid #333;border-radius:16px;padding:24px;max-width:340px;width:100%';
+  const p=document.createElement('p');
+  p.style.cssText='color:#fff;font-size:15px;line-height:1.8;margin-bottom:20px';
+  p.textContent=tip;
+  const btn=document.createElement('button');
+  btn.style.cssText='width:100%;padding:13px;border-radius:12px;border:none;background:var(--gold);color:#000;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit';
+  btn.textContent='OK';
+  btn.onclick=function(){overlay.remove();};
+  box.appendChild(p);box.appendChild(btn);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
 }
 
-function updateToggleUI(){
-  ['daily','workout'].forEach(function(type){
-    const btn=document.getElementById('toggle-'+type);
-    if(isNotifOn(type))btn.classList.add('on');else btn.classList.remove('on');
-  });
+function startBreathing(){
+  if(breathRunning){stopBreathing();return;}
+  breathRunning=true;
+  breathCycleCount=0;
+  document.getElementById('breath-start-btn').textContent=T[S.lang||'en'].breathStop||'Stop';
+  runBreathPhase('inhale');
 }
 
-function updateClock(){const now=new Date(),h=now.getHours()%12||12,m=String(now.getMinutes()).padStart(2,'0');document.getElementById('clock').textContent=h+':'+m;}
-updateClock();setInterval(updateClock,10000);
-
-// ── DAILY ──
-function renderDaily(){
-  const s=load('daily');
-  const splash=document.getElementById('daily-splash');
-  const main=document.getElementById('daily-main');
-  if(!s.start){splash.style.display='block';main.style.display='none';stopTicker('daily');return;}
-  splash.style.display='none';main.style.display='block';
-  document.getElementById('daily-notif-banner').style.display=isNotifOn('daily')?'block':'none';
-  const streak=calcStreak(s.log);
-  document.getElementById('daily-num').textContent=streak;
-  document.getElementById('daily-icon').textContent=streak>=14?'🔥':streak>=7?'✨':streak>=3?'⚡':'◆';
-  document.getElementById('daily-started').textContent='Started '+fmtDT(parseInt(s.start));
-  const rem=msLeft(s.lastTs),canAdd=s.lastTs===0||rem<=0;
-  const addBtn=document.getElementById('daily-add-btn');
-  if(canAdd){
-    addBtn.className='sbtn sbtn-white';
-    document.getElementById('daily-status').className='status-pill pill-ready';
-    document.getElementById('daily-status').textContent='Ready — you can add one now';
-    document.getElementById('daily-locked').style.display='none';
-    stopTicker('daily');
-  } else {
-    addBtn.className='sbtn sbtn-locked';
-    document.getElementById('daily-status').className='status-pill pill-locked';
-    document.getElementById('daily-status').textContent='Already added — come back in:';
-    document.getElementById('daily-locked').style.display='block';
-    document.getElementById('daily-countdown').textContent=fmt(rem);
-    document.getElementById('daily-prog').style.width=(100-Math.floor((rem/86400000)*100))+'%';
-    stopTicker('daily');
-    tickers['daily']=setInterval(function(){
-      const r=msLeft(s.lastTs);
-      if(r<=0){stopTicker('daily');renderDaily();return;}
-      document.getElementById('daily-countdown').textContent=fmt(r);
-      document.getElementById('daily-prog').style.width=(100-Math.floor((r/86400000)*100))+'%';
-    },1000);
-  }
-  renderDots('daily',s,false);
-}
-
-function renderDots(type,s,isGreen){
-  const container=document.getElementById(type+'-dots');
-  if(!container)return;
-  container.innerHTML='';
-  const logDays=new Set(s.log.map(toDay));
-  for(let i=29;i>=0;i--){
-    const d=new Date();d.setDate(d.getDate()-i);
-    const ds=toDay(d.getTime());
-    if(s.start&&ds<toDay(parseInt(s.start)))continue;
-    const dot=document.createElement('div');
-    dot.className='dot'+(logDays.has(ds)?(isGreen?' done green':' done'):'');
-    dot.textContent=d.getDate();
-    container.appendChild(dot);
-  }
-}
-
-// ── WORKOUT ──
-function renderWorkout(){
-  checkWorkoutDeadline();
-  const s=load('workout');
-  const streakArea=document.getElementById('workout-streak-area');
-  const dotsWrap=document.getElementById('workout-dots-wrap');
-
-  if(s.start){
-    streakArea.style.display='block';
-    dotsWrap.style.display='block';
-    document.getElementById('workout-notif-banner').style.display=isNotifOn('workout')?'block':'none';
-    const streak=Math.max(0,calcStreak(s.log)-1);
-    document.getElementById('workout-num').textContent=streak;
-    document.getElementById('workout-icon').textContent=streak>=14?'🏆':streak>=7?'🔥':'💪';
-    document.getElementById('workout-started').textContent='Started '+fmtDT(parseInt(s.start));
-    const rem=msLeft(s.lastTs);
-    const twoHrMs=2*3600*1000;
-
-    if(s.lastTs>0&&rem>0){
-      // still locked — show countdown
-      document.getElementById('workout-streak-status').className='status-pill pill-locked';
-      document.getElementById('workout-streak-status').textContent='Already worked out — come back in:';
-      document.getElementById('workout-streak-locked').style.display='block';
-      document.getElementById('workout-countdown').textContent=fmt(rem);
-      document.getElementById('workout-prog').style.width=(100-Math.floor((rem/86400000)*100))+'%';
-      stopTicker('workout');
-      tickers['workout']=setInterval(function(){
-        const r=msLeft(s.lastTs);
-        if(r<=0){stopTicker('workout');renderWorkout();return;}
-        document.getElementById('workout-countdown').textContent=fmt(r);
-        document.getElementById('workout-prog').style.width=(100-Math.floor((r/86400000)*100))+'%';
-      },1000);
-    } else if(s.lastTs>0&&rem<=0){
-      // 24h unlocked — set 2h deadline if not already set
-      const existingDl=localStorage.getItem('w_deadline');
-      if(!existingDl){
-        const deadline=s.lastTs+86400000+twoHrMs;
-        localStorage.setItem('w_deadline',String(deadline));
-        // schedule a notification for the deadline
-        if(isNotifOn('workout'))scheduleNotif('workout',deadline-Date.now());
+function runBreathPhase(phase){
+  const circle=document.getElementById('breath-circle');
+  const word=document.getElementById('breath-word');
+  const sub=document.getElementById('breath-sub');
+  const countEl=document.getElementById('breath-count');
+  const lang=S.lang||'en';
+  const phases={
+    inhale:{dur:4, word:lang==='ar'?'شهيق':'Inhale', sub:lang==='ar'?'تنفس ببطء':'Breathe in slowly', class:'inhale'},
+    hold:{dur:4, word:lang==='ar'?'احبس':'Hold', sub:lang==='ar'?'احبس نفسك':'Hold your breath', class:''},
+    exhale:{dur:6, word:lang==='ar'?'زفير':'Exhale', sub:lang==='ar'?'أخرج الهواء ببطء':'Breathe out slowly', class:'exhale'},
+  };
+  const p=phases[phase];
+  circle.className='breath-circle '+(p.class||'');
+  word.textContent=p.word;
+  sub.textContent=p.sub;
+  breathCountdown=p.dur;
+  countEl.textContent=breathCountdown;
+  if(breathTimer) clearInterval(breathTimer);
+  breathTimer=setInterval(function(){
+    breathCountdown--;
+    countEl.textContent=breathCountdown;
+    if(breathCountdown<=0){
+      clearInterval(breathTimer);
+      if(!breathRunning) return;
+      if(phase==='inhale') runBreathPhase('hold');
+      else if(phase==='hold') runBreathPhase('exhale');
+      else {
+        breathCycleCount++;
+        document.getElementById('breath-cycles').textContent=breathCycleCount+' / 5 '+(lang==='ar'?'دورات':'cycles');
+        if(breathCycleCount>=5) stopBreathing();
+        else runBreathPhase('inhale');
       }
-      // check how much time left in the 2h window
-      const dl=parseInt(localStorage.getItem('w_deadline')||'0');
-      const dlRem=dl?Math.max(0,dl-Date.now()):0;
-
-      if(dlRem>0){
-        const hLeft=Math.floor(dlRem/3600000);
-        const mLeft=Math.floor((dlRem%3600000)/60000);
-        const timeStr=(hLeft>0?hLeft+'h ':'')+mLeft+'m';
-        document.getElementById('workout-streak-status').className='status-pill';
-        document.getElementById('workout-streak-status').style.cssText='background:#2e1a00;color:#c9a84c;border:0.5px solid #5c3d00;border-radius:12px;padding:11px 16px;font-size:14px;text-align:center;margin-bottom:14px';
-        document.getElementById('workout-streak-status').textContent='⏰ '+timeStr+' left to log — or streak resets!';
-      } else {
-        document.getElementById('workout-streak-status').className='status-pill pill-ready';
-        document.getElementById('workout-streak-status').style.cssText='';
-        document.getElementById('workout-streak-status').textContent='Ready — choose a workout below';
-      }
-      document.getElementById('workout-streak-locked').style.display='none';
-      stopTicker('workout');
-      // tick the 2h warning
-      if(dlRem>0){
-        tickers['workout']=setInterval(function(){
-          const r2=parseInt(localStorage.getItem('w_deadline')||'0')-Date.now();
-          if(r2<=0){stopTicker('workout');renderWorkout();return;}
-          const h2=Math.floor(r2/3600000),m2=Math.floor((r2%3600000)/60000);
-          const ts2=(h2>0?h2+'h ':'')+m2+'m';
-          const el=document.getElementById('workout-streak-status');
-          if(el)el.textContent='⏰ '+ts2+' left to log — or streak resets!';
-        },30000);
-      }
-    } else {
-      // first time, never logged
-      document.getElementById('workout-streak-status').className='status-pill pill-ready';
-      document.getElementById('workout-streak-status').style.cssText='';
-      document.getElementById('workout-streak-status').textContent='Ready — choose a workout below';
-      document.getElementById('workout-streak-locked').style.display='none';
-      stopTicker('workout');
-    }
-    renderDots('workout',s,true);
-  } else {
-    streakArea.style.display='none';
-    dotsWrap.style.display='none';
-  }
-
-  // Always show picker
-  showScreen('picker');
-  document.getElementById('workout-splash').style.display=s.start?'none':'block';
-  document.getElementById('workout-picker-main').style.display='block';
-}
-
-function showScreen(name){
-  document.getElementById('workout-picker').style.display='none';
-  document.getElementById('workout-active').style.display='none';
-  document.getElementById('workout-done').style.display='none';
-  document.getElementById('workout-locked-screen').style.display='none';
-  if(name==='picker')document.getElementById('workout-picker').style.display='block';
-  else if(name==='active')document.getElementById('workout-active').style.display='block';
-  else if(name==='done')document.getElementById('workout-done').style.display='block';
-  else if(name==='locked')document.getElementById('workout-locked-screen').style.display='block';
-}
-
-function selectMuscle(muscle){
-  document.querySelectorAll('.muscle-card').forEach(c=>c.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-  currentMuscle=muscle;
-  document.getElementById('start-workout-wrap').style.display='block';
-}
-
-function startWorkout(){
-  if(!currentMuscle)return;
-  currentExIdx=0;
-  stopExTimer();
-  const r=ROUTINES[currentMuscle];
-  document.getElementById('workout-active-title').textContent=r.icon+' '+r.name;
-  showScreen('active');
-  renderExercise();
-}
-
-function renderExercise(){
-  const r=ROUTINES[currentMuscle];
-  const ex=r.exercises[currentExIdx];
-  const total=r.exercises.length;
-  const pct=Math.round((currentExIdx/total)*100);
-  document.getElementById('workout-prog-fill').style.width=pct+'%';
-
-  const area=document.getElementById('workout-exercise-area');
-  const prevBtn=document.getElementById('prev-btn');
-  const nextBtn=document.getElementById('next-btn');
-  prevBtn.style.display=currentExIdx===0?'none':'block';
-  nextBtn.textContent=currentExIdx===total-1?'Finish workout ✓':'Next →';
-
-  let html='<div class="exercise-card">';
-  html+='<div class="exercise-num">Exercise '+(currentExIdx+1)+' of '+total+'</div>';
-  html+='<div class="exercise-name">'+ex.name+'</div>';
-
-  if(ex.type==='reps'){
-    html+='<div class="exercise-detail">'+ex.reps+'</div>';
-    html+='<div class="exercise-tip">💡 '+ex.tip+'</div>';
-    html+='</div>';
-    area.innerHTML=html;
-    stopExTimer();
-  } else {
-    html+='<div class="exercise-detail">Hold for '+ex.seconds+' seconds</div>';
-    html+='<div class="exercise-tip">💡 '+ex.tip+'</div>';
-    html+='</div>';
-    html+='<div class="timer-circle active" id="ex-timer-circle"><div class="timer-num" id="ex-timer-num">'+ex.seconds+'</div><div class="timer-lbl">seconds</div></div>';
-    area.innerHTML=html;
-    startExTimer(ex.seconds);
-  }
-}
-
-function startExTimer(seconds){
-  stopExTimer();
-  exCountdown=seconds;
-  document.getElementById('ex-timer-num').textContent=exCountdown;
-  exInterval=setInterval(function(){
-    exCountdown--;
-    const el=document.getElementById('ex-timer-num');
-    if(el)el.textContent=exCountdown;
-    if(exCountdown<=0){
-      stopExTimer();
-      const circle=document.getElementById('ex-timer-circle');
-      if(circle){circle.classList.remove('active');circle.classList.add('rest');}
-      if(el)el.textContent='Done!';
     }
   },1000);
 }
 
-function stopExTimer(){if(exInterval){clearInterval(exInterval);exInterval=null;}}
+function stopBreathing(){
+  breathRunning=false;
+  if(breathTimer) clearInterval(breathTimer);
+  const circle=document.getElementById('breath-circle');
+  circle.className='breath-circle';
+  document.getElementById('breath-word').textContent='Ready';
+  document.getElementById('breath-count').textContent='4';
+  document.getElementById('breath-cycles').textContent='0 / 5 '+(S.lang==='ar'?'دورات':'cycles');
+  document.getElementById('breath-start-btn').textContent=T[S.lang||'en'].breathStart||'Start';
+  showScreen('screen-urge');
+}
 
-function nextExercise(){
-  const r=ROUTINES[currentMuscle];
-  if(currentExIdx>=r.exercises.length-1){
-    finishWorkout();
-  } else {
-    currentExIdx++;
-    stopExTimer();
-    renderExercise();
+// ═══════════════════════════════════════
+// DHIKR
+// ═══════════════════════════════════════
+function setupDhikrForAddiction(){
+  dhikrIdx=0; dhikrCount=0;
+  updateDhikr();
+}
+
+function updateDhikr(){
+  const d=DHIKRS[dhikrIdx];
+  document.getElementById('dhikr-arabic').textContent=d.ar;
+  document.getElementById('dhikr-translation').textContent=d.en;
+  document.getElementById('dhikr-count').textContent=dhikrCount;
+  const lang=S.lang||'en';
+  document.getElementById('dhikr-target').textContent=(lang==='ar'?'الهدف: ':'Target: ')+d.target;
+  document.getElementById('dhikr-tap-text').textContent=T[lang].dhikrTap||'Tap';
+}
+
+function tapDhikr(){
+  dhikrCount++;
+  const d=DHIKRS[dhikrIdx];
+  document.getElementById('dhikr-count').textContent=dhikrCount;
+  const tap=document.getElementById('dhikr-tap');
+  tap.style.background='var(--gold)';
+  setTimeout(function(){tap.style.background='var(--bg3)';},100);
+  if(dhikrCount>=d.target){
+    setTimeout(function(){dhikrIdx=(dhikrIdx+1)%DHIKRS.length;dhikrCount=0;updateDhikr();},500);
   }
 }
 
-function prevExercise(){
-  if(currentExIdx>0){currentExIdx--;stopExTimer();renderExercise();}
+function resetDhikr(){ dhikrCount=0; updateDhikr(); }
+function nextDhikr(){ dhikrIdx=(dhikrIdx+1)%DHIKRS.length; dhikrCount=0; updateDhikr(); }
+
+// ═══════════════════════════════════════
+// RELAPSE
+// ═══════════════════════════════════════
+function confirmRelapse(){
+  const elapsed=S.startTs?Date.now()-S.startTs:0;
+  if(elapsed>S.bestMs) S.bestMs=elapsed;
+  S.relapseCount=S.relapseCount+1;
+  S.startTs=Date.now();
+  updateStats();
+  showScreen('screen-home');
 }
 
-function finishWorkout(){
-  stopExTimer();
-  const s=load('workout');
-  const now=Date.now();
-  const canCount=s.lastTs===0||msLeft(s.lastTs)<=0;
-  const r=ROUTINES[currentMuscle];
-
-  if(canCount){
-    // first time or 24h passed — log to streak
-    if(!s.start){s.start=String(now);}
-    s.log.push(now);s.lastTs=now;
-    save('workout',s);
-    localStorage.removeItem('w_deadline'); // clear 2h deadline
-    if(isNotifOn('workout'))scheduleNotif('workout',86400000);
-    showScreen('done');
-    const streak=Math.max(0,calcStreak(s.log)-1); // start at 0, grows after 2nd day
-    document.getElementById('done-sub').textContent='You completed the '+r.name+' routine. Streak is now '+streak+' day'+(streak===1?'':'s')+'!';
-    document.getElementById('done-streak-card').style.display='block';
-    document.getElementById('done-streak-num').textContent=streak;
-    document.getElementById('done-streak-icon').textContent=streak>=14?'🏆':streak>=7?'🔥':'💪';
-  } else {
-    // within 24h — show done but don't log streak
-    const rem=msLeft(s.lastTs);
-    const h=Math.floor(rem/3600000),m=Math.floor((rem%3600000)/60000);
-    const timeStr=(h>0?h+'h ':'')+m+'m';
-    showScreen('done');
-    document.getElementById('done-sub').textContent='Great job with the '+r.name+' routine! Streak will update when your 24h window opens (in '+timeStr+').';
-    document.getElementById('done-streak-card').style.display='none';
-  }
-  renderWorkout();
+// ═══════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════
+function showLangChange(){
+  S.onboarded=false;
+  S.lang=null;
+  location.reload();
 }
 
-function goPickerFromDone(){
-  currentMuscle=null;
-  document.querySelectorAll('.muscle-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('start-workout-wrap').style.display='none';
-  showScreen('picker');
+function showAddictionChange(){
+  S.addiction=null;
+  selectedAddiction=null;
+  applyTranslations();
+  showScreen('screen-addiction');
 }
 
-function switchTab(type){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('tab-'+type).classList.add('active');
-  document.getElementById('page-'+type).classList.add('active');
-  document.getElementById('header-title').textContent=type==='workout'?'Workout':'Streak';
-  if(type==='daily')renderDaily();else renderWorkout();
+function showMilestones(){
+  buildMilestones();
+  showScreen('screen-milestones');
 }
 
-function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open');updateToggleUI();}
-function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open');}
-
-document.getElementById('burger-btn').addEventListener('click',openDrawer);
-document.getElementById('drawer-close').addEventListener('click',closeDrawer);
-document.getElementById('drawer-overlay').addEventListener('click',closeDrawer);
-document.getElementById('start-workout-btn').addEventListener('click',startWorkout);
-document.getElementById('workout-back-btn').addEventListener('click',function(){stopExTimer();showScreen('picker');});
-
-// daily buttons
-document.getElementById('daily-start-btn').addEventListener('click',function(){
-  const now=Date.now();save('daily',{start:String(now),log:[now],lastTs:now});
-  if(isNotifOn('daily'))scheduleNotif('daily',86400000);
-  renderDaily();
-});
-document.getElementById('daily-add-btn').addEventListener('click',function(){
-  const s=load('daily');if(s.lastTs>0&&msLeft(s.lastTs)>0)return;
-  const now=Date.now();s.log.push(now);s.lastTs=now;save('daily',s);
-  if(isNotifOn('daily'))scheduleNotif('daily',86400000);
-  renderDaily();
-});
-document.getElementById('daily-reset-btn').addEventListener('click',function(){document.getElementById('daily-confirm').style.display='block';document.getElementById('daily-reset-btn').style.display='none';});
-document.getElementById('daily-cancel-btn').addEventListener('click',function(){document.getElementById('daily-confirm').style.display='none';document.getElementById('daily-reset-btn').style.display='block';});
-document.getElementById('daily-confirm-btn').addEventListener('click',function(){clearAll('daily');stopTicker('daily');document.getElementById('daily-confirm').style.display='none';document.getElementById('daily-reset-btn').style.display='block';renderDaily();});
-
-// workout reset (done screen)
-document.getElementById('workout-reset-btn').addEventListener('click',function(){document.getElementById('workout-confirm').style.display='block';document.getElementById('workout-reset-btn').style.display='none';});
-document.getElementById('workout-cancel-btn').addEventListener('click',function(){document.getElementById('workout-confirm').style.display='none';document.getElementById('workout-reset-btn').style.display='block';});
-document.getElementById('workout-confirm-btn').addEventListener('click',function(){clearAll('workout');localStorage.removeItem('w_deadline');stopTicker('workout');document.getElementById('workout-confirm').style.display='none';document.getElementById('workout-reset-btn').style.display='block';renderWorkout();});
-
-// workout reset (locked screen)
-document.getElementById('workout-reset-btn2').addEventListener('click',function(){document.getElementById('workout-confirm2').style.display='block';document.getElementById('workout-reset-btn2').style.display='none';});
-document.getElementById('workout-cancel-btn2').addEventListener('click',function(){document.getElementById('workout-confirm2').style.display='none';document.getElementById('workout-reset-btn2').style.display='block';});
-document.getElementById('workout-confirm-btn2').addEventListener('click',function(){clearAll('workout');localStorage.removeItem('w_deadline');stopTicker('workout');document.getElementById('workout-confirm2').style.display='none';document.getElementById('workout-reset-btn2').style.display='block';renderWorkout();});
-
-// workout reset (picker screen)
-document.getElementById('workout-reset-btn3').addEventListener('click',function(){document.getElementById('workout-confirm3').style.display='block';document.getElementById('workout-reset-btn3').style.display='none';});
-document.getElementById('workout-cancel-btn3').addEventListener('click',function(){document.getElementById('workout-confirm3').style.display='none';document.getElementById('workout-reset-btn3').style.display='block';});
-document.getElementById('workout-confirm-btn3').addEventListener('click',function(){clearAll('workout');localStorage.removeItem('w_deadline');stopTicker('workout');document.getElementById('workout-confirm3').style.display='none';document.getElementById('workout-reset-btn3').style.display='block';renderWorkout();});
-
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').then(function(reg){
-    // Wait for SW to be ready then restore any scheduled notifications
-    navigator.serviceWorker.ready.then(function(){
-      restoreScheduledNotifs();
-    });
-  });
-
-  // Listen for messages from SW
-  navigator.serviceWorker.addEventListener('message', function(e){
-    if(e.data && e.data.type === 'REQUEST_SCHEDULE'){
-      restoreScheduledNotifs();
-    }
-  });
+function confirmClearData(){
+  const lang=S.lang||'en';
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:24px';
+  const box=document.createElement('div');
+  box.style.cssText='background:#111;border:0.5px solid #333;border-radius:16px;padding:24px;max-width:340px;width:100%';
+  const p1=document.createElement('p');
+  p1.style.cssText='color:#fff;font-size:16px;font-weight:700;margin-bottom:10px';
+  p1.textContent=lang==='ar'?'مسح كل البيانات؟':'Clear All Data?';
+  const p2=document.createElement('p');
+  p2.style.cssText='color:#aaa;font-size:14px;line-height:1.6;margin-bottom:20px';
+  p2.textContent=lang==='ar'?'سيتم حذف كل تقدمك وبدء التطبيق من جديد.':'This will delete all your progress and reset the app.';
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;gap:10px';
+  const b1=document.createElement('button');
+  b1.style.cssText='flex:1;padding:13px;border-radius:12px;border:0.5px solid #333;background:transparent;color:#aaa;font-size:15px;cursor:pointer;font-family:inherit';
+  b1.textContent=lang==='ar'?'إلغاء':'Cancel';
+  b1.onclick=function(){overlay.remove();};
+  const b2=document.createElement('button');
+  b2.style.cssText='flex:1;padding:13px;border-radius:12px;border:none;background:#c0392b;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit';
+  b2.textContent=lang==='ar'?'نعم، امسح':'Yes, Clear';
+  b2.onclick=clearAllData;
+  row.appendChild(b1);row.appendChild(b2);
+  box.appendChild(p1);box.appendChild(p2);box.appendChild(row);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
 }
 
-// Clear old API cache so fresh fetch happens with new endpoint
-(function(){
-  const oldDay=parseInt(localStorage.getItem('quran_api_day')||'0');
-  const todayIdx=getDayIndex();
-  if(oldDay!==todayIdx){
-    localStorage.removeItem('quran_api_verse');
-    localStorage.removeItem('quran_api_day');
-  }
-})();
-checkWorkoutDeadline();
-updateToggleUI();
-renderDaily();
-renderWorkout();
-showQuranSplash();
-
-// ── ADMIN ──
-const ADMIN_PASS = 'streak123';
-
-function openLoginModal(){
-  closeDrawer();
-  document.getElementById('admin-password').value='';
-  document.getElementById('login-error').style.display='none';
-  document.getElementById('login-modal').classList.add('open');
-  setTimeout(function(){document.getElementById('admin-password').focus();},200);
-}
-function closeLoginModal(){
-  document.getElementById('login-modal').classList.remove('open');
-}
-function submitLogin(){
-  const val=document.getElementById('admin-password').value;
-  if(val===ADMIN_PASS){
-    closeLoginModal();
-    openAdminPanel();
-  } else {
-    document.getElementById('login-error').style.display='block';
-    document.getElementById('admin-password').value='';
-  }
-}
-document.getElementById('admin-password').addEventListener('keydown',function(e){
-  if(e.key==='Enter') submitLogin();
-});
-
-function openAdminPanel(){
-  const perm=('Notification' in window)?Notification.permission:'unsupported';
-  const permEl=document.getElementById('admin-notif-perm');
-  permEl.textContent=perm;
-  permEl.className='admin-badge'+(perm==='granted'?'':' warn');
-  const dailyFire=localStorage.getItem('notif_fire_daily');
-  const workoutFire=localStorage.getItem('notif_fire_workout');
-  document.getElementById('admin-daily-fire').textContent=dailyFire
-    ?new Date(parseInt(dailyFire)).toLocaleString():'Not scheduled';
-  document.getElementById('admin-workout-fire').textContent=workoutFire
-    ?new Date(parseInt(workoutFire)).toLocaleString():'Not scheduled';
-  document.getElementById('admin-panel').classList.add('open');
-  // Populate verse dropdown
-  adminPopulateVerseSelect();
+function clearAllData(){
+  localStorage.clear();
+  location.reload();
 }
 
-function adminPopulateVerseSelect(){
-  const sel=document.getElementById('admin-verse-select');
-  if(sel.options.length>1) return; // already populated
-  VERSES.forEach(function(v,i){
-    const opt=document.createElement('option');
-    opt.value=i;
-    opt.textContent=v.ref+' — '+v.translation.substring(0,40)+(v.translation.length>40?'...':'');
-    sel.appendChild(opt);
-  });
+// ═══════════════════════════════════════
+// NAVIGATION HELPERS
+// ═══════════════════════════════════════
+function goToQuran(){
+  showQuranVerse();
+  showScreen('screen-quran');
 }
 
-let adminPickedIdx=null;
-let adminRandomIdx=null;
-
-function adminPreviewToday(){
-  const v=getTodayVerse();
-  document.getElementById('atv-arabic').textContent=v.arabic;
-  document.getElementById('atv-translation').textContent='"'+v.translation+'"';
-  document.getElementById('atv-ref').textContent='— '+v.ref;
-  document.getElementById('admin-today-verse').style.display='block';
+function goToAddiction(){
+  showScreen('screen-addiction');
 }
 
-function adminShowTodayOnScreen(){
-  const v=getTodayVerse();
-  showVerseOnSplash(v);
-  closeAdminPanel();
-}
-
-function adminPickVerse(){
-  const sel=document.getElementById('admin-verse-select');
-  const idx=parseInt(sel.value);
-  if(isNaN(idx)) return;
-  adminPickedIdx=idx;
-  const v=VERSES[idx];
-  document.getElementById('apv-arabic').textContent=v.arabic;
-  document.getElementById('apv-translation').textContent='"'+v.translation+'"';
-  document.getElementById('apv-ref').textContent='— '+v.ref;
-  document.getElementById('admin-picked-verse').style.display='block';
-  document.getElementById('admin-show-picked-btn').style.display='block';
-}
-
-function adminShowPickedOnScreen(){
-  if(adminPickedIdx===null) return;
-  showVerseOnSplash(VERSES[adminPickedIdx]);
-  closeAdminPanel();
-}
-
-function adminRandomVerse(){
-  adminRandomIdx=Math.floor(Math.random()*VERSES.length);
-  const v=VERSES[adminRandomIdx];
-  document.getElementById('arv-arabic').textContent=v.arabic;
-  document.getElementById('arv-translation').textContent='"'+v.translation+'"';
-  document.getElementById('arv-ref').textContent='— '+v.ref;
-  document.getElementById('admin-random-verse').style.display='block';
-  document.getElementById('admin-show-random-btn').style.display='block';
-}
-
-function adminShowRandomOnScreen(){
-  if(adminRandomIdx===null) return;
-  showVerseOnSplash(VERSES[adminRandomIdx]);
-  closeAdminPanel();
-}
-
-function showVerseOnSplash(v){
-  document.getElementById('quran-arabic').textContent=v.arabic;
-  document.getElementById('quran-translation').textContent='"'+v.translation+'"';
-  document.getElementById('quran-ref').textContent='— '+v.ref;
-  const d=new Date();
-  document.getElementById('quran-date').textContent=d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  document.getElementById('quran-overlay').style.display='flex';
-}
-function closeAdminPanel(){
-  document.getElementById('admin-panel').classList.remove('open');
-}
-
-function testNotif(type){
-  if(!('Notification' in window)||Notification.permission!=='granted'){
-    alert('Notifications not granted. Enable them first in the burger menu.');
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+function init(){
+  applyTranslations();
+  if(!S.lang){
+    showScreen('screen-lang');
     return;
   }
-  navigator.serviceWorker.ready.then(function(reg){
-    const body=type==='workout'
-      ?'Time to work out — keep your streak alive!'
-      :'Your 24h window is open — keep the streak going!';
-    reg.showNotification('Streak — test',{
-      body:body,
-      icon:'./icon-192.png',
-      badge:'./icon-192.png',
-      tag:'streak-test-'+type,
-      vibrate:[200,100,200],
-      requireInteraction:true
-    });
-  });
-}
-
-function testDelayedNotif(){
-  if(!('Notification' in window)||Notification.permission!=='granted'){
-    alert('Notifications not granted. Enable them first in the burger menu.');
+  setDir();
+  if(!S.onboarded || !S.addiction){
+    if(!S.onboarded) goToQuran();
+    else showScreen('screen-addiction');
     return;
   }
-  const btn=document.getElementById('test-delayed-btn');
-  const fireAt=Date.now()+10000;
-  ['daily','workout'].forEach(function(type){
-    localStorage.setItem('notif_fire_'+type,String(fireAt));
-    if(navigator.serviceWorker&&navigator.serviceWorker.controller){
-      const body=type==='workout'
-        ?'Time to work out — keep your streak alive!'
-        :'Your 24h window is open — keep the streak going!';
-      navigator.serviceWorker.controller.postMessage({
-        type:'SCHEDULE_NOTIF',
-        notifType:type,
-        fireAt:fireAt,
-        title:'Streak — test',
-        body:body
-      });
-    }
-  });
-  let count=10;
-  btn.textContent='Fires in '+count+'s...';
-  const iv=setInterval(function(){
-    count--;
-    if(count<=0){clearInterval(iv);btn.textContent='Schedule in 10s';}
-    else btn.textContent='Fires in '+count+'s...';
-  },1000);
+  applyTranslations();
+  buildUrgeTools();
+  buildMilestoneStrip();
+  buildMilestones();
+  updateHomeAddictionLabel();
+  updateStats();
+  startTimer();
+  showScreen('screen-home');
 }
 
-function adminClearAll(){
-  ['daily','workout'].forEach(function(type){
-    clearAll(type);
-    localStorage.removeItem('notif_fire_'+type);
-    localStorage.removeItem(KEYS[type].n);
-  });
-  localStorage.removeItem('quran_visit_count');
-  stopTicker('daily');stopTicker('workout');
-  closeAdminPanel();
-  updateToggleUI();
-  renderDaily();
-  renderWorkout();
-  alert('All data cleared.');
-}
+init();
 </script>
 </body>
 </html>
