@@ -415,7 +415,6 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 <div class="screen" id="screen-home">
   <div class="app-header">
     <div class="app-header-title" id="home-header-title">عادة</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-settings')">⚙️</button>
   </div>
   <div class="home-body">
     <!-- Timer Card -->
@@ -674,17 +673,7 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 <!-- ══════════════════════════════════
      SCREEN: PRAYER TIMES
 ════════════════════════════════════ -->
-<div class="screen" id="screen-prayer">
-  <div class="app-header">
-    <div class="app-header-title" id="prayer-header-title">Prayer Times</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
-  </div>
-  <div style="padding:16px;flex:1;overflow-y:auto">
-    <div class="prayer-location" id="prayer-location-text">Detecting your location...</div>
-    <div id="prayer-list"><div class="prayer-loading" id="prayer-loading-text">Loading prayer times...</div></div>
-    <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:16px;line-height:1.6" id="prayer-tip-text"></div>
-  </div>
-</div>
+
 
 <!-- ══════════════════════════════════
      SCREEN: WIDGET SUMMARY
@@ -1874,76 +1863,7 @@ function buildStories(){
 // ═══════════════════════════════════════
 let prayerData=null;
 
-function loadPrayerTimes(){
-  const lang=S.lang||'en';
-  document.getElementById('prayer-location-text').textContent=lang==='ar'?'جارٍ تحديد موقعك...':'Detecting your location...';
-  document.getElementById('prayer-loading-text').textContent=lang==='ar'?'جارٍ تحميل أوقات الصلاة...':'Loading prayer times...';
-  document.getElementById('prayer-header-title').textContent=lang==='ar'?'أوقات الصلاة':'Prayer Times';
-  document.getElementById('prayer-tip-text').textContent=lang==='ar'?'الصلاة تطرد وساوس الشيطان وتقوي الإرادة. كل صلاة فرصة جديدة.':'Prayer drives away the whispers of Shaytan and strengthens willpower. Every prayer is a fresh start.';
-  if(prayerData){renderPrayerTimes(prayerData);return;}
-  if(!navigator.geolocation){showPrayerError();return;}
-  navigator.geolocation.getCurrentPosition(
-    function(pos){
-      const lat=pos.coords.latitude.toFixed(4);
-      const lng=pos.coords.longitude.toFixed(4);
-      const today=new Date();
-      const url='https://api.aladhan.com/v1/timings/'+Math.floor(today.getTime()/1000)+'?latitude='+lat+'&longitude='+lng+'&method=2';
-      fetch(url)
-        .then(function(r){return r.json();})
-        .then(function(d){
-          if(d.code===200&&d.data){
-            prayerData=d.data;
-            renderPrayerTimes(d.data);
-          } else showPrayerError();
-        })
-        .catch(showPrayerError);
-    },
-    showPrayerError,
-    {timeout:8000}
-  );
-}
 
-function renderPrayerTimes(data){
-  const lang=S.lang||'en';
-  const t=data.timings;
-  const meta=data.meta;
-  const prayers=[
-    {key:'Fajr', ar:'الفجر', en:'Fajr', time:t.Fajr},
-    {key:'Sunrise', ar:'الشروق', en:'Sunrise', time:t.Sunrise},
-    {key:'Dhuhr', ar:'الظهر', en:'Dhuhr', time:t.Dhuhr},
-    {key:'Asr', ar:'العصر', en:'Asr', time:t.Asr},
-    {key:'Maghrib', ar:'المغرب', en:'Maghrib', time:t.Maghrib},
-    {key:'Isha', ar:'العشاء', en:'Isha', time:t.Isha},
-  ];
-  const now=new Date();
-  const nowMins=now.getHours()*60+now.getMinutes();
-  let nextIdx=0;
-  let minDiff=Infinity;
-  prayers.forEach(function(p,i){
-    if(p.key==='Sunrise') return;
-    const parts=p.time.split(':');
-    const pMins=parseInt(parts[0])*60+parseInt(parts[1]);
-    const diff=pMins-nowMins;
-    if(diff>0&&diff<minDiff){minDiff=diff;nextIdx=i;}
-  });
-  const list=document.getElementById('prayer-list');
-  list.innerHTML='';
-  prayers.forEach(function(p,i){
-    const isNext=i===nextIdx;
-    const card=document.createElement('div');
-    card.className='prayer-card'+(isNext?' next':'');
-    card.innerHTML='<div><div class="prayer-name">'+(lang==='ar'?p.ar:p.en)+'</div>'+(isNext?'<div class="prayer-next-badge">'+(lang==='ar'?'التالية':'Next')+'</div>':'')+'</div><div class="prayer-time">'+p.time+'</div>';
-    list.appendChild(card);
-  });
-  const city=meta.timezone||'';
-  document.getElementById('prayer-location-text').textContent=lang==='ar'?('📍 '+city):('📍 '+city);
-}
-
-function showPrayerError(){
-  const lang=S.lang||'en';
-  document.getElementById('prayer-list').innerHTML='<div class="prayer-loading">'+(lang==='ar'?'تعذّر تحديد الموقع. يرجى السماح بالوصول إلى الموقع.':'Could not detect location. Please allow location access.')+'</div>';
-  document.getElementById('prayer-location-text').textContent='';
-}
 
 // ═══════════════════════════════════════
 // WIDGET SUMMARY
