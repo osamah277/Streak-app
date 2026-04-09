@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Clean">
-<title>Clean</title>
+<meta name="apple-mobile-web-app-title" content="عادة">
+<title>عادة</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -191,6 +191,62 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 .rtl .ms-info{text-align:right}
 .rtl .addiction-card-name{font-size:16px}
 
+
+/* ── CALENDAR ── */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-month{font-size:16px;font-weight:600;color:var(--text)}
+.cal-nav{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:4px 10px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px}
+.cal-day-label{font-size:10px;color:var(--text3);text-align:center;padding:4px 0;font-weight:600}
+.cal-day{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);background:var(--bg3)}
+.cal-day.clean{background:#1a3a1f;color:#5dca7e;font-weight:600}
+.cal-day.today{border:2px solid var(--gold);color:var(--gold)}
+.cal-day.empty{background:transparent}
+.cal-day.relapse{background:#3a1515;color:#ff7070}
+.cal-legend{display:flex;gap:16px;justify-content:center;font-size:12px;color:var(--text3)}
+.cal-legend-item{display:flex;align-items:center;gap:6px}
+.cal-dot{width:10px;height:10px;border-radius:3px}
+
+/* ── HADITH ── */
+.hadith-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.hadith-arabic{font-size:18px;color:var(--text);direction:rtl;font-family:serif;line-height:1.9;margin-bottom:12px;text-align:right}
+.hadith-translation{font-size:14px;color:var(--text2);line-height:1.7;font-style:italic;margin-bottom:8px}
+.hadith-ref{font-size:11px;color:var(--gold)}
+
+/* ── WHY I STARTED ── */
+.why-input{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--r2);padding:14px;color:var(--text);font-size:15px;font-family:inherit;resize:none;min-height:100px;outline:none;line-height:1.6}
+.why-input:focus{border-color:var(--gold)}
+.why-display{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px;font-size:15px;color:var(--text);line-height:1.7;font-style:italic;min-height:80px}
+.why-empty{color:var(--text3);font-style:italic}
+
+/* ── PRAYER TIMES ── */
+.prayer-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.prayer-card.next{border-color:var(--gold);background:#1a1200}
+.prayer-name{font-size:15px;font-weight:600;color:var(--text)}
+.prayer-name-ar{font-size:13px;color:var(--text2);margin-top:2px}
+.prayer-time{font-size:18px;font-weight:700;color:var(--text)}
+.prayer-next-badge{font-size:11px;color:var(--gold);background:#2a1800;border-radius:6px;padding:3px 8px;margin-top:3px;display:inline-block}
+.prayer-location{font-size:12px;color:var(--text3);text-align:center;margin-bottom:14px}
+.prayer-loading{text-align:center;color:var(--text3);padding:30px;font-size:14px}
+
+/* ── WIDGET SUMMARY ── */
+.widget-preview{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:20px 18px;margin-bottom:14px;max-width:320px;margin-left:auto;margin-right:auto}
+.widget-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.widget-app-name{font-size:13px;color:var(--text3);font-weight:600}
+.widget-icon{font-size:20px}
+.widget-timer{font-size:38px;font-weight:700;color:var(--text);line-height:1;margin-bottom:4px}
+.widget-label{font-size:12px;color:var(--text3);margin-bottom:12px}
+.widget-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.widget-bar-fill{height:100%;background:var(--gold);border-radius:3px;transition:width 0.5s}
+.widget-ms{font-size:11px;color:var(--text2)}
+.widget-quote{font-size:12px;color:var(--text3);line-height:1.5;font-style:italic;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border)}
+
+/* ── SUCCESS STORIES ── */
+.story-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px}
+.story-days{font-size:28px;font-weight:700;color:var(--gold);margin-bottom:4px}
+.story-name{font-size:13px;color:var(--text3);margin-bottom:10px}
+.story-text{font-size:14px;color:var(--text2);line-height:1.7}
+
 /* ── SETTINGS ── */
 .settings-body{padding:20px;flex:1}
 .settings-section{margin-bottom:24px}
@@ -339,7 +395,7 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 ════════════════════════════════════ -->
 <div class="screen" id="screen-home">
   <div class="app-header">
-    <div class="app-header-title" id="home-header-title">Clean</div>
+    <div class="app-header-title" id="home-header-title">عادة</div>
     <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-settings')">⚙️</button>
   </div>
   <div class="home-body">
@@ -365,6 +421,15 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
         <div class="stat-label" id="stat-best-label">Best Streak</div>
       </div>
     </div>
+
+    <!-- Feature Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <button class="btn btn-outline btn-sm" onclick="openCalendar()" id="btn-calendar" style="font-size:13px">📅 <span id="home-btn-cal">Calendar</span></button>
+      <button class="btn btn-outline btn-sm" onclick="openHadith()" id="btn-hadith" style="font-size:13px">📿 <span id="home-btn-hadith">Hadith</span></button>
+      <button class="btn btn-outline btn-sm" onclick="showScreen('screen-prayer');loadPrayerTimes()" id="btn-prayer" style="font-size:13px">🕌 <span id="home-btn-prayer">Prayer</span></button>
+      <button class="btn btn-outline btn-sm" onclick="openWidget()" id="btn-widget" style="font-size:13px">📊 <span id="home-btn-widget">Summary</span></button>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="openWhy()" id="btn-why" style="font-size:13px;margin-bottom:12px">💬 <span id="home-btn-why">Why I Started</span></button>
 
     <!-- Urge Button -->
     <button class="btn urge-btn" onclick="showScreen('screen-urge')" id="urge-btn"></button>
@@ -513,7 +578,136 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
         <span class="settings-item-arrow">›</span>
       </div>
     </div>
-    <div style="text-align:center;padding:20px 0;color:var(--text3);font-size:12px">Clean v1.0 — Everything stays on your device</div>
+    <div style="text-align:center;padding:20px 0;color:var(--text3);font-size:12px">عادة v1.0 — كل شيء محفوظ على جهازك</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SCREEN: CALENDAR
+════════════════════════════════════ -->
+<div class="screen" id="screen-calendar">
+  <div class="app-header">
+    <div class="app-header-title" id="cal-header-title">Streak Calendar</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div class="cal-header">
+      <button class="cal-nav" onclick="calPrevMonth()">‹</button>
+      <div class="cal-month" id="cal-month-label"></div>
+      <button class="cal-nav" onclick="calNextMonth()">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-legend">
+      <div class="cal-legend-item"><div class="cal-dot" style="background:#1a3a1f"></div><span id="cal-legend-clean">Clean day</span></div>
+      <div class="cal-legend-item"><div class="cal-dot" style="background:#3a1515"></div><span id="cal-legend-relapse">Relapse</span></div>
+      <div class="cal-legend-item"><div class="cal-dot" style="border:2px solid var(--gold)"></div><span id="cal-legend-today">Today</span></div>
+    </div>
+    <div class="card" style="margin-top:16px;text-align:center">
+      <div style="font-size:32px;font-weight:700;color:var(--gold)" id="cal-total-clean">0</div>
+      <div style="font-size:13px;color:var(--text3);margin-top:4px" id="cal-total-label">Total clean days</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN: HADITH
+════════════════════════════════════ -->
+<div class="screen" id="screen-hadith">
+  <div class="app-header">
+    <div class="app-header-title" id="hadith-header-title">Daily Hadith</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div style="text-align:center;padding:8px 0 20px">
+      <div style="font-size:36px;margin-bottom:8px">📿</div>
+      <div style="font-size:12px;color:var(--text3)" id="hadith-date-label"></div>
+    </div>
+    <div class="hadith-card">
+      <div class="hadith-arabic" id="hadith-arabic"></div>
+      <div class="hadith-translation" id="hadith-translation"></div>
+      <div class="hadith-ref" id="hadith-ref"></div>
+    </div>
+    <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:8px" id="hadith-changes-label">Changes every day at midnight</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN: WHY I STARTED
+════════════════════════════════════ -->
+<div class="screen" id="screen-why">
+  <div class="app-header">
+    <div class="app-header-title" id="why-header-title">Why I Started</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div style="font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.7" id="why-intro-text">Write your personal reason for breaking this habit. Read it when you feel weak.</div>
+    <div class="why-display" id="why-display"></div>
+    <textarea class="why-input" id="why-input" rows="4" id="why-input" placeholder="My reason..."></textarea>
+    <button class="btn btn-gold" onclick="saveWhy()" id="why-save-btn">Save</button>
+    <div style="margin-top:20px">
+      <div style="font-size:13px;color:var(--text3);margin-bottom:12px;font-weight:600" id="why-stories-label">Others who made it:</div>
+      <div id="why-stories-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN: PRAYER TIMES
+════════════════════════════════════ -->
+<div class="screen" id="screen-prayer">
+  <div class="app-header">
+    <div class="app-header-title" id="prayer-header-title">Prayer Times</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div class="prayer-location" id="prayer-location-text">Detecting your location...</div>
+    <div id="prayer-list"><div class="prayer-loading" id="prayer-loading-text">Loading prayer times...</div></div>
+    <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:16px;line-height:1.6" id="prayer-tip-text"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN: WIDGET SUMMARY
+════════════════════════════════════ -->
+<div class="screen" id="screen-widget">
+  <div class="app-header">
+    <div class="app-header-title" id="widget-header-title">My Summary</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div style="font-size:13px;color:var(--text3);text-align:center;margin-bottom:16px" id="widget-subtitle">Your progress at a glance</div>
+    <div class="widget-preview" id="widget-preview">
+      <div class="widget-top">
+        <div class="widget-app-name">عادة</div>
+        <div class="widget-icon" id="w-icon">🌙</div>
+      </div>
+      <div class="widget-timer" id="w-timer">00:00</div>
+      <div class="widget-label" id="w-label">days : hours clean</div>
+      <div class="widget-bar"><div class="widget-bar-fill" id="w-bar" style="width:0%"></div></div>
+      <div class="widget-ms" id="w-next-ms"></div>
+      <div class="widget-quote" id="w-quote"></div>
+    </div>
+    <div class="stats-row" style="margin-top:4px">
+      <div class="stat-card">
+        <div class="stat-num" id="w-stat-days">0</div>
+        <div class="stat-label" id="w-stat-days-lbl">Days Clean</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="w-stat-best">0</div>
+        <div class="stat-label" id="w-stat-best-lbl">Best Streak</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="w-stat-relapses">0</div>
+        <div class="stat-label" id="w-stat-relapses-lbl">Relapses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="w-stat-total">0</div>
+        <div class="stat-label" id="w-stat-total-lbl">Total Days</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -546,18 +740,18 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 // STATE
 // ═══════════════════════════════════════
 const S = {
-  get lang(){ return localStorage.getItem('cl_lang')||null },
-  set lang(v){ localStorage.setItem('cl_lang',v) },
-  get addiction(){ return localStorage.getItem('cl_addiction')||null },
-  set addiction(v){ localStorage.setItem('cl_addiction',v) },
-  get startTs(){ return parseInt(localStorage.getItem('cl_start')||'0') },
-  set startTs(v){ localStorage.setItem('cl_start',String(v)) },
-  get bestMs(){ return parseInt(localStorage.getItem('cl_best')||'0') },
-  set bestMs(v){ localStorage.setItem('cl_best',String(v)) },
-  get relapseCount(){ return parseInt(localStorage.getItem('cl_relapses')||'0') },
-  set relapseCount(v){ localStorage.setItem('cl_relapses',String(v)) },
-  get onboarded(){ return localStorage.getItem('cl_onboarded')==='1' },
-  set onboarded(v){ localStorage.setItem('cl_onboarded',v?'1':'0') },
+  get lang(){ return localStorage.getItem('aa_lang')||null },
+  set lang(v){ localStorage.setItem('aa_lang',v) },
+  get addiction(){ return localStorage.getItem('aa_addiction')||null },
+  set addiction(v){ localStorage.setItem('aa_addiction',v) },
+  get startTs(){ return parseInt(localStorage.getItem('aa_start')||'0') },
+  set startTs(v){ localStorage.setItem('aa_start',String(v)) },
+  get bestMs(){ return parseInt(localStorage.getItem('aa_best')||'0') },
+  set bestMs(v){ localStorage.setItem('aa_best',String(v)) },
+  get relapseCount(){ return parseInt(localStorage.getItem('aa_relapses')||'0') },
+  set relapseCount(v){ localStorage.setItem('aa_relapses',String(v)) },
+  get onboarded(){ return localStorage.getItem('aa_onboarded')==='1' },
+  set onboarded(v){ localStorage.setItem('aa_onboarded',v?'1':'0') },
 };
 
 let timerInterval = null;
@@ -1026,6 +1220,7 @@ function applyTranslations(){
   });
   if(S.addiction) updateHomeAddictionLabel();
   updateDhikr();
+  updateFeatureButtonLabels();
 }
 
 // ═══════════════════════════════════════
@@ -1383,6 +1578,349 @@ function goToAddiction(){
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// HADITHS
+// ═══════════════════════════════════════
+const HADITHS = [
+  {ar:'إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ', en:'Actions are judged by intentions.', ref:'Bukhari & Muslim'},
+  {ar:'مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ', en:'Charity does not decrease wealth.', ref:'Muslim'},
+  {ar:'مَنْ كَظَمَ غَيْظًا وَهُوَ قَادِرٌ عَلَى إِنْفَاذِهِ دَعَاهُ اللهُ عَلَى رُؤُوسِ الْخَلَائِقِ', en:'Whoever suppresses his anger while able to act on it, Allah will call him before all creation.', ref:'Abu Dawud'},
+  {ar:'الطَّهُورُ شَطْرُ الإِيمَانِ', en:'Cleanliness is half of faith.', ref:'Muslim'},
+  {ar:'لَيْسَ الشَّدِيدُ بِالصُّرَعَةِ إِنَّمَا الشَّدِيدُ الَّذِي يَمْلِكُ نَفْسَهُ عِنْدَ الْغَضَبِ', en:'The strong man is not the one who wrestles, but the one who controls himself in anger.', ref:'Bukhari & Muslim'},
+  {ar:'كُلُّ ابْنِ آدَمَ خَطَّاءٌ وَخَيْرُ الْخَطَّائِينَ التَّوَّابُونَ', en:'Every son of Adam makes mistakes, and the best of those who make mistakes are those who repent.', ref:'Tirmidhi'},
+  {ar:'مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ', en:'Whoever fasts Ramadan with faith and seeking reward, his past sins will be forgiven.', ref:'Bukhari'},
+  {ar:'الدُّنْيَا سِجْنُ الْمُؤْمِنِ وَجَنَّةُ الْكَافِرِ', en:'The world is a prison for the believer and a paradise for the disbeliever.', ref:'Muslim'},
+  {ar:'مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ', en:'Whoever takes a path seeking knowledge, Allah makes easy for him the path to Paradise.', ref:'Muslim'},
+  {ar:'أَحَبُّ الأَعْمَالِ إِلَى اللهِ أَدْوَمُهَا وَإِنْ قَلَّ', en:'The most beloved deeds to Allah are the most consistent, even if small.', ref:'Bukhari & Muslim'},
+  {ar:'إِنَّ اللهَ يُحِبُّ إِذَا عَمِلَ أَحَدُكُمْ عَمَلًا أَنْ يُتْقِنَهُ', en:'Allah loves that when one of you does a deed, he does it with excellence.', ref:'Bayhaqi'},
+  {ar:'اتَّقِ اللهَ حَيْثُمَا كُنْتَ', en:'Fear Allah wherever you are.', ref:'Tirmidhi'},
+  {ar:'وَأَتْبِعِ السَّيِّئَةَ الْحَسَنَةَ تَمْحُهَا', en:'Follow a bad deed with a good one and it will erase it.', ref:'Tirmidhi'},
+  {ar:'وَخَالِقِ النَّاسَ بِخُلُقٍ حَسَنٍ', en:'And treat people with good character.', ref:'Tirmidhi'},
+  {ar:'مَنْ تَرَكَ شَيْئًا للهِ عَوَّضَهُ اللهُ خَيْرًا مِنْهُ', en:'Whoever leaves something for Allah, Allah will replace it with something better.', ref:'Ahmad'},
+  {ar:'إِنَّ اللهَ يَفْرَحُ بِتَوْبَةِ عَبْدِهِ', en:'Indeed Allah rejoices at the repentance of His servant.', ref:'Bukhari & Muslim'},
+  {ar:'الصَّبْرُ عِنْدَ الصَّدْمَةِ الأُولَى', en:'True patience is at the first stroke of calamity.', ref:'Bukhari'},
+  {ar:'مَنْ يَتَصَبَّرْ يُصَبِّرْهُ اللهُ', en:'Whoever tries to be patient, Allah will make him patient.', ref:'Bukhari'},
+  {ar:'وَمَا أُعْطِيَ أَحَدٌ عَطَاءً خَيْرًا وَأَوْسَعَ مِنَ الصَّبْرِ', en:'No one has been given a gift better and more comprehensive than patience.', ref:'Bukhari'},
+  {ar:'الْمُؤْمِنُ الْقَوِيُّ خَيْرٌ وَأَحَبُّ إِلَى اللهِ مِنَ الْمُؤْمِنِ الضَّعِيفِ', en:'The strong believer is better and more beloved to Allah than the weak believer.', ref:'Muslim'},
+  {ar:'وَفِي كُلٍّ خَيْرٌ', en:'And in each there is good.', ref:'Muslim'},
+  {ar:'احْرِصْ عَلَى مَا يَنْفَعُكَ وَاسْتَعِنْ بِاللهِ وَلَا تَعْجَزْ', en:'Be eager for what benefits you, seek help from Allah, and do not be helpless.', ref:'Muslim'},
+  {ar:'إِذَا أَحَبَّ اللهُ عَبْدًا ابْتَلَاهُ', en:'When Allah loves a servant, He tests him.', ref:'Tirmidhi'},
+  {ar:'مَا يُصِيبُ الْمُسْلِمَ مِنْ نَصَبٍ وَلَا وَصَبٍ وَلَا هَمٍّ وَلَا حَزَنٍ إِلَّا كَفَّرَ اللهُ بِهِ', en:'No hardship, illness, worry, or sorrow befalls a Muslim except that Allah expiates sins through it.', ref:'Bukhari'},
+  {ar:'تَعَرَّفْ إِلَى اللهِ فِي الرَّخَاءِ يَعْرِفْكَ فِي الشِّدَّةِ', en:'Know Allah in times of ease and He will know you in times of hardship.', ref:'Ahmad'},
+  {ar:'وَاعْلَمْ أَنَّ النَّصْرَ مَعَ الصَّبْرِ', en:'Know that victory comes with patience.', ref:'Tirmidhi'},
+  {ar:'وَأَنَّ الْفَرَجَ مَعَ الْكَرْبِ', en:'And relief comes with distress.', ref:'Tirmidhi'},
+  {ar:'وَأَنَّ مَعَ الْعُسْرِ يُسْرًا', en:'And with hardship comes ease.', ref:'Tirmidhi'},
+  {ar:'مَنِ اسْتَعَاذَ بِاللهِ فَأَعِيذُوهُ', en:'Whoever seeks refuge in Allah, grant him refuge.', ref:'Abu Dawud'},
+  {ar:'لَا تَحْقِرَنَّ مِنَ الْمَعْرُوفِ شَيْئًا', en:'Do not belittle any act of kindness.', ref:'Muslim'},
+];
+
+const SUCCESS_STORIES = {
+  smoking:[
+    {days:30, name:'Ahmad, 28', text:'The first week was the hardest. I replaced every cigarette urge with 2 minutes of breathing and dhikr. By day 30, I forgot I ever smoked.'},
+    {days:90, name:'Sara, 34', text:'I quit for my children. Every time I wanted to give up, I looked at their faces. 90 days later, I can breathe properly for the first time in years.'},
+    {days:365, name:'Khalid, 45', text:'One year clean. I used to smoke 2 packs a day. I replaced it with morning walks and Quran. It changed my whole life, not just the smoking.'},
+  ],
+  masturbation:[
+    {days:40, name:'Anonymous', text:'The first 40 days felt impossible. Wudu became my weapon — every time the urge hit, I made wudu immediately. It works.'},
+    {days:90, name:'Anonymous', text:'I tried and failed many times. The key was keeping busy and never being alone with my phone. Accountability to Allah changed everything.'},
+    {days:180, name:'Anonymous', text:'6 months. I feel more confident, more focused, and closer to Allah than I ever have. The struggle was worth every difficult moment.'},
+  ],
+  social_media:[
+    {days:14, name:'Nour, 22', text:'Two weeks without Instagram. I was anxious the first 3 days. Then something shifted — I started reading again, calling friends, sleeping better.'},
+    {days:30, name:'Omar, 31', text:'30 days off social media. I finished a book, started exercising, and had real conversations. I had forgotten what real life felt like.'},
+    {days:90, name:'Fatima, 26', text:'3 months. My anxiety dropped dramatically. I pray on time now. I realized social media was stealing my khushu in salah.'},
+  ],
+  alcohol:[
+    {days:30, name:'Anonymous', text:'30 days sober. I kept saying bismillah every time the urge came. The community at the masjid helped me more than anything.'},
+    {days:90, name:'Anonymous', text:'I drank to cope with stress. I replaced it with exercise and tahajjud. 90 days later, the stress is still there — but I am stronger.'},
+    {days:365, name:'Anonymous', text:'One full year. I lost everything to alcohol. I got it all back through tawbah, patience, and genuine change. Never give up.'},
+  ],
+  gambling:[
+    {days:30, name:'Yusuf, 38', text:'I lost everything gambling. Starting over at zero felt impossible. But 30 days in, I feel hope for the first time in years.'},
+    {days:90, name:'Anonymous', text:'The urge to gamble felt like madness. I replaced it by calculating what I would have lost. The math cured me faster than anything.'},
+  ],
+  food:[
+    {days:21, name:'Maryam, 29', text:'21 days of mindful eating. I stopped eating in front of screens, said bismillah before every meal, and chewed slowly. 6kg gone.'},
+    {days:40, name:'Hassan, 42', text:'The sunnah of eating less than full changed my life. 40 days in and I feel lighter in body and spirit.'},
+  ],
+  anger:[
+    {days:30, name:'Ibrahim, 35', text:'30 days of practicing patience. I memorized the dua against anger. The first 10 times felt fake. By day 30, it felt natural.'},
+    {days:60, name:'Aisha, 33', text:'I damaged relationships with my anger. 60 days of intentional calm — my family noticed before I did.'},
+  ],
+  procrastination:[
+    {days:14, name:'Zaid, 24', text:'2 weeks of starting before I felt ready. The 2-minute rule changed everything. Nothing is as hard as beginning.'},
+    {days:30, name:'Layla, 27', text:'I started with one task a day. 30 days later I am more productive than I have ever been, and I actually rest guilt-free.'},
+  ],
+};
+
+function getTodayHadith(){
+  const d=getDayIndex();
+  let seed=d*1234567;
+  seed=((seed>>>16)^seed)*0x45d9f3b;
+  seed=(seed>>>16)^seed;
+  return HADITHS[Math.abs(seed)%HADITHS.length];
+}
+
+function openHadith(){
+  const h=getTodayHadith();
+  document.getElementById('hadith-arabic').textContent=h.ar;
+  document.getElementById('hadith-translation').textContent='"'+h.en+'"';
+  document.getElementById('hadith-ref').textContent='— '+h.ref;
+  const lang=S.lang||'en';
+  const d=new Date();
+  document.getElementById('hadith-date-label').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('hadith-changes-label').textContent=lang==='ar'?'يتغير كل يوم عند منتصف الليل':'Changes every day at midnight';
+  document.getElementById('hadith-header-title').textContent=lang==='ar'?'حديث اليوم':'Daily Hadith';
+  showScreen('screen-hadith');
+}
+
+// ═══════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════
+let calYear=new Date().getFullYear();
+let calMonth=new Date().getMonth();
+
+function openCalendar(){
+  calYear=new Date().getFullYear();
+  calMonth=new Date().getMonth();
+  renderCalendar();
+  const lang=S.lang||'en';
+  document.getElementById('cal-header-title').textContent=lang==='ar'?'تقويم الأيام النظيفة':'Streak Calendar';
+  document.getElementById('cal-legend-clean').textContent=lang==='ar'?'يوم نظيف':'Clean day';
+  document.getElementById('cal-legend-relapse').textContent=lang==='ar'?'انتكاسة':'Relapse';
+  document.getElementById('cal-legend-today').textContent=lang==='ar'?'اليوم':'Today';
+  document.getElementById('cal-total-label').textContent=lang==='ar'?'إجمالي الأيام النظيفة':'Total clean days';
+  showScreen('screen-calendar');
+}
+
+function renderCalendar(){
+  const grid=document.getElementById('cal-grid');
+  grid.innerHTML='';
+  const lang=S.lang||'en';
+  const dayLabels=lang==='ar'?['أح','إث','ثل','أر','خم','جم','سب']:['S','M','T','W','T','F','S'];
+  dayLabels.forEach(function(d){
+    const el=document.createElement('div');
+    el.className='cal-day-label';
+    el.textContent=d;
+    grid.appendChild(el);
+  });
+  const months=lang==='ar'?['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']:['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent=months[calMonth]+' '+calYear;
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date();
+  const startTs=S.startTs;
+  // empty cells
+  for(let i=0;i<firstDay;i++){const el=document.createElement('div');el.className='cal-day empty';grid.appendChild(el);}
+  let cleanCount=0;
+  for(let d=1;d<=daysInMonth;d++){
+    const el=document.createElement('div');
+    el.className='cal-day';
+    el.textContent=d;
+    const thisDate=new Date(calYear,calMonth,d);
+    const isToday=today.getDate()===d&&today.getMonth()===calMonth&&today.getFullYear()===calYear;
+    const isPast=thisDate<=today;
+    if(isPast && startTs){
+      const dayStart=new Date(calYear,calMonth,d,0,0,0).getTime();
+      const dayEnd=new Date(calYear,calMonth,d,23,59,59).getTime();
+      if(startTs<=dayEnd){
+        el.classList.add('clean');
+        cleanCount++;
+      }
+    }
+    if(isToday) el.classList.add('today');
+    grid.appendChild(el);
+  }
+  document.getElementById('cal-total-clean').textContent=cleanCount;
+}
+
+function calPrevMonth(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calNextMonth(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
+
+// ═══════════════════════════════════════
+// WHY I STARTED + SUCCESS STORIES
+// ═══════════════════════════════════════
+function openWhy(){
+  const lang=S.lang||'en';
+  const saved=localStorage.getItem('aa_why')||'';
+  const display=document.getElementById('why-display');
+  const input=document.getElementById('why-input');
+  if(saved){
+    display.textContent=saved;
+    display.className='why-display';
+  } else {
+    display.textContent=lang==='ar'?'لم تكتب سببك بعد...':'You have not written your reason yet...';
+    display.className='why-display why-empty';
+  }
+  input.value=saved;
+  input.placeholder=lang==='ar'?'سببي هو...':'My reason is...';
+  document.getElementById('why-header-title').textContent=lang==='ar'?'لماذا بدأت':'Why I Started';
+  document.getElementById('why-intro-text').textContent=lang==='ar'?'اكتب سببك الشخصي للتخلص من هذه العادة. اقرأه عندما تشعر بالضعف.':'Write your personal reason for breaking this habit. Read it when you feel weak.';
+  document.getElementById('why-save-btn').textContent=lang==='ar'?'حفظ':'Save';
+  document.getElementById('why-stories-label').textContent=lang==='ar'?'آخرون نجحوا:':'Others who made it:';
+  buildStories();
+  showScreen('screen-why');
+}
+
+function saveWhy(){
+  const val=document.getElementById('why-input').value.trim();
+  if(!val) return;
+  localStorage.setItem('aa_why',val);
+  const display=document.getElementById('why-display');
+  display.textContent=val;
+  display.className='why-display';
+  const lang=S.lang||'en';
+  const btn=document.getElementById('why-save-btn');
+  btn.textContent=lang==='ar'?'تم الحفظ ✓':'Saved ✓';
+  setTimeout(function(){btn.textContent=lang==='ar'?'حفظ':'Save';},2000);
+}
+
+function buildStories(){
+  const add=S.addiction||'smoking';
+  const stories=(SUCCESS_STORIES[add]||SUCCESS_STORIES.smoking);
+  const list=document.getElementById('why-stories-list');
+  list.innerHTML='';
+  stories.forEach(function(s){
+    const card=document.createElement('div');
+    card.className='story-card';
+    card.innerHTML='<div class="story-days">'+s.days+'<span style="font-size:16px;color:var(--text3)"> days</span></div><div class="story-name">'+s.name+'</div><div class="story-text">'+s.text+'</div>';
+    list.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════
+// PRAYER TIMES
+// ═══════════════════════════════════════
+let prayerData=null;
+
+function loadPrayerTimes(){
+  const lang=S.lang||'en';
+  document.getElementById('prayer-location-text').textContent=lang==='ar'?'جارٍ تحديد موقعك...':'Detecting your location...';
+  document.getElementById('prayer-loading-text').textContent=lang==='ar'?'جارٍ تحميل أوقات الصلاة...':'Loading prayer times...';
+  document.getElementById('prayer-header-title').textContent=lang==='ar'?'أوقات الصلاة':'Prayer Times';
+  document.getElementById('prayer-tip-text').textContent=lang==='ar'?'الصلاة تطرد وساوس الشيطان وتقوي الإرادة. كل صلاة فرصة جديدة.':'Prayer drives away the whispers of Shaytan and strengthens willpower. Every prayer is a fresh start.';
+  if(prayerData){renderPrayerTimes(prayerData);return;}
+  if(!navigator.geolocation){showPrayerError();return;}
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      const lat=pos.coords.latitude.toFixed(4);
+      const lng=pos.coords.longitude.toFixed(4);
+      const today=new Date();
+      const url='https://api.aladhan.com/v1/timings/'+Math.floor(today.getTime()/1000)+'?latitude='+lat+'&longitude='+lng+'&method=2';
+      fetch(url)
+        .then(function(r){return r.json();})
+        .then(function(d){
+          if(d.code===200&&d.data){
+            prayerData=d.data;
+            renderPrayerTimes(d.data);
+          } else showPrayerError();
+        })
+        .catch(showPrayerError);
+    },
+    showPrayerError,
+    {timeout:8000}
+  );
+}
+
+function renderPrayerTimes(data){
+  const lang=S.lang||'en';
+  const t=data.timings;
+  const meta=data.meta;
+  const prayers=[
+    {key:'Fajr', ar:'الفجر', en:'Fajr', time:t.Fajr},
+    {key:'Sunrise', ar:'الشروق', en:'Sunrise', time:t.Sunrise},
+    {key:'Dhuhr', ar:'الظهر', en:'Dhuhr', time:t.Dhuhr},
+    {key:'Asr', ar:'العصر', en:'Asr', time:t.Asr},
+    {key:'Maghrib', ar:'المغرب', en:'Maghrib', time:t.Maghrib},
+    {key:'Isha', ar:'العشاء', en:'Isha', time:t.Isha},
+  ];
+  const now=new Date();
+  const nowMins=now.getHours()*60+now.getMinutes();
+  let nextIdx=0;
+  let minDiff=Infinity;
+  prayers.forEach(function(p,i){
+    if(p.key==='Sunrise') return;
+    const parts=p.time.split(':');
+    const pMins=parseInt(parts[0])*60+parseInt(parts[1]);
+    const diff=pMins-nowMins;
+    if(diff>0&&diff<minDiff){minDiff=diff;nextIdx=i;}
+  });
+  const list=document.getElementById('prayer-list');
+  list.innerHTML='';
+  prayers.forEach(function(p,i){
+    const isNext=i===nextIdx;
+    const card=document.createElement('div');
+    card.className='prayer-card'+(isNext?' next':'');
+    card.innerHTML='<div><div class="prayer-name">'+(lang==='ar'?p.ar:p.en)+'</div>'+(isNext?'<div class="prayer-next-badge">'+(lang==='ar'?'التالية':'Next')+'</div>':'')+'</div><div class="prayer-time">'+p.time+'</div>';
+    list.appendChild(card);
+  });
+  const city=meta.timezone||'';
+  document.getElementById('prayer-location-text').textContent=lang==='ar'?('📍 '+city):('📍 '+city);
+}
+
+function showPrayerError(){
+  const lang=S.lang||'en';
+  document.getElementById('prayer-list').innerHTML='<div class="prayer-loading">'+(lang==='ar'?'تعذّر تحديد الموقع. يرجى السماح بالوصول إلى الموقع.':'Could not detect location. Please allow location access.')+'</div>';
+  document.getElementById('prayer-location-text').textContent='';
+}
+
+// ═══════════════════════════════════════
+// WIDGET SUMMARY
+// ═══════════════════════════════════════
+function openWidget(){
+  const lang=S.lang||'en';
+  document.getElementById('widget-header-title').textContent=lang==='ar'?'ملخصي':'My Summary';
+  document.getElementById('widget-subtitle').textContent=lang==='ar'?'تقدمك في لمحة':'Your progress at a glance';
+  const elapsed=S.startTs?Date.now()-S.startTs:0;
+  const days=Math.floor(elapsed/86400000);
+  const hours=Math.floor((elapsed%86400000)/3600000);
+  document.getElementById('w-timer').textContent=String(days).padStart(2,'0')+':'+String(hours).padStart(2,'0');
+  document.getElementById('w-label').textContent=lang==='ar'?'أيام : ساعات نظيفة':'days : hours clean';
+  const add=S.addiction||'smoking';
+  const tr=T[lang];
+  document.getElementById('w-icon').textContent={'smoking':'🚬','masturbation':'🛡️','social_media':'📱','alcohol':'🍶','gambling':'🎲','food':'🍔','anger':'😤','procrastination':'⏰'}[add]||'🌙';
+  // next milestone
+  const keys=['1h','3h','12h','1d','3d','1w','2w','1m','3m','6m','1y'];
+  let nextMs=null;
+  for(let i=0;i<keys.length;i++){if(elapsed<MILESTONE_MS[keys[i]]){nextMs={key:keys[i],ms:MILESTONE_MS[keys[i]]};break;}}
+  if(nextMs){
+    const pct=Math.min(100,Math.floor((elapsed/nextMs.ms)*100));
+    document.getElementById('w-bar').style.width=pct+'%';
+    const msList=tr.milestones;
+    const m=msList.find(function(x){return x.key===nextMs.key;});
+    document.getElementById('w-next-ms').textContent=(lang==='ar'?'الإنجاز التالي: ':'Next: ')+(m?m.name:'');
+  } else {
+    document.getElementById('w-bar').style.width='100%';
+    document.getElementById('w-next-ms').textContent=lang==='ar'?'أكملت كل الإنجازات 🏆':'All milestones achieved 🏆';
+  }
+  const h=getTodayHadith();
+  document.getElementById('w-quote').textContent='"'+h.en+'"';
+  document.getElementById('w-stat-days').textContent=days;
+  document.getElementById('w-stat-best').textContent=Math.floor(S.bestMs/86400000);
+  document.getElementById('w-stat-relapses').textContent=S.relapseCount;
+  const totalDays=S.startTs?Math.floor((Date.now()-S.startTs)/86400000):0;
+  document.getElementById('w-stat-total').textContent=totalDays;
+  document.getElementById('w-stat-days-lbl').textContent=lang==='ar'?'أيام نظيفة':'Days Clean';
+  document.getElementById('w-stat-best-lbl').textContent=lang==='ar'?'أفضل سجل':'Best Streak';
+  document.getElementById('w-stat-relapses-lbl').textContent=lang==='ar'?'الانتكاسات':'Relapses';
+  document.getElementById('w-stat-total-lbl').textContent=lang==='ar'?'إجمالي الأيام':'Total Days';
+  showScreen('screen-widget');
+}
+
+// ═══════════════════════════════════════
+// UPDATE HOME FEATURE BUTTONS LABELS
+// ═══════════════════════════════════════
+function updateFeatureButtonLabels(){
+  const lang=S.lang||'en';
+  const el=function(id,txt){const e=document.getElementById(id);if(e)e.textContent=txt;};
+  el('home-btn-cal', lang==='ar'?'التقويم':'Calendar');
+  el('home-btn-hadith', lang==='ar'?'حديث اليوم':'Hadith');
+  el('home-btn-prayer', lang==='ar'?'الصلاة':'Prayer');
+  el('home-btn-widget', lang==='ar'?'ملخصي':'Summary');
+  el('home-btn-why', lang==='ar'?'لماذا بدأت':'Why I Started');
+}
+
+
 function init(){
   applyTranslations();
   if(!S.lang){
