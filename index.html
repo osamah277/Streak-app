@@ -298,8 +298,6 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 </head>
 <body>
 
-</div>
-
 <!-- ══════════════════════════════════
      SCREEN 1: LANGUAGE
 ════════════════════════════════════ -->
@@ -453,7 +451,7 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
       <button class="btn btn-outline btn-sm" onclick="openCalendar()" id="btn-calendar" style="font-size:13px">📅 <span id="home-btn-cal">Calendar</span></button>
       <button class="btn btn-outline btn-sm" onclick="openHadith()" id="btn-hadith" style="font-size:13px">📿 <span id="home-btn-hadith">Hadith</span></button>
-      <!--<button class="btn btn-outline btn-sm" onclick="openPrayerTracker()" id="btn-prayer" style="font-size:13px">🕌 <span id="home-btn-prayer">Prayer</span></button>-->
+      <button class="btn btn-outline btn-sm" onclick="openPrayerTracker()" id="btn-prayer" style="font-size:13px">🕌 <span id="home-btn-prayer">Prayer</span></button>
       <button class="btn btn-outline btn-sm" onclick="openWidget()" id="btn-widget" style="font-size:13px">📊 <span id="home-btn-widget">Summary</span></button>
     </div>
     <button class="btn btn-outline btn-sm" onclick="openWhy()" id="btn-why" style="font-size:13px;margin-bottom:12px">💬 <span id="home-btn-why">Why I Started</span></button>
@@ -858,6 +856,37 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 
 <script src="verses.js"></script>
 <script>
+
+//========================================
+// OPen prayer
+//========================================
+function openPrayerTracker() {
+  // Hide home
+  document.getElementById("screen-home").classList.remove("active");
+
+  // Show prayer tracker (make sure this screen exists)
+  const screen = document.getElementById("screen-prayer-tracker");
+
+  if (screen) {
+    screen.classList.add("active");
+  } else {
+    console.error("screen-prayer-tracker not found");
+  }
+}
+
+// =======================================
+// Select lang
+//========================================
+function selectLang(lang) {
+  console.log("Selected language:", lang);
+
+  // Example: save language
+  localStorage.setItem("lang", lang);
+
+  // Move to next screen
+  document.getElementById("screen-lang").classList.remove("active");
+  document.getElementById("screen-privacy").classList.add("active");
+}
 
 // ═══════════════════════════════════════
 // STATE
