@@ -40,8 +40,8 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 
 
 .status-icons svg{fill:var(--text)}
-.app-header{background:var(--bg);padding:12px 20px 14px;border-bottom:0.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
-.app-header-title{color:var(--text);font-size:18px;font-weight:600}
+.app-header{background:var(--bg);padding:12px 20px 14px;border-bottom:0.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;position:relative}
+.app-header-title{color:var(--text);font-size:18px;font-weight:600;position:absolute;left:50%;transform:translateX(-50%);text-align:center;width:60%}
 .home-bar{display:none}
 
 
@@ -596,7 +596,7 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
         <span class="settings-item-arrow">›</span>
       </div>
     </div>
-    <div style="text-align:center;padding:20px 0;color:var(--text3);font-size:12px">عادة v2.2 — كل شيء محفوظ على جهازك</div>
+    <div style="text-align:center;padding:20px 0;color:var(--text3);font-size:12px">عادة v1.0 — كل شيء محفوظ على جهازك</div>
   </div>
 </div>
 
@@ -646,7 +646,17 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
       <div class="hadith-translation" id="hadith-translation"></div>
       <div class="hadith-ref" id="hadith-ref"></div>
     </div>
-    <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:8px" id="hadith-changes-label">Changes every day at midnight</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <button class="btn btn-gold btn-sm" style="flex:1" onclick="shareHadith()" id="hadith-share-btn"><span id="hadith-share-btn-text">📤 Share Hadith</span></button>
+    </div>
+    <div style="font-size:12px;color:var(--text3);text-align:center;margin-bottom:20px" id="hadith-changes-label">Changes every day at midnight</div>
+    <div style="font-size:11px;color:var(--text3);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px" id="hadith-quran-label">Today's Quran Verse</div>
+    <div class="card card-gold" style="margin-bottom:10px">
+      <div style="font-size:18px;color:var(--text);direction:rtl;font-family:serif;line-height:1.9;margin-bottom:10px;text-align:right" id="hadith-q-arabic"></div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;margin-bottom:6px" id="hadith-q-translation"></div>
+      <div style="font-size:11px;color:var(--gold)" id="hadith-q-ref"></div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="shareQuranFromHadith()" style="margin-bottom:8px" id="hadith-q-share-btn"><span id="hadith-q-share-text">📤 Share Verse</span></button>
   </div>
 </div>
 
@@ -726,9 +736,10 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 <div class="screen" id="screen-location">
   <div class="app-header">
     <div class="app-header-title" id="loc-header-title">Choose City</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-prayer')">✕</button>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="openPrayerTracker()">✕</button>
   </div>
   <div style="padding:16px;flex:1;overflow-y:auto">
+    <button onclick="useGPSLocation()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#0d1a2e;border:1px solid var(--blue);border-radius:var(--r2);padding:13px;color:var(--blue);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:14px" id="gps-btn">📡 <span id="gps-btn-text">Use my GPS location</span></button>
     <div class="location-current" id="loc-current-text">Search for your city to get accurate prayer times.</div>
     <input class="location-search" id="loc-search-input" placeholder="Search city..." oninput="searchCity(this.value)" />
     <div id="loc-results-list"></div>
@@ -1729,15 +1740,55 @@ function getTodayHadith(){
 
 function openHadith(){
   const h=getTodayHadith();
+  const v=getTodayVerse();
+  const lang=S.lang||'en';
   document.getElementById('hadith-arabic').textContent=h.ar;
   document.getElementById('hadith-translation').textContent='"'+h.en+'"';
   document.getElementById('hadith-ref').textContent='— '+h.ref;
-  const lang=S.lang||'en';
   const d=new Date();
   document.getElementById('hadith-date-label').textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
   document.getElementById('hadith-changes-label').textContent=lang==='ar'?'يتغير كل يوم عند منتصف الليل':'Changes every day at midnight';
   document.getElementById('hadith-header-title').textContent=lang==='ar'?'حديث اليوم':'Daily Hadith';
+  document.getElementById('hadith-quran-label').textContent=lang==='ar'?'آية القرآن اليوم':'Today\'s Quran Verse';
+  document.getElementById('hadith-share-btn-text').textContent=lang==='ar'?'📤 شارك الحديث':'📤 Share Hadith';
+  document.getElementById('hadith-q-share-text').textContent=lang==='ar'?'📤 شارك الآية':'📤 Share Verse';
+  // Populate Quran verse
+  document.getElementById('hadith-q-arabic').textContent=v.arabic;
+  document.getElementById('hadith-q-translation').textContent='"'+v.translation+'"';
+  document.getElementById('hadith-q-ref').textContent='— '+v.ref;
   showScreen('screen-hadith');
+}
+
+function shareHadith(){
+  const h=getTodayHadith();
+  const lang=S.lang||'en';
+  const text=h.ar+'\n\n"'+h.en+'"\n— '+h.ref+'\n\n#عادة #hadith';
+  if(navigator.share){
+    navigator.share({title:'Hadith of the Day',text:text}).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(text).then(function(){
+      const btn=document.getElementById('hadith-share-btn');
+      const orig=btn.textContent;
+      btn.textContent=lang==='ar'?'تم النسخ ✓':'Copied ✓';
+      setTimeout(function(){btn.textContent=orig;},2000);
+    });
+  }
+}
+
+function shareQuranFromHadith(){
+  const v=getTodayVerse();
+  const lang=S.lang||'en';
+  const text=v.arabic+'\n\n"'+v.translation+'"\n— '+v.ref+'\n\n#عادة #quran';
+  if(navigator.share){
+    navigator.share({title:'Quran Verse of the Day',text:text}).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(text).then(function(){
+      const btn=document.getElementById('hadith-q-share-btn');
+      const orig=btn.textContent;
+      btn.textContent=lang==='ar'?'تم النسخ ✓':'Copied ✓';
+      setTimeout(function(){btn.textContent=orig;},2000);
+    });
+  }
 }
 
 // ═══════════════════════════════════════
@@ -2021,11 +2072,56 @@ function buildPopularCities(){
   });
 }
 
+
+function useGPSLocation(){
+  const lang=S.lang||'en';
+  const btn=document.getElementById('gps-btn');
+  btn.textContent=lang==='ar'?'⏳ جارٍ تحديد الموقع...':'⏳ Detecting location...';
+  btn.disabled=true;
+  if(!navigator.geolocation){
+    btn.textContent=lang==='ar'?'❌ GPS غير متاح':'❌ GPS not available';
+    btn.disabled=false;
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      const lat=pos.coords.latitude;
+      const lng=pos.coords.longitude;
+      // Find closest city from our list
+      let closest=POPULAR_CITIES[0];
+      let minDist=Infinity;
+      POPULAR_CITIES.forEach(function(c){
+        const dist=Math.sqrt(Math.pow(c.lat-lat,2)+Math.pow(c.lng-lng,2));
+        if(dist<minDist){minDist=dist;closest=c;}
+      });
+      // Create a custom city entry with GPS coords but closest city's timezone
+      const gpsCity={
+        name:closest.name+' (GPS)',
+        ar:closest.ar+' (GPS)',
+        country:closest.country,
+        lat:lat,
+        lng:lng,
+        tz:closest.tz
+      };
+      btn.disabled=false;
+      localStorage.removeItem('aa_ptimes_'+getPrayerTodayKey());
+      selectCity(gpsCity);
+    },
+    function(err){
+      btn.textContent=lang==='ar'?'📡 استخدام موقعي':'📡 Use my GPS location';
+      btn.disabled=false;
+      const msg=lang==='ar'?'تعذّر الوصول إلى الموقع. اختر مدينة يدوياً.':'Could not access GPS. Please pick a city manually.';
+      document.getElementById('loc-current-text').textContent=msg;
+    },
+    {timeout:10000,enableHighAccuracy:true}
+  );
+}
 function openLocationPicker(){
   const lang = S.lang || 'en';
   document.getElementById('loc-header-title').textContent = lang==='ar'?'اختر مدينتك':'Choose Your City';
   document.getElementById('loc-search-input').placeholder = lang==='ar'?'ابحث عن مدينة...':'Search city...';
   document.getElementById('loc-popular-label').textContent = lang==='ar'?'مدن شائعة:':'Popular cities:';
+  const gpsBtn=document.getElementById('gps-btn-text');if(gpsBtn)gpsBtn.textContent=lang==='ar'?'استخدام موقعي':'Use my GPS location';
   const saved = getSavedCity();
   document.getElementById('loc-current-text').textContent = saved
     ? (lang==='ar'?'المدينة الحالية: ':' Current city: ') + (lang==='ar'?saved.ar:saved.name)
