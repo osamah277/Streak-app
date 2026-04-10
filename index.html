@@ -297,6 +297,18 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 </style>
 </head>
 <body>
+<script>
+window._pendingLang=null;
+function selectLang(l){ window._pendingLang=l; }
+document.addEventListener('DOMContentLoaded',function(){
+  if(window._pendingLang){
+    var l=window._pendingLang; window._pendingLang=null;
+    setTimeout(function(){ if(typeof selectLang==='function') selectLang(l); },0);
+  }
+});
+</script>
+
+</div>
 
 <!-- ══════════════════════════════════
      SCREEN 1: LANGUAGE
@@ -854,39 +866,8 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 
 
 
-<script src="verses.js"></script>
-<script>
-
-//========================================
-// OPen prayer
-//========================================
-function openPrayerTracker() {
-  // Hide home
-  document.getElementById("screen-home").classList.remove("active");
-
-  // Show prayer tracker (make sure this screen exists)
-  const screen = document.getElementById("screen-prayer-tracker");
-
-  if (screen) {
-    screen.classList.add("active");
-  } else {
-    console.error("screen-prayer-tracker not found");
-  }
-}
-
-// =======================================
-// Select lang
-//========================================
-function selectLang(lang) {
-  console.log("Selected language:", lang);
-
-  // Example: save language
-  localStorage.setItem("lang", lang);
-
-  // Move to next screen
-  document.getElementById("screen-lang").classList.remove("active");
-  document.getElementById("screen-privacy").classList.add("active");
-}
+<script src="verses.js" defer></script>
+<script defer>
 
 // ═══════════════════════════════════════
 // STATE
@@ -2322,13 +2303,9 @@ function openPrayerTracker(){
   document.getElementById('ptracker-header-title').textContent = lang==='ar'?'متتبع الصلاة':'Prayer Tracker';
   document.getElementById('ptracker-notif-label').textContent = lang==='ar'?'الإشعارات':'Notifications';
   document.getElementById('ptracker-notif-prayer-label').textContent = lang==='ar'?'تنبيهات وقت الصلاة':'Prayer time alerts';
-  document.getElementById('ptracker-notif-prayer-sub').textContent = lang==='ar'?'إشعار عند كل وقت صلاة':'Notify when each prayer time starts';
   document.getElementById('ptracker-notif-missed-label').textContent = lang==='ar'?'تذكير الصلاة الفائتة':'Missed prayer reminder';
-  document.getElementById('ptracker-notif-missed-sub').textContent = lang==='ar'?'تنبيه قبل 30 دقيقة من الصلاة التالية إذا فاتت السابقة':'Alert 30 min before next prayer if previous was missed';
   document.getElementById('ptracker-notif-urge-label').textContent = lang==='ar'?'تذكيرات الإغراء':'Urge reminders';
-  document.getElementById('ptracker-notif-urge-sub').textContent = lang==='ar'?'دفعة تحفيزية عندما قد تتعثر':'Motivational push when you might struggle';
   document.getElementById('ptracker-notif-streak-label').textContent = lang==='ar'?'تذكير السجل اليومي':'Daily streak reminder';
-  document.getElementById('ptracker-notif-streak-sub').textContent = lang==='ar'?'تذكير يومي لتسجيل تقدمك':'Daily reminder to log your progress';
   document.getElementById('change-city-btn').textContent = lang==='ar'?'📍 تغيير المدينة':'📍 Change City';
 
   updateNotifToggles();
