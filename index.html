@@ -622,7 +622,7 @@ document.addEventListener('DOMContentLoaded',function(){
           <span class="settings-item-icon">🌙</span>
           <div>
             <div class="settings-item-text">عادة</div>
-            <div class="settings-item-sub">Version 2.2</div>
+            <div class="settings-item-sub">Version 2.3</div>
           </div>
         </div>
       </div>
@@ -2188,281 +2188,299 @@ function getSavedCity(){
 }
 
 // ═══════════════════════════════════════
-// PRAYER TIMES (location-based, no GPS)
+// PRAYER TIMES — LOCAL CALCULATION
 // ═══════════════════════════════════════
 const PRAYER_NAMES_EN = ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'];
 const PRAYER_NAMES_AR = ['الفجر','الشروق','الظهر','العصر','المغرب','العشاء'];
 const PRAYER_KEYS = ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'];
-const TRACKABLE = ['Fajr','Dhuhr','Asr','Maghrib','Isha']; // Sunrise not tracked
-
+const TRACKABLE = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
 let cachedPrayerTimes = null;
+let prayerTickInterval = null;
 
 function getPrayerTodayKey(){
-  const d = new Date();
+  const d=new Date();
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 
 function getPrayerChecks(){
-  const key = 'aa_prayer_'+getPrayerTodayKey();
-  try { return JSON.parse(localStorage.getItem(key)||'{}'); } catch(e){ return {}; }
+  try{ return JSON.parse(localStorage.getItem('aa_prayer_'+getPrayerTodayKey())||'{}'); }catch(e){ return {}; }
 }
 
 function setPrayerCheck(prayer, status){
-  const key = 'aa_prayer_'+getPrayerTodayKey();
-  const checks = getPrayerChecks();
-  checks[prayer] = status; // 'done' or 'missed'
+  const key='aa_prayer_'+getPrayerTodayKey();
+  const checks=getPrayerChecks();
+  if(status==='') delete checks[prayer]; else checks[prayer]=status;
   localStorage.setItem(key, JSON.stringify(checks));
 }
 
-// ── LOCAL PRAYER TIME CALCULATION (no API, no CORS issues) ──
-// Based on the Muslim World League method (method 2)
 function calcPrayerTimes(city){
-  const cached = localStorage.getItem('aa_ptimes_'+getPrayerTodayKey());
-  if(cached){
-    try{ cachedPrayerTimes = JSON.parse(cached); return cachedPrayerTimes; }catch(e){}
-  }
-  const lat = city.lat;
-  const lng = city.lng;
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth()+1;
-  const day = now.getDate();
+  // Use cached if same day
+  const cacheKey = 'aa_ptimes_'+getPrayerTodayKey()+'_'+city.lat.toFixed(2)+'_'+city.lng.toFixed(2);
+  const cached = localStorage.getItem(cacheKey);
+  if(cached){ try{ cachedPrayerTimes=JSON.parse(cached); return cachedPrayerTimes; }catch(e){} }
 
-  // Julian day
-  function julianDay(y,m,d){
+  const lat=city.lat, lng=city.lng;
+  const now=new Date();
+  const Y=now.getFullYear(), M=now.getMonth()+1, D=now.getDate();
+
+  // Julian Day Number
+  function JD(y,m,d){
     if(m<=2){y--;m+=12;}
-    const A=Math.floor(y/100);
-    const B=2-A+Math.floor(A/4);
-    return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5;
+    return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+2-Math.floor(y/100)+Math.floor(Math.floor(y/100)/4)-1524.5;
+  }
+  const jd=JD(Y,M,D);
+  const n=jd-2451545.0;
+  const g=(357.529+0.98560028*n)*Math.PI/180;
+  const q=(280.459+0.98564736*n)%360;
+  const L=(q+1.915*Math.sin(g)+0.020*Math.sin(2*g))*Math.PI/180;
+  const e=(23.439-0.00000036*n)*Math.PI/180;
+  const RA=Math.atan2(Math.cos(e)*Math.sin(L),Math.cos(L))*180/Math.PI/15;
+  const dec=Math.asin(Math.sin(e)*Math.sin(L));
+  const EqT=q/15-(((RA%24)+24)%24);
+
+  // Get UTC offset for city timezone
+  let tzOff=0;
+  try{
+    const utcNow=new Date(now.toLocaleString('en-US',{timeZone:'UTC'}));
+    const tzNow=new Date(now.toLocaleString('en-US',{timeZone:city.tz}));
+    tzOff=(tzNow-utcNow)/3600000;
+  }catch(e){ tzOff=lng/15; }
+
+  const Tnoon=12-lng/15-EqT+tzOff; // local solar noon
+  const latR=lat*Math.PI/180;
+
+  function hourAngle(angle,after){
+    const cosH=(Math.sin(angle*Math.PI/180)-Math.sin(latR)*Math.sin(dec))/(Math.cos(latR)*Math.cos(dec));
+    if(cosH>1) return after?Tnoon+0:Tnoon;
+    if(cosH<-1) return after?Tnoon+12:Tnoon-12;
+    const H=Math.acos(cosH)*180/Math.PI/15;
+    return after?Tnoon+H:Tnoon-H;
   }
 
-  const JD = julianDay(year,month,day);
-  const D = JD - 2451545.0;
-  const g = (357.529 + 0.98560028*D) * Math.PI/180;
-  const q = (280.459 + 0.98564736*D) % 360;
-  const L = (q + 1.915*Math.sin(g) + 0.020*Math.sin(2*g)) * Math.PI/180;
-  const e = (23.439 - 0.00000036*D) * Math.PI/180;
-  const RA = Math.atan2(Math.cos(e)*Math.sin(L), Math.cos(L)) * 180/Math.PI / 15;
-  const dec = Math.asin(Math.sin(e)*Math.sin(L));
-  const EqT = q/15 - ((RA % 24 + 24) % 24);
-  const Tnoon = 12 - lng/15 - EqT;
-  const latR = lat * Math.PI/180;
-
-  function sunAngleTime(angle, after){
-    const cosH = (Math.sin(angle*Math.PI/180) - Math.sin(latR)*Math.sin(dec)) /
-                 (Math.cos(latR)*Math.cos(dec));
-    if(Math.abs(cosH)>1) return Tnoon;
-    const H = Math.acos(cosH)*180/Math.PI/15;
-    return after ? Tnoon+H : Tnoon-H;
+  function asrHA(){
+    const ang=-Math.atan(1/(1+Math.tan(Math.abs(latR-dec))))*180/Math.PI;
+    return hourAngle(ang,true);
   }
 
-  function asrTime(factor){
-    const ang = -Math.atan(1/(factor+Math.tan(Math.abs(latR-dec))))*180/Math.PI;
-    return sunAngleTime(ang, true);
+  function fmt(t){
+    t=((t%24)+24)%24;
+    return String(Math.floor(t)).padStart(2,'0')+':'+String(Math.floor((t%1)*60)).padStart(2,'0');
   }
 
-  function toHHMM(t){
-    t = ((t%24)+24)%24;
-    const h = Math.floor(t);
-    const m = Math.floor((t-h)*60);
-    return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
-  }
-
-  // Get timezone offset for city
-  let tzOffset = 0;
-  try {
-    const d = new Date();
-    const utcStr = d.toLocaleString('en-US',{timeZone:city.tz,hour:'2-digit',minute:'2-digit',hour12:false});
-    const localStr = d.toLocaleString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
-    const utcD = new Date(d.toLocaleString('en-US',{timeZone:'UTC'}));
-    const tzD = new Date(d.toLocaleString('en-US',{timeZone:city.tz}));
-    tzOffset = (tzD-utcD)/3600000;
-  } catch(e){ tzOffset = lng/15; }
-
-  const times = {
-    Fajr: toHHMM(sunAngleTime(-18, false) + tzOffset),
-    Sunrise: toHHMM(sunAngleTime(-0.833, false) + tzOffset),
-    Dhuhr: toHHMM(Tnoon + tzOffset + 0.0167),
-    Asr: toHHMM(asrTime(1) + tzOffset),
-    Maghrib: toHHMM(sunAngleTime(-0.833, true) + tzOffset),
-    Isha: toHHMM(sunAngleTime(-17, true) + tzOffset),
+  const times={
+    Fajr:    fmt(hourAngle(-18,false)),
+    Sunrise: fmt(hourAngle(-0.833,false)),
+    Dhuhr:   fmt(Tnoon+0.017),
+    Asr:     fmt(asrHA()),
+    Maghrib: fmt(hourAngle(-0.833,true)),
+    Isha:    fmt(hourAngle(-17,true)),
   };
 
-  cachedPrayerTimes = times;
-  localStorage.setItem('aa_ptimes_'+getPrayerTodayKey(), JSON.stringify(times));
+  localStorage.setItem(cacheKey, JSON.stringify(times));
+  cachedPrayerTimes=times;
   return times;
 }
 
-// Keep async wrapper for compatibility
 async function fetchPrayerTimesForCity(city){
   return calcPrayerTimes(city);
 }
 
-function openPrayerTracker(){
-  const lang = S.lang || 'en';
-  document.getElementById('ptracker-header-title').textContent = lang==='ar'?'متتبع الصلاة':'Prayer Tracker';
-  document.getElementById('ptracker-notif-label').textContent = lang==='ar'?'الإشعارات':'Notifications';
-  document.getElementById('ptracker-notif-prayer-label').textContent = lang==='ar'?'تنبيهات وقت الصلاة':'Prayer time alerts';
-  document.getElementById('ptracker-notif-missed-label').textContent = lang==='ar'?'تذكير الصلاة الفائتة':'Missed prayer reminder';
-  document.getElementById('ptracker-notif-urge-label').textContent = lang==='ar'?'تذكيرات الإغراء':'Urge reminders';
-  document.getElementById('ptracker-notif-streak-label').textContent = lang==='ar'?'تذكير السجل اليومي':'Daily streak reminder';
-  document.getElementById('change-city-btn').textContent = lang==='ar'?'📍 تغيير المدينة':'📍 Change City';
+function toMins(hhmm){
+  if(!hhmm) return 0;
+  const p=hhmm.split(':');
+  return parseInt(p[0])*60+parseInt(p[1]);
+}
 
+function nowMins(){
+  const n=new Date();
+  return n.getHours()*60+n.getMinutes();
+}
+
+function openPrayerTracker(){
+  const lang=S.lang||'en';
+  document.getElementById('ptracker-header-title').textContent=lang==='ar'?'متتبع الصلاة':'Prayer Tracker';
+  document.getElementById('ptracker-notif-label').textContent=lang==='ar'?'الإشعارات':'Notifications';
+  document.getElementById('ptracker-notif-prayer-label').textContent=lang==='ar'?'تنبيهات الصلاة':'Prayer alerts';
+  document.getElementById('ptracker-notif-missed-label').textContent=lang==='ar'?'الصلاة الفائتة':'Missed prayer';
+  document.getElementById('ptracker-notif-urge-label').textContent=lang==='ar'?'تذكيرات الإغراء':'Urge reminder';
+  document.getElementById('ptracker-notif-streak-label').textContent=lang==='ar'?'السجل اليومي':'Daily streak';
+  document.getElementById('change-city-btn').textContent=lang==='ar'?'📍 تغيير المدينة':'📍 Change City';
   updateNotifToggles();
 
-  const city = getSavedCity();
+  const city=getSavedCity();
   if(!city){
-    // Show city picker prompt directly in the prayer tracker screen
     showScreen('screen-prayer-tracker');
-    document.getElementById('ptracker-location-label').textContent = '';
-    document.getElementById('ptracker-date').textContent = '';
-    document.getElementById('ptracker-prog-text').textContent = '';
-    document.getElementById('ptracker-prog-fill').style.width = '0%';
-    document.getElementById('prayer-warning').style.display = 'none';
-    document.getElementById('ptracker-list').innerHTML =
-      '<div style="text-align:center;padding:30px 16px">' +
-        '<div style="font-size:48px;margin-bottom:16px">🕌</div>' +
-        '<div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">' +
-          (lang==='ar'?'اختر مدينتك':'Choose Your City') +
-        '</div>' +
-        '<div style="font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.6">' +
-          (lang==='ar'?'نحتاج إلى مدينتك لعرض أوقات الصلاة الدقيقة. لا يتم استخدام GPS.':'We need your city to show accurate prayer times. No GPS used.') +
-        '</div>' +
-        '<button onclick="openLocationPicker()" style="background:var(--gold);color:#000;border:none;border-radius:14px;padding:14px 32px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit">' +
-          (lang==='ar'?'📍 اختر مدينة':'📍 Pick a City') +
-        '</button>' +
+    document.getElementById('ptracker-location-label').textContent='';
+    document.getElementById('ptracker-date').textContent='';
+    document.getElementById('ptracker-prog-text').textContent='';
+    document.getElementById('ptracker-prog-fill').style.width='0%';
+    document.getElementById('prayer-warning').style.display='none';
+    document.getElementById('ptracker-list').innerHTML=
+      '<div style="text-align:center;padding:40px 16px">'+
+        '<div style="font-size:52px;margin-bottom:16px">🕌</div>'+
+        '<div style="font-size:17px;font-weight:600;color:var(--text);margin-bottom:10px">'+(lang==='ar'?'اختر مدينتك':'Choose Your City')+'</div>'+
+        '<div style="font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.7">'+(lang==='ar'?'نحتاج مدينتك لحساب أوقات الصلاة. لا يُستخدم GPS.':'We need your city to calculate prayer times. No GPS used.')+'</div>'+
+        '<button onclick="openLocationPicker()" style="background:var(--gold);color:#000;border:none;border-radius:14px;padding:14px 32px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit">📍 '+(lang==='ar'?'اختر مدينة':'Pick a City')+'</button>'+
       '</div>';
     return;
   }
 
-  document.getElementById('ptracker-location-label').textContent = '📍 '+(lang==='ar'?city.ar:city.name);
-  document.getElementById('ptracker-date').textContent = new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
-
+  const times=calcPrayerTimes(city);
   showScreen('screen-prayer-tracker');
+  document.getElementById('ptracker-location-label').textContent='📍 '+(lang==='ar'?city.ar:city.name);
+  document.getElementById('ptracker-date').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
 
-  const times = fetchPrayerTimesForCity(city);
-  if(times){
-    renderPrayerTracker(times);
-    schedulePrayerNotifications(times);
-  } else {
-    document.getElementById('ptracker-list').innerHTML='<div style="color:var(--text3);padding:20px;text-align:center">'+(lang==='ar'?'فشل تحميل الأوقات. تحقق من الاتصال.':'Could not load times. Check connection.')+'</div>';
-  }
+  renderPrayerTracker(times);
+  schedulePrayerNotifications(times);
+
+  // Live tick every 30s to update which prayer is next
+  if(prayerTickInterval) clearInterval(prayerTickInterval);
+  prayerTickInterval=setInterval(function(){ renderPrayerTracker(times); }, 30000);
 }
 
 function renderPrayerTracker(times){
-  const lang = S.lang || 'en';
-  const checks = getPrayerChecks();
-  const now = new Date();
-  const nowMins = now.getHours()*60+now.getMinutes();
+  const lang=S.lang||'en';
+  const checks=getPrayerChecks();
+  const nm=nowMins();
+  const now=new Date();
 
-  // Find next prayer
-  let nextPrayer = null;
-  let nextMins = Infinity;
-  TRACKABLE.forEach(function(p){
-    const t = times[p];
-    if(!t) return;
-    const parts = t.split(':');
-    const pMins = parseInt(parts[0])*60+parseInt(parts[1]);
-    if(pMins > nowMins && pMins < nextMins){ nextMins=pMins; nextPrayer=p; }
+  // Determine state of each prayer
+  let nextIdx=-1;
+  TRACKABLE.forEach(function(p,i){
+    const pm=toMins(times[p]);
+    if(pm>nm && nextIdx===-1) nextIdx=i;
   });
 
-  // Missed prayer warning
-  const warning = document.getElementById('prayer-warning');
-  if(nextPrayer){
-    const diff = nextMins - nowMins;
-    const idx = TRACKABLE.indexOf(nextPrayer);
-    if(diff <= 30 && diff > 0 && idx > 0){
-      const prev = TRACKABLE[idx-1];
-      if(!checks[prev] || checks[prev]!=='done'){
-        const prevName = lang==='ar'?PRAYER_NAMES_AR[PRAYER_KEYS.indexOf(prev)]:prev;
-        warning.style.display='block';
-        warning.textContent = lang==='ar'
-          ? '⚠️ لم تصلِّ '+prevName+' بعد! الصلاة التالية بعد '+diff+' دقيقة.'
-          : '⚠️ You have not prayed '+prevName+' yet! Next prayer in '+diff+' minutes.';
-      } else warning.style.display='none';
+  // Build summary counts
+  let doneCount=0, missedCount=0, lateCount=0;
+  TRACKABLE.forEach(function(p,i){
+    const status=checks[p]||'';
+    const pm=toMins(times[p]);
+    const isPast=pm<nm;
+    if(status==='done') doneCount++;
+    else if(status==='missed') missedCount++;
+    else if(isPast && i!==nextIdx) lateCount++;
+  });
+
+  // Warning banner
+  const warning=document.getElementById('prayer-warning');
+  if(nextIdx>0){
+    const prev=TRACKABLE[nextIdx-1];
+    const diff=toMins(times[TRACKABLE[nextIdx]])-nm;
+    if(diff<=30 && diff>0 && !checks[prev]){
+      const prevName=lang==='ar'?PRAYER_NAMES_AR[PRAYER_KEYS.indexOf(prev)]:prev;
+      warning.style.display='block';
+      warning.textContent='⚠️ '+(lang==='ar'?'لم تصلِّ '+prevName+' بعد! الصلاة التالية بعد '+diff+' دقيقة.':'You have not prayed '+prevName+' yet! Next prayer in '+diff+' min.');
     } else warning.style.display='none';
   } else warning.style.display='none';
 
-  const list = document.getElementById('ptracker-list');
-  list.innerHTML = '';
-  let doneCount = 0;
+  // Progress + summary
+  const total=TRACKABLE.length;
+  const pct=Math.floor((doneCount/total)*100);
+  document.getElementById('ptracker-prog-fill').style.width=pct+'%';
 
-  TRACKABLE.forEach(function(p){
-    const t = times[p];
+  let summaryParts=[];
+  if(doneCount>0) summaryParts.push((lang==='ar'?'✅ أديت: ':' ✅ Prayed: ')+doneCount);
+  if(lateCount>0) summaryParts.push((lang==='ar'?'⏰ متأخرة: ':' ⏰ Late: ')+lateCount);
+  if(missedCount>0) summaryParts.push((lang==='ar'?'❌ فائتة: ':' ❌ Missed: ')+missedCount);
+  const remaining=total-doneCount-missedCount;
+  if(remaining>0) summaryParts.push((lang==='ar'?'🕌 متبقية: ':' 🕌 Left: ')+remaining);
+  document.getElementById('ptracker-prog-text').textContent=summaryParts.join('  ');
+
+  // Render prayer rows
+  const list=document.getElementById('ptracker-list');
+  list.innerHTML='';
+
+  // Show ALL prayers including Sunrise as info
+  PRAYER_KEYS.forEach(function(p,ki){
+    const t=times[p];
     if(!t) return;
-    const parts = t.split(':');
-    const pMins = parseInt(parts[0])*60+parseInt(parts[1]);
-    const isPast = pMins < nowMins;
-    const isNext = p === nextPrayer;
-    const status = checks[p]||'';
-    if(status==='done') doneCount++;
+    const pm=toMins(t);
+    const isPast=pm<nm;
+    const isNext=TRACKABLE[nextIdx]===p;
+    const isTrackable=TRACKABLE.includes(p);
+    const status=checks[p]||'';
+    const nameAr=PRAYER_NAMES_AR[ki];
+    const nameEn=PRAYER_NAMES_EN[ki];
+    const displayName=lang==='ar'?nameAr:nameEn;
 
-    const nameAr = PRAYER_NAMES_AR[PRAYER_KEYS.indexOf(p)];
-    const nameEn = p;
-    const displayName = lang==='ar'?nameAr:nameEn;
+    // Card
+    const card=document.createElement('div');
+    card.style.cssText=
+      'display:flex;align-items:center;justify-content:space-between;'+
+      'padding:14px 16px;border-radius:14px;margin-bottom:8px;'+
+      'background:'+(isNext?'#1a1200':'var(--bg2)')+';'+
+      'border:'+(isNext?'1.5px solid var(--gold)':
+                 status==='done'?'1.5px solid var(--green)':
+                 status==='missed'?'1.5px solid var(--red)':
+                 isPast&&isTrackable?'1px solid #3a2500':'0.5px solid var(--border)')+';';
 
-    const row = document.createElement('div');
-    row.style.cssText = 'background:var(--bg2);border:' +
-      (isNext ? '1.5px solid var(--gold)' : '0.5px solid var(--border)') +
-      ';border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;' +
-      (isNext ? 'background:#1a1200;' : '');
+    // Left side — name + status label
+    const left=document.createElement('div');
+    const nameRow=document.createElement('div');
+    nameRow.style.cssText='font-size:16px;font-weight:600;color:'+(isNext?'var(--gold)':status==='done'?'var(--green)':isPast&&isTrackable&&!status?'#e09030':'var(--text)');
+    nameRow.textContent=displayName;
+    const subRow=document.createElement('div');
+    subRow.style.cssText='font-size:12px;margin-top:3px;color:var(--text3)';
+    if(isNext) subRow.textContent='▶ '+(lang==='ar'?'التالية':'Next');
+    else if(status==='done') subRow.textContent=lang==='ar'?'✅ أديت':'✅ Prayed';
+    else if(status==='missed') subRow.textContent=lang==='ar'?'❌ فائتت':'❌ Missed';
+    else if(isPast&&isTrackable) subRow.textContent=lang==='ar'?'⏰ لم تُؤدَّ بعد':'⏰ Not marked yet';
+    else if(!isPast&&isTrackable) subRow.textContent=lang==='ar'?'قادمة':'Upcoming';
+    else subRow.textContent=lang==='ar'?'(معلومة)':'(info)';
+    left.appendChild(nameRow);
+    left.appendChild(subRow);
 
-    // Left: name + time
-    const left = document.createElement('div');
-    const nameDiv = document.createElement('div');
-    nameDiv.style.cssText = 'font-size:16px;font-weight:600;color:'+(isNext?'var(--gold)':'var(--text)');
-    nameDiv.textContent = (isNext?'▶ ':'')+displayName+(isNext?' '+(lang==='ar'?'(التالية)':'(next)'):'');
-    const timeDiv = document.createElement('div');
-    timeDiv.style.cssText = 'font-size:13px;color:var(--text3);margin-top:3px';
-    timeDiv.textContent = t + (isPast && status!=='done' && status!=='missed' && !isNext ? (lang==='ar'?' — لم تُصلَّ بعد':' — not yet marked') : '');
-    left.appendChild(nameDiv);
-    left.appendChild(timeDiv);
+    // Right side
+    const right=document.createElement('div');
+    right.style.cssText='display:flex;align-items:center;gap:10px';
 
-    // Right: 3-state button
-    const btnWrap = document.createElement('div');
-    btnWrap.style.cssText = 'display:flex;gap:6px';
+    // Time display
+    const timeEl=document.createElement('div');
+    timeEl.style.cssText='font-size:18px;font-weight:700;color:'+(isNext?'var(--gold)':isPast?'var(--text3)':'var(--text)')+';min-width:52px;text-align:right';
+    timeEl.textContent=t;
+    right.appendChild(timeEl);
 
-    const doneBtn = document.createElement('button');
-    doneBtn.style.cssText = 'width:40px;height:40px;border-radius:50%;border:2px solid ' +
-      (status==='done'?'var(--green)':' var(--border)') +
-      ';background:'+(status==='done'?'var(--green)':'transparent')+
-      ';color:'+(status==='done'?'#000':'var(--text3)')+';font-size:18px;cursor:pointer;transition:all 0.2s';
-    doneBtn.textContent = '✓';
-    doneBtn.title = lang==='ar'?'صليت':'Prayed';
-    doneBtn.onclick = function(){
-      setPrayerCheck(p, status==='done'?'':' done');
-      renderPrayerTracker(times);
-    };
-    doneBtn.onclick = function(){
-      setPrayerCheck(p, checks[p]==='done'?'':'done');
-      renderPrayerTracker(times);
-    };
+    // Checkboxes for trackable prayers
+    if(isTrackable){
+      const btnWrap=document.createElement('div');
+      btnWrap.style.cssText='display:flex;flex-direction:column;gap:4px';
 
-    const missBtn = document.createElement('button');
-    missBtn.style.cssText = 'width:40px;height:40px;border-radius:50%;border:2px solid ' +
-      (status==='missed'?'var(--red)':' var(--border)') +
-      ';background:'+(status==='missed'?'#3a1515':'transparent')+
-      ';color:'+(status==='missed'?'var(--red)':'var(--text3)')+';font-size:18px;cursor:pointer;transition:all 0.2s';
-    missBtn.textContent = '✗';
-    missBtn.title = lang==='ar'?'فاتت':'Missed';
-    missBtn.onclick = function(){
-      setPrayerCheck(p, checks[p]==='missed'?'':'missed');
-      renderPrayerTracker(times);
-    };
+      const doneBtn=document.createElement('button');
+      doneBtn.style.cssText=
+        'width:36px;height:36px;border-radius:8px;border:none;cursor:pointer;font-size:16px;transition:all 0.15s;'+
+        'background:'+(status==='done'?'var(--green)':'var(--bg3)')+';'+
+        'color:'+(status==='done'?'#000':'var(--text3)');
+      doneBtn.textContent='✓';
+      doneBtn.title=lang==='ar'?'صليت':'Prayed';
+      doneBtn.onclick=function(e){
+        e.stopPropagation();
+        setPrayerCheck(p, checks[p]==='done'?'':'done');
+        renderPrayerTracker(times);
+      };
 
-    btnWrap.appendChild(doneBtn);
-    btnWrap.appendChild(missBtn);
-    row.appendChild(left);
-    row.appendChild(btnWrap);
-    list.appendChild(row);
+      const missBtn=document.createElement('button');
+      missBtn.style.cssText=
+        'width:36px;height:36px;border-radius:8px;border:none;cursor:pointer;font-size:16px;transition:all 0.15s;'+
+        'background:'+(status==='missed'?'#c0392b':'var(--bg3)')+';'+
+        'color:'+(status==='missed'?'#fff':'var(--text3)');
+      missBtn.textContent='✗';
+      missBtn.title=lang==='ar'?'فاتت':'Missed';
+      missBtn.onclick=function(e){
+        e.stopPropagation();
+        setPrayerCheck(p, checks[p]==='missed'?'':'missed');
+        renderPrayerTracker(times);
+      };
+
+      btnWrap.appendChild(doneBtn);
+      btnWrap.appendChild(missBtn);
+      right.appendChild(btnWrap);
+    }
+
+    card.appendChild(left);
+    card.appendChild(right);
+    list.appendChild(card);
   });
-
-  const total = TRACKABLE.length;
-  const pct = Math.floor((doneCount/total)*100);
-  document.getElementById('ptracker-prog-fill').style.width = pct+'%';
-  document.getElementById('ptracker-prog-text').textContent = lang==='ar'
-    ? doneCount+' من '+total+' صلوات اليوم'
-    : doneCount+' of '+total+' prayers today — tap ✓ to mark done, ✗ for missed';
 }
 
 
