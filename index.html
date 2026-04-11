@@ -622,7 +622,7 @@ document.addEventListener('DOMContentLoaded',function(){
           <span class="settings-item-icon">🌙</span>
           <div>
             <div class="settings-item-text">عادة</div>
-            <div class="settings-item-sub">Version 2.3</div>
+            <div class="settings-item-sub">Version 2.4</div>
           </div>
         </div>
       </div>
@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded',function(){
           <span class="settings-item-icon">❤️</span>
           <div>
             <div class="settings-item-text" id="credits-made-text">Contact for changes</div>
-            <div class="settings-item-sub" id="credits-made-sub">Osamah.a.Hasan@gmail.com</div>
+            <div class="settings-item-sub" id="credits-made-sub">Osamah.a.hasan@gmail.com</div>
           </div>
         </div>
       </div>
@@ -2446,28 +2446,35 @@ function renderPrayerTracker(times){
       const btnWrap=document.createElement('div');
       btnWrap.style.cssText='display:flex;flex-direction:column;gap:4px';
 
+      const canCheck=isPast||isNext;
       const doneBtn=document.createElement('button');
       doneBtn.style.cssText=
-        'width:36px;height:36px;border-radius:8px;border:none;cursor:pointer;font-size:16px;transition:all 0.15s;'+
-        'background:'+(status==='done'?'var(--green)':'var(--bg3)')+';'+
-        'color:'+(status==='done'?'#000':'var(--text3)');
+        'width:36px;height:36px;border-radius:8px;border:none;font-size:16px;transition:all 0.15s;'+
+        'background:'+(status==='done'?'var(--green)':canCheck?'var(--bg3)':'var(--bg)')+';'+
+        'color:'+(status==='done'?'#000':canCheck?'var(--text3)':'var(--border)')+';'+
+        'cursor:'+(canCheck?'pointer':'not-allowed')+';'+
+        'opacity:'+(canCheck?'1':'0.3')+';';
       doneBtn.textContent='✓';
-      doneBtn.title=lang==='ar'?'صليت':'Prayed';
+      doneBtn.title=canCheck?(lang==='ar'?'صليت':'Prayed'):(lang==='ar'?'لم يحن الوقت':'Not yet');
       doneBtn.onclick=function(e){
         e.stopPropagation();
+        if(!canCheck) return;
         setPrayerCheck(p, checks[p]==='done'?'':'done');
         renderPrayerTracker(times);
       };
 
       const missBtn=document.createElement('button');
       missBtn.style.cssText=
-        'width:36px;height:36px;border-radius:8px;border:none;cursor:pointer;font-size:16px;transition:all 0.15s;'+
-        'background:'+(status==='missed'?'#c0392b':'var(--bg3)')+';'+
-        'color:'+(status==='missed'?'#fff':'var(--text3)');
+        'width:36px;height:36px;border-radius:8px;border:none;font-size:16px;transition:all 0.15s;'+
+        'background:'+(status==='missed'?'#c0392b':canCheck?'var(--bg3)':'var(--bg)')+';'+
+        'color:'+(status==='missed'?'#fff':canCheck?'var(--text3)':'var(--border)')+';'+
+        'cursor:'+(canCheck?'pointer':'not-allowed')+';'+
+        'opacity:'+(canCheck?'1':'0.3')+';';
       missBtn.textContent='✗';
-      missBtn.title=lang==='ar'?'فاتت':'Missed';
+      missBtn.title=canCheck?(lang==='ar'?'فاتت':'Missed'):(lang==='ar'?'لم يحن الوقت':'Not yet');
       missBtn.onclick=function(e){
         e.stopPropagation();
+        if(!canCheck) return;
         setPrayerCheck(p, checks[p]==='missed'?'':'missed');
         renderPrayerTracker(times);
       };
