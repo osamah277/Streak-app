@@ -295,579 +295,8 @@ body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;min-height
 .settings-item-sub{font-size:12px;color:var(--text3);margin-top:1px}
 .settings-item-arrow{color:var(--text3);font-size:14px}
 </style>
-</head>
-<body>
+  <script src="verses.js"></script>
 <script>
-window._pendingLang=null;
-function selectLang(l){ window._pendingLang=l; }
-document.addEventListener('DOMContentLoaded',function(){
-  if(window._pendingLang){
-    var l=window._pendingLang; window._pendingLang=null;
-    setTimeout(function(){ if(typeof selectLang==='function') selectLang(l); },0);
-  }
-});
-</script>
-
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 1: LANGUAGE
-════════════════════════════════════ -->
-<div class="screen active lang-screen" id="screen-lang">
-  <div class="lang-logo">🌙</div>
-  <div class="lang-title">Clean</div>
-  <div class="lang-sub">Your journey to freedom starts here<br>رحلتك نحو الحرية تبدأ هنا</div>
-  <button class="lang-btn" id="lang-en-btn" onclick="selectLang('en')">
-    <span class="lang-flag">🇺🇸</span>
-    <span>English</span>
-  </button>
-  <button class="lang-btn" id="lang-ar-btn" onclick="selectLang('ar')">
-    <span class="lang-flag">🇸🇦</span>
-    <span>العربية</span>
-  </button>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 2: PRIVACY
-════════════════════════════════════ -->
-<div class="screen" id="screen-privacy">
-  <div class="privacy-body">
-    <div class="privacy-icon">🔒</div>
-    <div class="privacy-title" id="priv-title">Your Privacy is Protected</div>
-    <div class="privacy-text" id="priv-intro">Everything you share in this app stays on your device. Nothing is uploaded, shared, or stored on any server.</div>
-    <div class="privacy-item">
-      <div class="privacy-item-icon">📱</div>
-      <div class="privacy-item-text"><strong id="priv-p1-title">Stored on your phone only</strong><span id="priv-p1-text">Your progress, streak, and personal data never leave your device.</span></div>
-    </div>
-    <div class="privacy-item">
-      <div class="privacy-item-icon">🚫</div>
-      <div class="privacy-item-text"><strong id="priv-p2-title">No accounts needed</strong><span id="priv-p2-text">No sign-up, no email, no tracking of any kind.</span></div>
-    </div>
-    <div class="privacy-item">
-      <div class="privacy-item-icon">🤝</div>
-      <div class="privacy-item-text"><strong id="priv-p3-title">Judgment-free</strong><span id="priv-p3-text">This is your safe space. No one will ever know what you are working on.</span></div>
-    </div>
-    <div class="privacy-item">
-      <div class="privacy-item-icon">🗑️</div>
-      <div class="privacy-item-text"><strong id="priv-p4-title">Delete anytime</strong><span id="priv-p4-text">You can clear all your data at any time from settings.</span></div>
-    </div>
-    <div style="margin-top:24px">
-      <button class="btn btn-gold" id="priv-btn" onclick="goToQuran()">I Understand — Continue</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 3: QURAN VERSE
-════════════════════════════════════ -->
-<div class="screen" id="screen-quran">
-  <div class="quran-body">
-    <div class="quran-ornament">☪️</div>
-    <div class="quran-bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
-    <div class="quran-arabic" id="q-arabic"></div>
-    <div class="quran-translation" id="q-translation"></div>
-    <div class="quran-ref" id="q-ref"></div>
-    <div class="quran-date" id="q-date"></div>
-    <button class="btn btn-gold" id="q-continue-btn" onclick="goToAddiction()"></button>
-    <button class="quran-skip" id="q-skip-btn" onclick="goToAddiction()"></button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 4: ADDICTION TYPE
-════════════════════════════════════ -->
-<div class="screen" id="screen-addiction">
-  <div class="addiction-body">
-    <div style="padding:8px 0 20px;text-align:center">
-      <div class="addiction-title" id="add-title">What are you working on?</div>
-      <div class="addiction-sub" id="add-sub">Choose what you want to break free from. You can change this later.</div>
-    </div>
-    <div class="addiction-grid">
-      <div class="addiction-card" onclick="selectAddiction('smoking')" id="add-smoking">
-        <span class="addiction-card-icon">🚬</span>
-        <div class="addiction-card-name" id="add-smoking-name">Smoking</div>
-        <div class="addiction-card-name-ar">التدخين</div>
-      </div>
-      <div class="addiction-card" onclick="selectAddiction('masturbation')" id="add-masturbation">
-        <span class="addiction-card-icon">🛡️</span>
-        <div class="addiction-card-name" id="add-masturbation-name">Purity</div>
-        <div class="addiction-card-name-ar">الطهارة</div>
-      </div>
-      <div class="addiction-card" onclick="selectAddiction('social_media')" id="add-social_media">
-        <span class="addiction-card-icon">📱</span>
-        <div class="addiction-card-name" id="add-social_media-name">Social Media</div>
-        <div class="addiction-card-name-ar">التواصل الاجتماعي</div>
-      </div>
-      <div class="addiction-card" onclick="selectAddiction('alcohol')" id="add-alcohol">
-        <span class="addiction-card-icon">🍶</span>
-        <div class="addiction-card-name" id="add-alcohol-name">Alcohol</div>
-        <div class="addiction-card-name-ar">الكحول</div>
-      </div>
-      <div class="addiction-card" onclick="selectAddiction('gambling')" id="add-gambling">
-        <span class="addiction-card-icon">🎲</span>
-        <div class="addiction-card-name" id="add-gambling-name">Gambling</div>
-        <div class="addiction-card-name-ar">القمار</div>
-      </div>
-      <div class="addiction-card" onclick="selectAddiction('food')" id="add-food">
-        <span class="addiction-card-icon">🍔</span>
-        <div class="addiction-card-name" id="add-food-name">Overeating</div>
-        <div class="addiction-card-name-ar">الإفراط في الأكل</div>
-      </div>
-      <div class="addiction-card" onclick="selectAddiction('anger')" id="add-anger">
-        <span class="addiction-card-icon">😤</span>
-        <div class="addiction-card-name" id="add-anger-name">Anger</div>
-        <div class="addiction-card-name-ar">الغضب</div>
-      </div>
-      <div class="addiction-card" onclick="selectAddiction('procrastination')" id="add-procrastination">
-        <span class="addiction-card-icon">⏰</span>
-        <div class="addiction-card-name" id="add-procrastination-name">Procrastination</div>
-        <div class="addiction-card-name-ar">التسويف</div>
-      </div>
-    </div>
-    <button class="btn btn-gold" id="add-continue-btn" onclick="confirmAddiction()" style="display:none"></button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 5: HOME (MAIN)
-════════════════════════════════════ -->
-<div class="screen" id="screen-home">
-  <div class="app-header">
-    <div class="app-header-title" id="home-header-title">عادة</div>
-  </div>
-  <div class="home-body">
-    <!-- Timer Card -->
-    <div class="timer-card">
-      <div class="timer-addiction-label" id="home-addiction-label">SMOKING FREE</div>
-      <div class="timer-big" id="home-timer">00:00:00</div>
-      <div class="timer-unit" id="home-timer-unit">hours : minutes : seconds</div>
-      <div class="timer-msg" id="home-timer-msg"></div>
-    </div>
-
-    <!-- Milestones -->
-    <div class="milestone-strip" id="milestone-strip"></div>
-
-    <!-- Stats -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-num" id="stat-days">0</div>
-        <div class="stat-label" id="stat-days-label">Days Clean</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-best">0</div>
-        <div class="stat-label" id="stat-best-label">Best Streak</div>
-      </div>
-    </div>
-
-    <!-- Feature Grid -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-      <button class="btn btn-outline btn-sm" onclick="openCalendar()" id="btn-calendar" style="font-size:13px">📅 <span id="home-btn-cal">Calendar</span></button>
-      <button class="btn btn-outline btn-sm" onclick="openHadith()" id="btn-hadith" style="font-size:13px">📿 <span id="home-btn-hadith">Hadith</span></button>
-      <button class="btn btn-outline btn-sm" onclick="openPrayerTracker()" id="btn-prayer" style="font-size:13px">🕌 <span id="home-btn-prayer">Prayer</span></button>
-      <button class="btn btn-outline btn-sm" onclick="openWidget()" id="btn-widget" style="font-size:13px">📊 <span id="home-btn-widget">Summary</span></button>
-    </div>
-    <button class="btn btn-outline btn-sm" onclick="openWhy()" id="btn-why" style="font-size:13px;margin-bottom:12px">💬 <span id="home-btn-why">Why I Started</span></button>
-
-    <!-- Urge Button -->
-    <button class="btn urge-btn" onclick="showScreen('screen-urge')" id="urge-btn"></button>
-
-    <!-- Relapse -->
-    <div class="relapse-btn-wrap">
-      <button class="btn relapse-btn" onclick="showScreen('screen-relapse')" id="relapse-btn"></button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 6: URGE TOOLS
-════════════════════════════════════ -->
-<div class="screen" id="screen-urge">
-  <div class="app-header">
-    <div class="app-header-title" id="urge-header-title">I Feel the Urge</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
-  </div>
-  <div class="urge-body">
-    <div class="urge-sub" id="urge-sub">You can do this. Choose a tool to help you through this moment.</div>
-    <div id="urge-tools-list"></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 7: BREATHING EXERCISE
-════════════════════════════════════ -->
-<div class="screen" id="screen-breathing">
-  <div class="app-header">
-    <div class="app-header-title" id="breath-header">Breathing Exercise</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="stopBreathing()">✕</button>
-  </div>
-  <div class="breath-body">
-    <div class="breath-circle" id="breath-circle">
-      <div class="breath-word" id="breath-word">Ready</div>
-    </div>
-    <div class="breath-count" id="breath-count">4</div>
-    <div class="breath-sub" id="breath-sub">Breathe in slowly</div>
-    <div class="breath-cycles" id="breath-cycles">0 / 5 cycles</div>
-    <button class="btn btn-gold" style="margin-top:24px" id="breath-start-btn" onclick="startBreathing()"></button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 8: DHIKR COUNTER
-════════════════════════════════════ -->
-<div class="screen" id="screen-dhikr">
-  <div class="app-header">
-    <div class="app-header-title" id="dhikr-header">Dhikr Counter</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-urge')">✕</button>
-  </div>
-  <div class="dhikr-body">
-    <div class="dhikr-arabic" id="dhikr-arabic">سُبْحَانَ اللهِ</div>
-    <div class="dhikr-translation" id="dhikr-translation">Glory be to Allah</div>
-    <div class="dhikr-count" id="dhikr-count">0</div>
-    <div class="dhikr-target" id="dhikr-target">Target: 33</div>
-    <div class="dhikr-tap" id="dhikr-tap" onclick="tapDhikr()">
-      <div class="dhikr-tap-text" id="dhikr-tap-text">Tap</div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:20px">
-      <button class="btn btn-outline btn-sm" style="flex:1" onclick="resetDhikr()" id="dhikr-reset-btn">Reset</button>
-      <button class="btn btn-outline btn-sm" style="flex:1" onclick="nextDhikr()" id="dhikr-next-btn">Next Dhikr</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 9: RELAPSE
-════════════════════════════════════ -->
-<div class="screen" id="screen-relapse">
-  <div class="relapse-body">
-    <div class="relapse-icon">🤲</div>
-    <div class="relapse-title" id="relapse-title">It is okay. Start again.</div>
-    <div class="relapse-msg" id="relapse-msg">Every setback is a lesson. Allah loves those who repent and return. Your journey is not over — it is just beginning again.</div>
-    <div class="relapse-hadith" id="relapse-hadith-card">
-      <div class="relapse-hadith-text" id="relapse-hadith-text">"All of the children of Adam are sinners, and the best of sinners are those who repent."</div>
-      <div class="relapse-hadith-ref">— Ibn Majah</div>
-    </div>
-    <button class="btn btn-gold" onclick="confirmRelapse()" id="relapse-confirm-btn">Reset My Timer</button>
-    <button class="btn btn-outline" onclick="showScreen('screen-home')" id="relapse-cancel-btn">Not Yet — Go Back</button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 10: MILESTONES
-════════════════════════════════════ -->
-<div class="screen" id="screen-milestones">
-  <div class="app-header">
-    <div class="app-header-title" id="ms-header-title">Milestones</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
-  </div>
-  <div class="milestone-body" id="milestone-body"></div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN 11: SETTINGS
-════════════════════════════════════ -->
-<div class="screen" id="screen-settings">
-  <div class="app-header">
-    <div class="app-header-title" id="settings-title">Settings</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
-  </div>
-  <div class="settings-body">
-    <div class="settings-section">
-      <div class="settings-label" id="settings-general-label">General</div>
-      <div class="settings-item" onclick="showLangChange()">
-        <div class="settings-item-left">
-          <span class="settings-item-icon">🌐</span>
-          <div>
-            <div class="settings-item-text" id="settings-lang-text">Language</div>
-            <div class="settings-item-sub" id="settings-lang-sub">English</div>
-          </div>
-        </div>
-        <span class="settings-item-arrow">›</span>
-      </div>
-      <div class="settings-item" onclick="showAddictionChange()">
-        <div class="settings-item-left">
-          <span class="settings-item-icon">🎯</span>
-          <div>
-            <div class="settings-item-text" id="settings-addiction-text">My Goal</div>
-            <div class="settings-item-sub" id="settings-addiction-sub">Smoking</div>
-          </div>
-        </div>
-        <span class="settings-item-arrow">›</span>
-      </div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-label" id="settings-data-label">Data</div>
-      <div class="settings-item" onclick="showMilestones()">
-        <div class="settings-item-left">
-          <span class="settings-item-icon">🏆</span>
-          <div>
-            <div class="settings-item-text" id="settings-ms-text">View Milestones</div>
-          </div>
-        </div>
-        <span class="settings-item-arrow">›</span>
-      </div>
-      <div class="settings-item" onclick="confirmClearData()">
-        <div class="settings-item-left">
-          <span class="settings-item-icon">🗑️</span>
-          <div>
-            <div class="settings-item-text" style="color:var(--red)" id="settings-clear-text">Clear All Data</div>
-          </div>
-        </div>
-        <span class="settings-item-arrow">›</span>
-      </div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-label">About</div>
-      <div class="settings-item" style="cursor:default">
-        <div class="settings-item-left">
-          <span class="settings-item-icon">🌙</span>
-          <div>
-            <div class="settings-item-text">عادة</div>
-            <div class="settings-item-sub">Version 2.4</div>
-          </div>
-        </div>
-      </div>
-      <div class="settings-item" style="cursor:default">
-        <div class="settings-item-left">
-          <span class="settings-item-icon">📖</span>
-          <div>
-            <div class="settings-item-text" id="credits-quran-text">Created By</div>
-            <div class="settings-item-sub">Osamah Hasan</div>
-          </div>
-        </div>
-      </div>
-      <div class="settings-item" style="cursor:default">
-        <div class="settings-item-left">
-          <span class="settings-item-icon">❤️</span>
-          <div>
-            <div class="settings-item-text" id="credits-made-text">Contact for changes</div>
-            <div class="settings-item-sub" id="credits-made-sub">Osamah.a.hasan@gmail.com</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════
-     SCREEN: CALENDAR
-════════════════════════════════════ -->
-<div class="screen" id="screen-calendar">
-  <div class="app-header">
-    <div class="app-header-title" id="cal-header-title">Streak Calendar</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
-  </div>
-  <div style="padding:16px;flex:1;overflow-y:auto">
-    <div class="cal-header">
-      <button class="cal-nav" onclick="calPrevMonth()">‹</button>
-      <div class="cal-month" id="cal-month-label"></div>
-      <button class="cal-nav" onclick="calNextMonth()">›</button>
-    </div>
-    <div class="cal-grid" id="cal-grid"></div>
-    <div class="cal-legend">
-      <div class="cal-legend-item"><div class="cal-dot" style="background:#1a3a1f"></div><span id="cal-legend-clean">Clean day</span></div>
-      <div class="cal-legend-item"><div class="cal-dot" style="background:#3a1515"></div><span id="cal-legend-relapse">Relapse</span></div>
-      <div class="cal-legend-item"><div class="cal-dot" style="border:2px solid var(--gold)"></div><span id="cal-legend-today">Today</span></div>
-    </div>
-    <div class="card" style="margin-top:16px;text-align:center">
-      <div style="font-size:32px;font-weight:700;color:var(--gold)" id="cal-total-clean">0</div>
-      <div style="font-size:13px;color:var(--text3);margin-top:4px" id="cal-total-label">Total clean days</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN: HADITH
-════════════════════════════════════ -->
-<div class="screen" id="screen-hadith">
-  <div class="app-header">
-    <div class="app-header-title" id="hadith-header-title">Daily Hadith</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
-  </div>
-  <div style="padding:16px;flex:1;overflow-y:auto">
-    <div style="text-align:center;padding:8px 0 20px">
-      <div style="font-size:36px;margin-bottom:8px">📿</div>
-      <div style="font-size:12px;color:var(--text3)" id="hadith-date-label"></div>
-    </div>
-    <div class="hadith-card">
-      <div class="hadith-arabic" id="hadith-arabic"></div>
-      <div class="hadith-translation" id="hadith-translation"></div>
-      <div class="hadith-ref" id="hadith-ref"></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-bottom:16px">
-      <button class="btn btn-gold btn-sm" style="flex:1" onclick="shareHadithAsImage()" id="hadith-share-btn"><span id="hadith-share-btn-text">📤 Share Hadith</span></button>
-    </div>
-    <div style="font-size:12px;color:var(--text3);text-align:center;margin-bottom:20px" id="hadith-changes-label">Changes every day at midnight</div>
-    <div style="font-size:11px;color:var(--text3);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px" id="hadith-quran-label">Today's Quran Verse</div>
-    <div class="card card-gold" style="margin-bottom:10px">
-      <div style="font-size:18px;color:var(--text);direction:rtl;font-family:serif;line-height:1.9;margin-bottom:10px;text-align:right" id="hadith-q-arabic"></div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;margin-bottom:6px" id="hadith-q-translation"></div>
-      <div style="font-size:11px;color:var(--gold)" id="hadith-q-ref"></div>
-    </div>
-    <button class="btn btn-outline btn-sm" onclick="shareQuranAsImage()" style="margin-bottom:8px" id="hadith-q-share-btn"><span id="hadith-q-share-text">📤 Share Verse</span></button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN: WHY I STARTED
-════════════════════════════════════ -->
-<div class="screen" id="screen-why">
-  <div class="app-header">
-    <div class="app-header-title" id="why-header-title">Why I Started</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
-  </div>
-  <div style="padding:16px;flex:1;overflow-y:auto">
-    <div style="font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.7" id="why-intro-text">Write your personal reason for breaking this habit. Read it when you feel weak.</div>
-    <div class="why-display" id="why-display"></div>
-    <textarea class="why-input" id="why-input" rows="4" id="why-input" placeholder="My reason..."></textarea>
-    <button class="btn btn-gold" onclick="saveWhy()" id="why-save-btn">Save</button>
-    <div style="margin-top:20px">
-      <div style="font-size:13px;color:var(--text3);margin-bottom:12px;font-weight:600" id="why-stories-label">Others who made it:</div>
-      <div id="why-stories-list"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN: PRAYER TIMES
-════════════════════════════════════ -->
-
-
-<!-- ══════════════════════════════════
-     SCREEN: WIDGET SUMMARY
-════════════════════════════════════ -->
-<div class="screen" id="screen-widget">
-  <div class="app-header">
-    <div class="app-header-title" id="widget-header-title">My Summary</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
-  </div>
-  <div style="padding:16px;flex:1;overflow-y:auto">
-    <div style="font-size:13px;color:var(--text3);text-align:center;margin-bottom:16px" id="widget-subtitle">Your progress at a glance</div>
-    <div class="widget-preview" id="widget-preview">
-      <div class="widget-top">
-        <div class="widget-app-name">عادة</div>
-        <div class="widget-icon" id="w-icon">🌙</div>
-      </div>
-      <div class="widget-timer" id="w-timer">00:00</div>
-      <div class="widget-label" id="w-label">days : hours clean</div>
-      <div class="widget-bar"><div class="widget-bar-fill" id="w-bar" style="width:0%"></div></div>
-      <div class="widget-ms" id="w-next-ms"></div>
-      <div class="widget-quote" id="w-quote"></div>
-    </div>
-    <div class="stats-row" style="margin-top:4px">
-      <div class="stat-card">
-        <div class="stat-num" id="w-stat-days">0</div>
-        <div class="stat-label" id="w-stat-days-lbl">Days Clean</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="w-stat-best">0</div>
-        <div class="stat-label" id="w-stat-best-lbl">Best Streak</div>
-      </div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-num" id="w-stat-relapses">0</div>
-        <div class="stat-label" id="w-stat-relapses-lbl">Relapses</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="w-stat-total">0</div>
-        <div class="stat-label" id="w-stat-total-lbl">Total Days</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════
-     SCREEN: LOCATION PICKER
-════════════════════════════════════ -->
-<div class="screen" id="screen-location">
-  <div class="app-header">
-    <div class="app-header-title" id="loc-header-title">Choose City</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="openPrayerTracker()">✕</button>
-  </div>
-  <div style="padding:16px;flex:1;overflow-y:auto">
-    <button onclick="useGPSLocation()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#0d1a2e;border:1px solid var(--blue);border-radius:var(--r2);padding:13px;color:var(--blue);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:14px" id="gps-btn">📡 <span id="gps-btn-text">Use my GPS location</span></button>
-    <div class="location-current" id="loc-current-text">Search for your city to get accurate prayer times.</div>
-    <input class="location-search" id="loc-search-input" placeholder="Search city..." oninput="searchCity(this.value)" />
-    <div id="loc-results-list"></div>
-    <div style="margin-top:20px">
-      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:600" id="loc-popular-label">Popular cities:</div>
-      <div id="loc-popular-list"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     SCREEN: PRAYER TRACKER
-════════════════════════════════════ -->
-<div class="screen" id="screen-prayer-tracker">
-  <div class="app-header">
-    <div class="app-header-title" id="ptracker-header-title">Prayer Tracker</div>
-    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
-  </div>
-  <div style="padding:16px;flex:1;overflow-y:auto">
-    <div class="prayer-warning" id="prayer-warning"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div style="font-size:13px;color:var(--text3)" id="ptracker-date"></div>
-      <div style="font-size:13px;color:var(--text3)" id="ptracker-location-label"></div>
-    </div>
-    <div class="prayer-progress-bar"><div class="prayer-progress-fill" id="ptracker-prog-fill" style="width:0%"></div></div>
-    <div class="prayer-progress-text" id="ptracker-prog-text"></div>
-    <div style="margin-top:14px" id="ptracker-list"></div>
-    <div style="margin-top:16px">
-      <div style="font-size:12px;color:var(--text3);font-weight:600;margin-bottom:12px;letter-spacing:0.06em;text-transform:uppercase" id="ptracker-notif-label">Notifications</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-        <button class="notif-big-btn" id="notif-btn-prayer" onclick="togglePrayerNotif()">
-          <div style="font-size:24px;margin-bottom:6px">🕌</div>
-          <div class="notif-big-label" id="ptracker-notif-prayer-label">Prayer alerts</div>
-          <div class="notif-big-state" id="notif-state-prayer">Off</div>
-        </button>
-        <button class="notif-big-btn" id="notif-btn-missed" onclick="toggleMissedNotif()">
-          <div style="font-size:24px;margin-bottom:6px">⚠️</div>
-          <div class="notif-big-label" id="ptracker-notif-missed-label">Missed prayer</div>
-          <div class="notif-big-state" id="notif-state-missed">Off</div>
-        </button>
-        <button class="notif-big-btn" id="notif-btn-urge" onclick="toggleUrgeNotif()">
-          <div style="font-size:24px;margin-bottom:6px">💜</div>
-          <div class="notif-big-label" id="ptracker-notif-urge-label">Urge reminder</div>
-          <div class="notif-big-state" id="notif-state-urge">Off</div>
-        </button>
-        <button class="notif-big-btn" id="notif-btn-streak" onclick="toggleStreakNotif()">
-          <div style="font-size:24px;margin-bottom:6px">📿</div>
-          <div class="notif-big-label" id="ptracker-notif-streak-label">Daily streak</div>
-          <div class="notif-big-state" id="notif-state-streak">Off</div>
-        </button>
-      </div>
-            <button class="btn btn-outline" onclick="showScreen('screen-location')" id="change-city-btn">📍 Change City</button>
-    </div>
-  </div>
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav" id="bottom-nav">
-  <button class="nav-item active" id="nav-home" onclick="navTo('home')">
-    <span class="nav-icon">🏠</span>
-    <span class="nav-label" id="nav-home-label">Home</span>
-  </button>
-  <button class="nav-item" id="nav-urge" onclick="navTo('urge')">
-    <span class="nav-icon">🛡️</span>
-    <span class="nav-label" id="nav-urge-label">Urge Help</span>
-  </button>
-  <button class="nav-item" id="nav-milestones" onclick="navTo('milestones')">
-    <span class="nav-icon">🏆</span>
-    <span class="nav-label" id="nav-ms-label">Progress</span>
-  </button>
-  <button class="nav-item" id="nav-settings" onclick="navTo('settings')">
-    <span class="nav-icon">⚙️</span>
-    <span class="nav-label" id="nav-settings-label">Settings</span>
-  </button>
-</div>
-
-
-
-<script src="verses.js" defer></script>
-<script defer>
 
 // ═══════════════════════════════════════
 // STATE
@@ -2291,7 +1720,21 @@ function toMins(hhmm){
   return parseInt(p[0])*60+parseInt(p[1]);
 }
 
-function nowMins(){
+function nowMins(city){
+  // Get current time in city's timezone if available
+  if(city && city.tz){
+    try{
+      const now = new Date();
+      const cityTimeStr = now.toLocaleString('en-US',{timeZone:city.tz,hour:'2-digit',minute:'2-digit',hour12:false});
+      // parse "HH:MM"
+      const parts = cityTimeStr.replace(/[^0-9:]/g,'').split(':');
+      if(parts.length >= 2){
+        const h = parseInt(parts[0]);
+        const m = parseInt(parts[1]);
+        if(!isNaN(h) && !isNaN(m)) return h*60+m;
+      }
+    }catch(e){}
+  }
   const n=new Date();
   return n.getHours()*60+n.getMinutes();
 }
@@ -2325,7 +1768,7 @@ function openPrayerTracker(){
     return;
   }
 
-  const times=calcPrayerTimes(city);
+  const times=getEffectiveTimes(city);
   showScreen('screen-prayer-tracker');
   document.getElementById('ptracker-location-label').textContent='📍 '+(lang==='ar'?city.ar:city.name);
   document.getElementById('ptracker-date').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
@@ -2333,15 +1776,19 @@ function openPrayerTracker(){
   renderPrayerTracker(times);
   schedulePrayerNotifications(times);
 
-  // Live tick every 30s to update which prayer is next
+  // Live tick every 60s to update which prayer is next
   if(prayerTickInterval) clearInterval(prayerTickInterval);
-  prayerTickInterval=setInterval(function(){ renderPrayerTracker(times); }, 30000);
+  prayerTickInterval=setInterval(function(){
+    const freshTimes=getEffectiveTimes(city);
+    renderPrayerTracker(freshTimes);
+  }, 60000);
 }
 
 function renderPrayerTracker(times){
   const lang=S.lang||'en';
   const checks=getPrayerChecks();
-  const nm=nowMins();
+  const city=getSavedCity();
+  const nm=nowMins(city);
   const now=new Date();
 
   // Determine state of each prayer
@@ -2461,6 +1908,7 @@ function renderPrayerTracker(times){
         if(!canCheck) return;
         setPrayerCheck(p, checks[p]==='done'?'':'done');
         renderPrayerTracker(times);
+        if(p==='Isha') setTimeout(function(){ checkIshaSplash(times); }, 600);
       };
 
       const missBtn=document.createElement('button');
@@ -2805,6 +2253,151 @@ function shareQuranAsImage(){
   });
 }
 
+
+// ═══════════════════════════════════════
+// MANUAL PRAYER TIMES
+// ═══════════════════════════════════════
+function getManualTimes(){
+  try{ return JSON.parse(localStorage.getItem('aa_manual_times')||'null'); }catch(e){ return null; }
+}
+
+function getEffectiveTimes(city){
+  const manual = getManualTimes();
+  if(manual) return manual;
+  return calcPrayerTimes(city);
+}
+
+function openManualTimes(){
+  const lang = S.lang||'en';
+  document.getElementById('manual-prayer-title').textContent = lang==='ar'?'ضبط أوقات الصلاة':'Set Prayer Times';
+  document.getElementById('manual-prayer-sub').textContent = lang==='ar'?'اضبط أوقات الصلاة يدوياً. ستتجاوز الأوقات المحسوبة.':'Set your local prayer times manually. These will override the calculated times.';
+  document.getElementById('manual-save-btn').textContent = lang==='ar'?'حفظ الأوقات':'Save Times';
+  document.getElementById('manual-clear-btn').textContent = lang==='ar'?'إعادة للأوقات المحسوبة':'Reset to Calculated Times';
+
+  const city = getSavedCity();
+  const calculated = city ? calcPrayerTimes(city) : {Fajr:'05:00',Dhuhr:'12:30',Asr:'15:45',Maghrib:'18:00',Isha:'19:30'};
+  const manual = getManualTimes();
+  const current = manual || calculated;
+
+  const list = document.getElementById('manual-times-list');
+  list.innerHTML = '';
+
+  TRACKABLE.forEach(function(p){
+    const ki = PRAYER_KEYS.indexOf(p);
+    const nameAr = PRAYER_NAMES_AR[ki];
+    const nameEn = PRAYER_NAMES_EN[ki];
+    const displayName = lang==='ar'?nameAr:nameEn;
+    const val = current[p]||'00:00';
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px';
+
+    const label = document.createElement('div');
+    label.style.cssText = 'font-size:16px;font-weight:600;color:var(--text)';
+    label.textContent = displayName;
+
+    const input = document.createElement('input');
+    input.type = 'time';
+    input.value = val;
+    input.id = 'manual-input-'+p;
+    input.style.cssText = 'background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:16px;font-family:inherit;outline:none;cursor:pointer';
+
+    row.appendChild(label);
+    row.appendChild(input);
+    list.appendChild(row);
+
+    // Show calculated value as hint
+    if(calculated[p]){
+      const hint = document.createElement('div');
+      hint.style.cssText = 'font-size:11px;color:var(--text3);text-align:right;margin-top:-6px;margin-bottom:4px;padding-right:4px';
+      hint.textContent = (lang==='ar'?'المحسوب: ':'Calculated: ')+calculated[p];
+      list.appendChild(hint);
+    }
+  });
+
+  showScreen('screen-manual-prayer');
+}
+
+function saveManualTimes(){
+  const times = {};
+  TRACKABLE.forEach(function(p){
+    const input = document.getElementById('manual-input-'+p);
+    if(input && input.value) times[p] = input.value;
+  });
+  // Add Sunrise from calculated (not manually set)
+  const city = getSavedCity();
+  if(city){
+    const calc = calcPrayerTimes(city);
+    times.Sunrise = calc.Sunrise;
+  }
+  localStorage.setItem('aa_manual_times', JSON.stringify(times));
+  // Clear prayer time cache so tracker refreshes
+  const key = 'aa_ptimes_'+getPrayerTodayKey();
+  Object.keys(localStorage).filter(k=>k.startsWith('aa_ptimes_')).forEach(k=>localStorage.removeItem(k));
+  const lang = S.lang||'en';
+  const btn = document.getElementById('manual-save-btn');
+  btn.textContent = lang==='ar'?'تم الحفظ ✓':'Saved ✓';
+  setTimeout(function(){ closeManualTimes(); }, 800);
+}
+
+function clearManualTimes(){
+  localStorage.removeItem('aa_manual_times');
+  Object.keys(localStorage).filter(k=>k.startsWith('aa_ptimes_')).forEach(k=>localStorage.removeItem(k));
+  cachedPrayerTimes = null;
+  closeManualTimes();
+}
+
+function closeManualTimes(){
+  // Re-open prayer tracker with fresh times
+  openPrayerTracker();
+}
+
+// ═══════════════════════════════════════
+// ISHA DONE SPLASH
+// ═══════════════════════════════════════
+let ishaShownToday = false;
+
+function checkIshaSplash(times){
+  const todayKey = 'aa_isha_shown_'+getPrayerTodayKey();
+  if(localStorage.getItem(todayKey)) return;
+  const checks = getPrayerChecks();
+  if(checks['Isha']!=='done') return;
+  // Count completed
+  let done=0, missed=0, late=0;
+  const nm = nowMins();
+  TRACKABLE.forEach(function(p){
+    const status=checks[p]||'';
+    const pm=toMins(times[p]);
+    if(status==='done') done++;
+    else if(status==='missed') missed++;
+    else if(pm<nm) late++;
+  });
+  localStorage.setItem(todayKey,'1');
+  showIshaSplash(done, missed, late);
+}
+
+function showIshaSplash(done, missed, late){
+  const lang = S.lang||'en';
+  const total = TRACKABLE.length;
+  document.getElementById('isha-splash-title').textContent = done===total
+    ? (lang==='ar'?'الحمد لله':'Alhamdulillah')
+    : (lang==='ar'?'يوم آخر':'Another Day');
+  document.getElementById('isha-splash-msg').textContent = done===total
+    ? (lang==='ar'?'أتممت كل صلواتك اليوم. تقبل الله منك.':'You completed all your prayers today. May Allah accept from you.')
+    : (lang==='ar'?'الغد فرصة جديدة. لا تيأس من رحمة الله.':'Tomorrow is a new chance. Do not despair of Allah\'s mercy.');
+  document.getElementById('isha-splash-summary-label').textContent = lang==='ar'?'ملخص اليوم':'Today\'s summary';
+  document.getElementById('isha-splash-count').textContent = done+'/'+total;
+  document.getElementById('isha-splash-count-label').textContent = lang==='ar'?'صلوات أُديت':'prayers completed';
+  const h = getTodayHadith();
+  document.getElementById('isha-splash-hadith').textContent = '"'+h.en+'"  — '+h.ref;
+  document.getElementById('isha-splash-home-btn').textContent = lang==='ar'?'العودة للرئيسية':'Return Home';
+  const manualBtn = document.getElementById('isha-splash-manual-btn');
+  manualBtn.style.display = 'block';
+  manualBtn.textContent = lang==='ar'?'🕐 ضبط أوقات الصلاة':'🕐 Adjust Prayer Times';
+  document.getElementById('isha-splash-manual-btn').onclick = function(){ openManualTimes(); };
+  showScreen('screen-isha-splash');
+}
+
 function init(){
   applyTranslations();
   if(!S.lang){
@@ -2825,7 +2418,6 @@ function init(){
   updateStats();
   startTimer();
   showScreen('screen-home');
-  // Init notifications in background
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').then(function(){
       initNotifications();
@@ -2833,7 +2425,617 @@ function init(){
   }
 }
 
-init();
+document.addEventListener('DOMContentLoaded', function(){ init(); });
 </script>
+</head>
+<body>
+
+
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 1: LANGUAGE
+════════════════════════════════════ -->
+<div class="screen active lang-screen" id="screen-lang">
+  <div class="lang-logo">🌙</div>
+  <div class="lang-title">Clean</div>
+  <div class="lang-sub">Your journey to freedom starts here<br>رحلتك نحو الحرية تبدأ هنا</div>
+  <button class="lang-btn" id="lang-en-btn" onclick="selectLang('en')">
+    <span class="lang-flag">🇺🇸</span>
+    <span>English</span>
+  </button>
+  <button class="lang-btn" id="lang-ar-btn" onclick="selectLang('ar')">
+    <span class="lang-flag">🇸🇦</span>
+    <span>العربية</span>
+  </button>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 2: PRIVACY
+════════════════════════════════════ -->
+<div class="screen" id="screen-privacy">
+  <div class="privacy-body">
+    <div class="privacy-icon">🔒</div>
+    <div class="privacy-title" id="priv-title">Your Privacy is Protected</div>
+    <div class="privacy-text" id="priv-intro">Everything you share in this app stays on your device. Nothing is uploaded, shared, or stored on any server.</div>
+    <div class="privacy-item">
+      <div class="privacy-item-icon">📱</div>
+      <div class="privacy-item-text"><strong id="priv-p1-title">Stored on your phone only</strong><span id="priv-p1-text">Your progress, streak, and personal data never leave your device.</span></div>
+    </div>
+    <div class="privacy-item">
+      <div class="privacy-item-icon">🚫</div>
+      <div class="privacy-item-text"><strong id="priv-p2-title">No accounts needed</strong><span id="priv-p2-text">No sign-up, no email, no tracking of any kind.</span></div>
+    </div>
+    <div class="privacy-item">
+      <div class="privacy-item-icon">🤝</div>
+      <div class="privacy-item-text"><strong id="priv-p3-title">Judgment-free</strong><span id="priv-p3-text">This is your safe space. No one will ever know what you are working on.</span></div>
+    </div>
+    <div class="privacy-item">
+      <div class="privacy-item-icon">🗑️</div>
+      <div class="privacy-item-text"><strong id="priv-p4-title">Delete anytime</strong><span id="priv-p4-text">You can clear all your data at any time from settings.</span></div>
+    </div>
+    <div style="margin-top:24px">
+      <button class="btn btn-gold" id="priv-btn" onclick="goToQuran()">I Understand — Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 3: QURAN VERSE
+════════════════════════════════════ -->
+<div class="screen" id="screen-quran">
+  <div class="quran-body">
+    <div class="quran-ornament">☪️</div>
+    <div class="quran-bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+    <div class="quran-arabic" id="q-arabic"></div>
+    <div class="quran-translation" id="q-translation"></div>
+    <div class="quran-ref" id="q-ref"></div>
+    <div class="quran-date" id="q-date"></div>
+    <button class="btn btn-gold" id="q-continue-btn" onclick="goToAddiction()"></button>
+    <button class="quran-skip" id="q-skip-btn" onclick="goToAddiction()"></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 4: ADDICTION TYPE
+════════════════════════════════════ -->
+<div class="screen" id="screen-addiction">
+  <div class="addiction-body">
+    <div style="padding:8px 0 20px;text-align:center">
+      <div class="addiction-title" id="add-title">What are you working on?</div>
+      <div class="addiction-sub" id="add-sub">Choose what you want to break free from. You can change this later.</div>
+    </div>
+    <div class="addiction-grid">
+      <div class="addiction-card" onclick="selectAddiction('smoking')" id="add-smoking">
+        <span class="addiction-card-icon">🚬</span>
+        <div class="addiction-card-name" id="add-smoking-name">Smoking</div>
+        <div class="addiction-card-name-ar">التدخين</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('masturbation')" id="add-masturbation">
+        <span class="addiction-card-icon">🛡️</span>
+        <div class="addiction-card-name" id="add-masturbation-name">Purity</div>
+        <div class="addiction-card-name-ar">الطهارة</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('social_media')" id="add-social_media">
+        <span class="addiction-card-icon">📱</span>
+        <div class="addiction-card-name" id="add-social_media-name">Social Media</div>
+        <div class="addiction-card-name-ar">التواصل الاجتماعي</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('alcohol')" id="add-alcohol">
+        <span class="addiction-card-icon">🍶</span>
+        <div class="addiction-card-name" id="add-alcohol-name">Alcohol</div>
+        <div class="addiction-card-name-ar">الكحول</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('gambling')" id="add-gambling">
+        <span class="addiction-card-icon">🎲</span>
+        <div class="addiction-card-name" id="add-gambling-name">Gambling</div>
+        <div class="addiction-card-name-ar">القمار</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('food')" id="add-food">
+        <span class="addiction-card-icon">🍔</span>
+        <div class="addiction-card-name" id="add-food-name">Overeating</div>
+        <div class="addiction-card-name-ar">الإفراط في الأكل</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('anger')" id="add-anger">
+        <span class="addiction-card-icon">😤</span>
+        <div class="addiction-card-name" id="add-anger-name">Anger</div>
+        <div class="addiction-card-name-ar">الغضب</div>
+      </div>
+      <div class="addiction-card" onclick="selectAddiction('procrastination')" id="add-procrastination">
+        <span class="addiction-card-icon">⏰</span>
+        <div class="addiction-card-name" id="add-procrastination-name">Procrastination</div>
+        <div class="addiction-card-name-ar">التسويف</div>
+      </div>
+    </div>
+    <button class="btn btn-gold" id="add-continue-btn" onclick="confirmAddiction()" style="display:none"></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 5: HOME (MAIN)
+════════════════════════════════════ -->
+<div class="screen" id="screen-home">
+  <div class="app-header">
+    <div class="app-header-title" id="home-header-title">عادة</div>
+  </div>
+  <div class="home-body">
+    <!-- Timer Card -->
+    <div class="timer-card">
+      <div class="timer-addiction-label" id="home-addiction-label">SMOKING FREE</div>
+      <div class="timer-big" id="home-timer">00:00:00</div>
+      <div class="timer-unit" id="home-timer-unit">hours : minutes : seconds</div>
+      <div class="timer-msg" id="home-timer-msg"></div>
+    </div>
+
+    <!-- Milestones -->
+    <div class="milestone-strip" id="milestone-strip"></div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-days">0</div>
+        <div class="stat-label" id="stat-days-label">Days Clean</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-best">0</div>
+        <div class="stat-label" id="stat-best-label">Best Streak</div>
+      </div>
+    </div>
+
+    <!-- Feature Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <button class="btn btn-outline btn-sm" onclick="openCalendar()" id="btn-calendar" style="font-size:13px">📅 <span id="home-btn-cal">Calendar</span></button>
+      <button class="btn btn-outline btn-sm" onclick="openHadith()" id="btn-hadith" style="font-size:13px">📿 <span id="home-btn-hadith">Hadith</span></button>
+      <button class="btn btn-outline btn-sm" onclick="openPrayerTracker()" id="btn-prayer" style="font-size:13px">🕌 <span id="home-btn-prayer">Prayer</span></button>
+      <button class="btn btn-outline btn-sm" onclick="openWidget()" id="btn-widget" style="font-size:13px">📊 <span id="home-btn-widget">Summary</span></button>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="openWhy()" id="btn-why" style="font-size:13px;margin-bottom:12px">💬 <span id="home-btn-why">Why I Started</span></button>
+
+    <!-- Urge Button -->
+    <button class="btn urge-btn" onclick="showScreen('screen-urge')" id="urge-btn"></button>
+
+    <!-- Relapse -->
+    <div class="relapse-btn-wrap">
+      <button class="btn relapse-btn" onclick="showScreen('screen-relapse')" id="relapse-btn"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 6: URGE TOOLS
+════════════════════════════════════ -->
+<div class="screen" id="screen-urge">
+  <div class="app-header">
+    <div class="app-header-title" id="urge-header-title">I Feel the Urge</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div class="urge-body">
+    <div class="urge-sub" id="urge-sub">You can do this. Choose a tool to help you through this moment.</div>
+    <div id="urge-tools-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 7: BREATHING EXERCISE
+════════════════════════════════════ -->
+<div class="screen" id="screen-breathing">
+  <div class="app-header">
+    <div class="app-header-title" id="breath-header">Breathing Exercise</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="stopBreathing()">✕</button>
+  </div>
+  <div class="breath-body">
+    <div class="breath-circle" id="breath-circle">
+      <div class="breath-word" id="breath-word">Ready</div>
+    </div>
+    <div class="breath-count" id="breath-count">4</div>
+    <div class="breath-sub" id="breath-sub">Breathe in slowly</div>
+    <div class="breath-cycles" id="breath-cycles">0 / 5 cycles</div>
+    <button class="btn btn-gold" style="margin-top:24px" id="breath-start-btn" onclick="startBreathing()"></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 8: DHIKR COUNTER
+════════════════════════════════════ -->
+<div class="screen" id="screen-dhikr">
+  <div class="app-header">
+    <div class="app-header-title" id="dhikr-header">Dhikr Counter</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-urge')">✕</button>
+  </div>
+  <div class="dhikr-body">
+    <div class="dhikr-arabic" id="dhikr-arabic">سُبْحَانَ اللهِ</div>
+    <div class="dhikr-translation" id="dhikr-translation">Glory be to Allah</div>
+    <div class="dhikr-count" id="dhikr-count">0</div>
+    <div class="dhikr-target" id="dhikr-target">Target: 33</div>
+    <div class="dhikr-tap" id="dhikr-tap" onclick="tapDhikr()">
+      <div class="dhikr-tap-text" id="dhikr-tap-text">Tap</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="resetDhikr()" id="dhikr-reset-btn">Reset</button>
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="nextDhikr()" id="dhikr-next-btn">Next Dhikr</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 9: RELAPSE
+════════════════════════════════════ -->
+<div class="screen" id="screen-relapse">
+  <div class="relapse-body">
+    <div class="relapse-icon">🤲</div>
+    <div class="relapse-title" id="relapse-title">It is okay. Start again.</div>
+    <div class="relapse-msg" id="relapse-msg">Every setback is a lesson. Allah loves those who repent and return. Your journey is not over — it is just beginning again.</div>
+    <div class="relapse-hadith" id="relapse-hadith-card">
+      <div class="relapse-hadith-text" id="relapse-hadith-text">"All of the children of Adam are sinners, and the best of sinners are those who repent."</div>
+      <div class="relapse-hadith-ref">— Ibn Majah</div>
+    </div>
+    <button class="btn btn-gold" onclick="confirmRelapse()" id="relapse-confirm-btn">Reset My Timer</button>
+    <button class="btn btn-outline" onclick="showScreen('screen-home')" id="relapse-cancel-btn">Not Yet — Go Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 10: MILESTONES
+════════════════════════════════════ -->
+<div class="screen" id="screen-milestones">
+  <div class="app-header">
+    <div class="app-header-title" id="ms-header-title">Milestones</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div class="milestone-body" id="milestone-body"></div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 11: SETTINGS
+════════════════════════════════════ -->
+<div class="screen" id="screen-settings">
+  <div class="app-header">
+    <div class="app-header-title" id="settings-title">Settings</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div class="settings-body">
+    <div class="settings-section">
+      <div class="settings-label" id="settings-general-label">General</div>
+      <div class="settings-item" onclick="showLangChange()">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">🌐</span>
+          <div>
+            <div class="settings-item-text" id="settings-lang-text">Language</div>
+            <div class="settings-item-sub" id="settings-lang-sub">English</div>
+          </div>
+        </div>
+        <span class="settings-item-arrow">›</span>
+      </div>
+      <div class="settings-item" onclick="showAddictionChange()">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">🎯</span>
+          <div>
+            <div class="settings-item-text" id="settings-addiction-text">My Goal</div>
+            <div class="settings-item-sub" id="settings-addiction-sub">Smoking</div>
+          </div>
+        </div>
+        <span class="settings-item-arrow">›</span>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label" id="settings-data-label">Data</div>
+      <div class="settings-item" onclick="showMilestones()">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">🏆</span>
+          <div>
+            <div class="settings-item-text" id="settings-ms-text">View Milestones</div>
+          </div>
+        </div>
+        <span class="settings-item-arrow">›</span>
+      </div>
+      <div class="settings-item" onclick="confirmClearData()">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">🗑️</span>
+          <div>
+            <div class="settings-item-text" style="color:var(--red)" id="settings-clear-text">Clear All Data</div>
+          </div>
+        </div>
+        <span class="settings-item-arrow">›</span>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">About</div>
+      <div class="settings-item" style="cursor:default">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">🌙</span>
+          <div>
+            <div class="settings-item-text">عادة</div>
+            <div class="settings-item-sub">Version 2.4</div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-item" style="cursor:default">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">📖</span>
+          <div>
+            <div class="settings-item-text" id="credits-quran-text">Created By</div>
+            <div class="settings-item-sub">Osamah Hasan</div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-item" style="cursor:default">
+        <div class="settings-item-left">
+          <span class="settings-item-icon">❤️</span>
+          <div>
+            <div class="settings-item-text" id="credits-made-text">Contact for changes</div>
+            <div class="settings-item-sub" id="credits-made-sub"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b3fcc0d2ded2db9dd29ddbd2c0d2ddf3d4ded2dadf9dd0dcde">[email&#160;protected]</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SCREEN: CALENDAR
+════════════════════════════════════ -->
+<div class="screen" id="screen-calendar">
+  <div class="app-header">
+    <div class="app-header-title" id="cal-header-title">Streak Calendar</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div class="cal-header">
+      <button class="cal-nav" onclick="calPrevMonth()">‹</button>
+      <div class="cal-month" id="cal-month-label"></div>
+      <button class="cal-nav" onclick="calNextMonth()">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-legend">
+      <div class="cal-legend-item"><div class="cal-dot" style="background:#1a3a1f"></div><span id="cal-legend-clean">Clean day</span></div>
+      <div class="cal-legend-item"><div class="cal-dot" style="background:#3a1515"></div><span id="cal-legend-relapse">Relapse</span></div>
+      <div class="cal-legend-item"><div class="cal-dot" style="border:2px solid var(--gold)"></div><span id="cal-legend-today">Today</span></div>
+    </div>
+    <div class="card" style="margin-top:16px;text-align:center">
+      <div style="font-size:32px;font-weight:700;color:var(--gold)" id="cal-total-clean">0</div>
+      <div style="font-size:13px;color:var(--text3);margin-top:4px" id="cal-total-label">Total clean days</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN: HADITH
+════════════════════════════════════ -->
+<div class="screen" id="screen-hadith">
+  <div class="app-header">
+    <div class="app-header-title" id="hadith-header-title">Daily Hadith</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div style="text-align:center;padding:8px 0 20px">
+      <div style="font-size:36px;margin-bottom:8px">📿</div>
+      <div style="font-size:12px;color:var(--text3)" id="hadith-date-label"></div>
+    </div>
+    <div class="hadith-card">
+      <div class="hadith-arabic" id="hadith-arabic"></div>
+      <div class="hadith-translation" id="hadith-translation"></div>
+      <div class="hadith-ref" id="hadith-ref"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <button class="btn btn-gold btn-sm" style="flex:1" onclick="shareHadithAsImage()" id="hadith-share-btn"><span id="hadith-share-btn-text">📤 Share Hadith</span></button>
+    </div>
+    <div style="font-size:12px;color:var(--text3);text-align:center;margin-bottom:20px" id="hadith-changes-label">Changes every day at midnight</div>
+    <div style="font-size:11px;color:var(--text3);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px" id="hadith-quran-label">Today's Quran Verse</div>
+    <div class="card card-gold" style="margin-bottom:10px">
+      <div style="font-size:18px;color:var(--text);direction:rtl;font-family:serif;line-height:1.9;margin-bottom:10px;text-align:right" id="hadith-q-arabic"></div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;margin-bottom:6px" id="hadith-q-translation"></div>
+      <div style="font-size:11px;color:var(--gold)" id="hadith-q-ref"></div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="shareQuranAsImage()" style="margin-bottom:8px" id="hadith-q-share-btn"><span id="hadith-q-share-text">📤 Share Verse</span></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN: WHY I STARTED
+════════════════════════════════════ -->
+<div class="screen" id="screen-why">
+  <div class="app-header">
+    <div class="app-header-title" id="why-header-title">Why I Started</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div style="font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.7" id="why-intro-text">Write your personal reason for breaking this habit. Read it when you feel weak.</div>
+    <div class="why-display" id="why-display"></div>
+    <textarea class="why-input" id="why-input" rows="4" id="why-input" placeholder="My reason..."></textarea>
+    <button class="btn btn-gold" onclick="saveWhy()" id="why-save-btn">Save</button>
+    <div style="margin-top:20px">
+      <div style="font-size:13px;color:var(--text3);margin-bottom:12px;font-weight:600" id="why-stories-label">Others who made it:</div>
+      <div id="why-stories-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN: PRAYER TIMES
+════════════════════════════════════ -->
+
+
+<!-- ══════════════════════════════════
+     SCREEN: WIDGET SUMMARY
+════════════════════════════════════ -->
+<div class="screen" id="screen-widget">
+  <div class="app-header">
+    <div class="app-header-title" id="widget-header-title">My Summary</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div style="font-size:13px;color:var(--text3);text-align:center;margin-bottom:16px" id="widget-subtitle">Your progress at a glance</div>
+    <div class="widget-preview" id="widget-preview">
+      <div class="widget-top">
+        <div class="widget-app-name">عادة</div>
+        <div class="widget-icon" id="w-icon">🌙</div>
+      </div>
+      <div class="widget-timer" id="w-timer">00:00</div>
+      <div class="widget-label" id="w-label">days : hours clean</div>
+      <div class="widget-bar"><div class="widget-bar-fill" id="w-bar" style="width:0%"></div></div>
+      <div class="widget-ms" id="w-next-ms"></div>
+      <div class="widget-quote" id="w-quote"></div>
+    </div>
+    <div class="stats-row" style="margin-top:4px">
+      <div class="stat-card">
+        <div class="stat-num" id="w-stat-days">0</div>
+        <div class="stat-label" id="w-stat-days-lbl">Days Clean</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="w-stat-best">0</div>
+        <div class="stat-label" id="w-stat-best-lbl">Best Streak</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="w-stat-relapses">0</div>
+        <div class="stat-label" id="w-stat-relapses-lbl">Relapses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="w-stat-total">0</div>
+        <div class="stat-label" id="w-stat-total-lbl">Total Days</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SCREEN: LOCATION PICKER
+════════════════════════════════════ -->
+<div class="screen" id="screen-location">
+  <div class="app-header">
+    <div class="app-header-title" id="loc-header-title">Choose City</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="openPrayerTracker()">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <button onclick="useGPSLocation()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#0d1a2e;border:1px solid var(--blue);border-radius:var(--r2);padding:13px;color:var(--blue);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:14px" id="gps-btn">📡 <span id="gps-btn-text">Use my GPS location</span></button>
+    <div class="location-current" id="loc-current-text">Search for your city to get accurate prayer times.</div>
+    <input class="location-search" id="loc-search-input" placeholder="Search city..." oninput="searchCity(this.value)" />
+    <div id="loc-results-list"></div>
+    <div style="margin-top:20px">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:600" id="loc-popular-label">Popular cities:</div>
+      <div id="loc-popular-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN: PRAYER TRACKER
+════════════════════════════════════ -->
+<div class="screen" id="screen-prayer-tracker">
+  <div class="app-header">
+    <div class="app-header-title" id="ptracker-header-title">Prayer Tracker</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div class="prayer-warning" id="prayer-warning"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:13px;color:var(--text3)" id="ptracker-date"></div>
+      <div style="font-size:13px;color:var(--text3)" id="ptracker-location-label"></div>
+    </div>
+    <div class="prayer-progress-bar"><div class="prayer-progress-fill" id="ptracker-prog-fill" style="width:0%"></div></div>
+    <div class="prayer-progress-text" id="ptracker-prog-text"></div>
+    <div style="margin-top:14px" id="ptracker-list"></div>
+    <div style="margin-top:16px">
+      <div style="font-size:12px;color:var(--text3);font-weight:600;margin-bottom:12px;letter-spacing:0.06em;text-transform:uppercase" id="ptracker-notif-label">Notifications</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <button class="notif-big-btn" id="notif-btn-prayer" onclick="togglePrayerNotif()">
+          <div style="font-size:24px;margin-bottom:6px">🕌</div>
+          <div class="notif-big-label" id="ptracker-notif-prayer-label">Prayer alerts</div>
+          <div class="notif-big-state" id="notif-state-prayer">Off</div>
+        </button>
+        <button class="notif-big-btn" id="notif-btn-missed" onclick="toggleMissedNotif()">
+          <div style="font-size:24px;margin-bottom:6px">⚠️</div>
+          <div class="notif-big-label" id="ptracker-notif-missed-label">Missed prayer</div>
+          <div class="notif-big-state" id="notif-state-missed">Off</div>
+        </button>
+        <button class="notif-big-btn" id="notif-btn-urge" onclick="toggleUrgeNotif()">
+          <div style="font-size:24px;margin-bottom:6px">💜</div>
+          <div class="notif-big-label" id="ptracker-notif-urge-label">Urge reminder</div>
+          <div class="notif-big-state" id="notif-state-urge">Off</div>
+        </button>
+        <button class="notif-big-btn" id="notif-btn-streak" onclick="toggleStreakNotif()">
+          <div style="font-size:24px;margin-bottom:6px">📿</div>
+          <div class="notif-big-label" id="ptracker-notif-streak-label">Daily streak</div>
+          <div class="notif-big-state" id="notif-state-streak">Off</div>
+        </button>
+      </div>
+            <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-outline btn-sm" onclick="showScreen('screen-location')" id="change-city-btn" style="flex:1">📍 <span id="change-city-label">Change City</span></button>
+        <button class="btn btn-outline btn-sm" onclick="openManualTimes()" id="manual-times-btn" style="flex:1">🕐 <span id="manual-times-label">Set Manually</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SCREEN: MANUAL PRAYER TIMES
+════════════════════════════════════ -->
+<div class="screen" id="screen-manual-prayer">
+  <div class="app-header">
+    <div class="app-header-title" id="manual-prayer-title">Set Prayer Times</div>
+    <button style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer" onclick="closeManualTimes()">✕</button>
+  </div>
+  <div style="padding:16px;flex:1;overflow-y:auto">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6" id="manual-prayer-sub">Set your local prayer times manually. These will override the calculated times.</div>
+    <div id="manual-times-list"></div>
+    <div style="margin-top:8px;display:flex;gap:10px">
+      <button class="btn btn-gold" onclick="saveManualTimes()" id="manual-save-btn">Save Times</button>
+    </div>
+    <div style="margin-top:12px">
+      <button class="btn btn-outline btn-sm" onclick="clearManualTimes()" id="manual-clear-btn">Reset to Calculated Times</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN: ISHA DONE SPLASH
+════════════════════════════════════ -->
+<div class="screen" id="screen-isha-splash">
+  <div style="padding:32px 24px;flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center">
+    <div style="font-size:56px;margin-bottom:16px">🌙</div>
+    <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px" id="isha-splash-title">Alhamdulillah</div>
+    <div style="font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:28px" id="isha-splash-msg">You completed all your prayers today. May Allah accept from you.</div>
+    <div class="card card-gold" style="margin-bottom:24px;text-align:center">
+      <div style="font-size:13px;color:var(--text3);margin-bottom:8px" id="isha-splash-summary-label">Today's summary</div>
+      <div style="font-size:32px;font-weight:700;color:var(--gold)" id="isha-splash-count">5/5</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:4px" id="isha-splash-count-label">prayers completed</div>
+    </div>
+    <div style="font-size:14px;color:var(--text2);font-style:italic;margin-bottom:28px" id="isha-splash-hadith"></div>
+    <div style="margin-bottom:12px">
+      <button class="btn btn-outline btn-sm" onclick="showScreen('screen-prayer-tracker')" id="isha-splash-manual-btn" style="display:none">🕐 Adjust Prayer Times</button>
+    </div>
+    <button class="btn btn-gold" onclick="showScreen('screen-home')" id="isha-splash-home-btn">Return Home</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottom-nav">
+  <button class="nav-item active" id="nav-home" onclick="navTo('home')">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label" id="nav-home-label">Home</span>
+  </button>
+  <button class="nav-item" id="nav-urge" onclick="navTo('urge')">
+    <span class="nav-icon">🛡️</span>
+    <span class="nav-label" id="nav-urge-label">Urge Help</span>
+  </button>
+  <button class="nav-item" id="nav-milestones" onclick="navTo('milestones')">
+    <span class="nav-icon">🏆</span>
+    <span class="nav-label" id="nav-ms-label">Progress</span>
+  </button>
+  <button class="nav-item" id="nav-settings" onclick="navTo('settings')">
+    <span class="nav-icon">⚙️</span>
+    <span class="nav-label" id="nav-settings-label">Settings</span>
+  </button>
+</div>
+
+
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+
+
 </body>
 </html>
