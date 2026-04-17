@@ -322,6 +322,7 @@ let dhikrIdx = 0;
 let dhikrCount = 0;
 let breathRunning = false;
 let breathCycles = 0;
+let breathTimer = null;
 let selectedAddiction = null;
 let tempSelectedAddiction = null;
 
@@ -386,6 +387,14 @@ const T = {
       food:{name:'Overeating', label:'MINDFUL EATING'},
       anger:{name:'Anger', label:'STAYING CALM'},
       procrastination:{name:'Procrastination', label:'TAKING ACTION'},
+      drugs:{name:'Drugs', label:'DRUG FREE'},
+      lying:{name:'Lying', label:'STAYING HONEST'},
+      bad_language:{name:'Bad Language', label:'SPEAKING CLEAN'},
+      netflix:{name:'Binge Watching', label:'SCREEN BALANCED'},
+      games:{name:'Gaming', label:'GAMING BALANCED'},
+      shopping:{name:'Overspending', label:'SPENDING MINDFULLY'},
+      negativity:{name:'Negativity', label:'STAYING POSITIVE'},
+      caffeine:{name:'Caffeine', label:'CAFFEINE FREE'},
     },
     milestones:[
       {key:'1h', name:'First Hour', time:'1 hour'},
@@ -472,6 +481,59 @@ const T = {
         {icon:'🫁', name:'Breathe & Focus', desc:'Clear your mind before starting.', screen:'screen-breathing'},
         {icon:'📿', name:'Dhikr for Clarity', desc:'بِسْمِ اللهِ — Begin with the name of Allah.', screen:'screen-dhikr'},
       ],
+      drugs:[
+        {icon:'🫁', name:'Deep Breathing', desc:'Slow your body down. Breathe through the craving.', screen:'screen-breathing'},
+        {icon:'💧', name:'Drink Cold Water', desc:'Cold water shocks your system and breaks the urge cycle.', screen:null, action:'waterTip'},
+        {icon:'📿', name:'Dhikr', desc:'Replace the craving with remembrance of Allah.', screen:'screen-dhikr'},
+        {icon:'🏃', name:'Physical Activity', desc:'Run, do push-ups — exhaust the urge physically.', screen:null, action:'exerciseTip'},
+        {icon:'🤲', name:'Make Dua', desc:'Ask Allah for strength. He is closer than you think.', screen:null, action:'duaTip'},
+        {icon:'🌐', name:'Change Location', desc:'Leave the environment immediately. Go outside.', screen:null, action:'envTip'},
+      ],
+      lying:[
+        {icon:'⏸️', name:'Pause Before Speaking', desc:'Take 3 seconds before you respond to anything.', screen:null, action:'pauseTip'},
+        {icon:'🫁', name:'Breathe', desc:'Anxiety drives lying. Calm yourself first.', screen:'screen-breathing'},
+        {icon:'📿', name:'Dhikr', desc:'The Prophet ﷺ said truthfulness leads to Paradise.', screen:'screen-dhikr'},
+        {icon:'✍️', name:'Write It Down', desc:'Write what you want to say honestly first, then say it.', screen:null, action:'journalTip'},
+      ],
+      bad_language:[
+        {icon:'🤐', name:'Bite Your Tongue', desc:'Literally pause. The urge to say it will pass in 3 seconds.', screen:null, action:'pauseTip'},
+        {icon:'📿', name:'Say Astaghfirullah', desc:'Replace the bad word with seeking forgiveness.', screen:'screen-dhikr'},
+        {icon:'🫁', name:'Breathe', desc:'Frustration drives bad language. Slow down.', screen:'screen-breathing'},
+        {icon:'📖', name:'Recall the Hadith', desc:'"Whoever believes in Allah and the Last Day should speak good or remain silent." — Bukhari', screen:null, action:'angerTip'},
+      ],
+      netflix:[
+        {icon:'⏱️', name:'Set a Timer', desc:'Decide your limit before you start. Stop when it rings.', screen:null, action:'timerTip'},
+        {icon:'📿', name:'Dhikr Instead', desc:'Do dhikr for 10 minutes before watching. Often the urge passes.', screen:'screen-dhikr'},
+        {icon:'📖', name:'Read Instead', desc:'Open a book. Even one page shifts your mindset.', screen:null, action:'readTip'},
+        {icon:'🫁', name:'Breathe', desc:'Ask yourself: am I watching to fill emptiness?', screen:'screen-breathing'},
+        {icon:'🚶', name:'Go for a Walk', desc:'The urge to watch is often boredom. Fix the boredom instead.', screen:null, action:'walkTip'},
+      ],
+      games:[
+        {icon:'⏱️', name:'Set a Session Limit', desc:'Decide before you start: 30 minutes maximum.', screen:null, action:'timerTip'},
+        {icon:'📿', name:'Dhikr First', desc:'Do 33 dhikr before you open any game.', screen:'screen-dhikr'},
+        {icon:'🚶', name:'Go Outside', desc:'Physical movement breaks the pull of screens.', screen:null, action:'walkTip'},
+        {icon:'✍️', name:'Write Your Goals', desc:'Write what you could achieve in the time you spend gaming.', screen:null, action:'taskTip'},
+        {icon:'🫁', name:'Breathe', desc:'Games trigger dopamine. Reset your brain with breathing.', screen:'screen-breathing'},
+      ],
+      shopping:[
+        {icon:'✍️', name:'Write Before You Buy', desc:'Write down what you want to buy and wait 24 hours.', screen:null, action:'writeLossTip'},
+        {icon:'📿', name:'Dhikr', desc:'Contentment (qana\'ah) is a treasure. Remember Allah\'s provision.', screen:'screen-dhikr'},
+        {icon:'🫁', name:'Breathe', desc:'Shopping impulses peak and pass within minutes.', screen:'screen-breathing'},
+        {icon:'💧', name:'Drink Water', desc:'Pause. Hydrate. Ask: do I truly need this?', screen:null, action:'waterTip'},
+      ],
+      negativity:[
+        {icon:'✍️', name:'Write 3 Gratitudes', desc:'Right now — write 3 things you are grateful for.', screen:null, action:'journalTip'},
+        {icon:'📿', name:'Alhamdulillah', desc:'Say it 33 times. Gratitude rewires the mind.', screen:'screen-dhikr'},
+        {icon:'🫁', name:'Breathe', desc:'Negative thoughts spiral. Break the cycle with breath.', screen:'screen-breathing'},
+        {icon:'📖', name:'Read a Quran Verse', desc:'Open the app to today\'s verse. Let it shift your perspective.', screen:null, action:'quranTip'},
+        {icon:'🚶', name:'Walk in Nature', desc:'Sunlight and movement are proven mood shifters.', screen:null, action:'walkTip'},
+      ],
+      caffeine:[
+        {icon:'💧', name:'Drink Water', desc:'Replace the coffee urge with a full glass of cold water.', screen:null, action:'waterTip'},
+        {icon:'🚶', name:'Walk It Off', desc:'A 5-minute walk gives more energy than caffeine.', screen:null, action:'walkTip'},
+        {icon:'🫁', name:'Deep Breathing', desc:'Energizing breath: 4 count inhale, 1 count hold, 4 exhale.', screen:'screen-breathing'},
+        {icon:'📿', name:'Dhikr', desc:'The remembrance of Allah gives the heart true rest.', screen:'screen-dhikr'},
+      ],
     },
     toolTips:{
       waterTip:'Drink a full glass of water slowly. Cravings often pass within 10-15 minutes.',
@@ -490,6 +552,7 @@ const T = {
       twoMinTip:'Set a timer for 2 minutes and just begin the task. You will almost always continue.',
       taskTip:'What is the very next physical action needed? Write it. Then do only that.',
       timerTip:'Put your phone face down and set a timer for 5 minutes. You can check it after — but only after.',
+      pauseTip:'Take a full 3-second pause before speaking or acting. In that pause, ask: is this true? Is this necessary? Is this kind?',
     },
   },
   ar: {
@@ -549,6 +612,14 @@ const T = {
       food:{name:'الإفراط في الأكل', label:'أكل واعٍ'},
       anger:{name:'الغضب', label:'محافظ على الهدوء'},
       procrastination:{name:'التسويف', label:'يتخذ الإجراء'},
+      drugs:{name:'المخدرات', label:'خالٍ من المخدرات'},
+      lying:{name:'الكذب', label:'ملتزم بالصدق'},
+      bad_language:{name:'الكلام السيء', label:'كلام نظيف'},
+      netflix:{name:'مشاهدة مفرطة', label:'مشاهدة متوازنة'},
+      games:{name:'الألعاب الإلكترونية', label:'ألعاب متوازنة'},
+      shopping:{name:'الإنفاق المفرط', label:'إنفاق واعٍ'},
+      negativity:{name:'السلبية', label:'إيجابي'},
+      caffeine:{name:'الكافيين', label:'خالٍ من الكافيين'},
     },
     milestones:[
       {key:'1h', name:'الساعة الأولى', time:'ساعة واحدة'},
@@ -635,6 +706,59 @@ const T = {
         {icon:'🫁', name:'تنفس وركّز', desc:'صفِّ ذهنك قبل البدء.', screen:'screen-breathing'},
         {icon:'📿', name:'ذكر للوضوح', desc:'بِسْمِ اللهِ — ابدأ بذكر اسم الله.', screen:'screen-dhikr'},
       ],
+      drugs:[
+        {icon:'🫁', name:'تنفس عميق', desc:'أبطئ جسمك. تنفس خلال الشهوة.', screen:'screen-breathing'},
+        {icon:'💧', name:'اشرب ماء بارد', desc:'الماء البارد يصدم جسمك ويكسر دورة الإغراء.', screen:null, action:'waterTip'},
+        {icon:'📿', name:'ذكر', desc:'استبدل الشهوة بذكر الله.', screen:'screen-dhikr'},
+        {icon:'🏃', name:'نشاط بدني', desc:'اركض أو اعمل ضغطات — استنزف الشهوة جسديًا.', screen:null, action:'exerciseTip'},
+        {icon:'🤲', name:'ادعُ الله', desc:'اطلب من الله القوة. هو أقرب مما تظن.', screen:null, action:'duaTip'},
+        {icon:'🌐', name:'غيّر المكان', desc:'غادر البيئة فورًا. اخرج.', screen:null, action:'envTip'},
+      ],
+      lying:[
+        {icon:'⏸️', name:'توقف قبل الكلام', desc:'خذ 3 ثوانٍ قبل أي رد.', screen:null, action:'pauseTip'},
+        {icon:'🫁', name:'تنفس', desc:'القلق يدفع للكذب. هدئ نفسك أولًا.', screen:'screen-breathing'},
+        {icon:'📿', name:'ذكر', desc:'قال النبي ﷺ: الصدق يهدي إلى الجنة.', screen:'screen-dhikr'},
+        {icon:'✍️', name:'اكتب الحقيقة', desc:'اكتب ما تريد قوله بصدق أولًا، ثم قله.', screen:null, action:'journalTip'},
+      ],
+      bad_language:[
+        {icon:'🤐', name:'عضّ لسانك', desc:'توقف حرفيًا. الرغبة في قوله ستمر في 3 ثوانٍ.', screen:null, action:'pauseTip'},
+        {icon:'📿', name:'قل أستغفر الله', desc:'استبدل الكلام السيء بطلب المغفرة.', screen:'screen-dhikr'},
+        {icon:'🫁', name:'تنفس', desc:'الإحباط يقود للكلام السيء. تمهل.', screen:'screen-breathing'},
+        {icon:'📖', name:'تذكر الحديث', desc:'«من كان يؤمن بالله واليوم الآخر فليقل خيرًا أو ليصمت.» — البخاري', screen:null, action:'angerTip'},
+      ],
+      netflix:[
+        {icon:'⏱️', name:'ضع مؤقتًا', desc:'حدد وقتًا قبل البدء. توقف عند الرنين.', screen:null, action:'timerTip'},
+        {icon:'📿', name:'ذكر بدلًا من ذلك', desc:'اذكر الله 10 دقائق قبل المشاهدة. كثيرًا ما تمر الرغبة.', screen:'screen-dhikr'},
+        {icon:'📖', name:'اقرأ بدلًا من ذلك', desc:'افتح كتابًا. حتى صفحة واحدة تغير حالتك.', screen:null, action:'readTip'},
+        {icon:'🫁', name:'تنفس', desc:'اسأل نفسك: هل أشاهد لأملأ فراغًا؟', screen:'screen-breathing'},
+        {icon:'🚶', name:'امشِ', desc:'الرغبة في المشاهدة غالبًا ملل. عالج الملل.', screen:null, action:'walkTip'},
+      ],
+      games:[
+        {icon:'⏱️', name:'ضع حدًا للجلسة', desc:'قرر قبل البدء: 30 دقيقة كحد أقصى.', screen:null, action:'timerTip'},
+        {icon:'📿', name:'ذكر أولًا', desc:'اعمل 33 ذكرًا قبل فتح أي لعبة.', screen:'screen-dhikr'},
+        {icon:'🚶', name:'اخرج', desc:'الحركة الجسدية تكسر جاذبية الشاشات.', screen:null, action:'walkTip'},
+        {icon:'✍️', name:'اكتب أهدافك', desc:'اكتب ما يمكنك تحقيقه في وقت الألعاب.', screen:null, action:'taskTip'},
+        {icon:'🫁', name:'تنفس', desc:'الألعاب تثير الدوبامين. أعد ضبط دماغك بالتنفس.', screen:'screen-breathing'},
+      ],
+      shopping:[
+        {icon:'✍️', name:'اكتب قبل الشراء', desc:'اكتب ما تريد شراءه وانتظر 24 ساعة.', screen:null, action:'writeLossTip'},
+        {icon:'📿', name:'ذكر', desc:'القناعة كنز. تذكر رزق الله.', screen:'screen-dhikr'},
+        {icon:'🫁', name:'تنفس', desc:'دوافع الشراء تصل إلى ذروتها وتمر في دقائق.', screen:'screen-breathing'},
+        {icon:'💧', name:'اشرب ماء', desc:'توقف. ارتوِ. اسأل: هل أحتاج هذا حقًا؟', screen:null, action:'waterTip'},
+      ],
+      negativity:[
+        {icon:'✍️', name:'اكتب 3 شُكر', desc:'الآن — اكتب 3 أشياء تشكر عليها.', screen:null, action:'journalTip'},
+        {icon:'📿', name:'الحمد لله', desc:'قلها 33 مرة. الشكر يعيد برمجة العقل.', screen:'screen-dhikr'},
+        {icon:'🫁', name:'تنفس', desc:'الأفكار السلبية تتصاعد. اكسر الدورة بالتنفس.', screen:'screen-breathing'},
+        {icon:'📖', name:'اقرأ آية', desc:'افتح آية اليوم. دعها تغير منظورك.', screen:null, action:'quranTip'},
+        {icon:'🚶', name:'امشِ في الطبيعة', desc:'ضوء الشمس والحركة مثبتان لتحسين المزاج.', screen:null, action:'walkTip'},
+      ],
+      caffeine:[
+        {icon:'💧', name:'اشرب ماء', desc:'استبدل رغبة القهوة بكأس ماء بارد كامل.', screen:null, action:'waterTip'},
+        {icon:'🚶', name:'امشِ', desc:'نزهة 5 دقائق تعطي طاقة أكثر من الكافيين.', screen:null, action:'walkTip'},
+        {icon:'🫁', name:'تنفس عميق', desc:'تنفس منشط: شهيق 4، حبس 1، زفير 4.', screen:'screen-breathing'},
+        {icon:'📿', name:'ذكر', desc:'ذكر الله يريح القلب راحة حقيقية.', screen:'screen-dhikr'},
+      ],
     },
     toolTips:{
       waterTip:'اشرب كأسًا كاملًا من الماء ببطء. غالبًا تمر الشهوات في ١٠-١٥ دقيقة.',
@@ -653,6 +777,7 @@ const T = {
       twoMinTip:'ضع مؤقتًا لدقيقتين وابدأ المهمة. ستستمر تلقائيًا في جميع الأحوال تقريبًا.',
       taskTip:'ما هي الخطوة الجسدية التالية التي تحتاجها؟ اكتبها. ثم افعل تلك الخطوة فقط.',
       timerTip:'ضع هاتفك وجهًا للأسفل وضع مؤقتًا لـ٥ دقائق. يمكنك التحقق منه بعدها — لكن بعدها فقط.',
+      pauseTip:'خذ توقفًا كاملًا 3 ثوانٍ قبل الكلام أو الفعل. في تلك اللحظة اسأل نفسك: هل هذا صحيح؟ هل هو ضروري؟',
     },
   }
 };
@@ -740,7 +865,7 @@ function applyTranslations(){
   document.getElementById('q-continue-btn').textContent=tr.qContinue;
   document.getElementById('q-skip-btn').textContent=tr.qSkip;
   document.getElementById('add-title').textContent=tr.addTitle;
-  document.getElementById('add-sub').textContent=tr.addSub;
+  document.getElementById('add-sub').textContent=l==='ar'?'اختر هدفًا أو أكثر. يمكنك التغيير لاحقًا.':'Select one or more goals. You can change this later.';
   document.getElementById('add-continue-btn').textContent=tr.addContinue;
   document.getElementById('urge-header-title').textContent=tr.urgeHeader;
   document.getElementById('urge-sub').textContent=tr.urgeSub;
@@ -773,10 +898,12 @@ function applyTranslations(){
   document.getElementById('stat-best-label').textContent=tr.statBest;
   document.getElementById('home-timer-unit').textContent=tr.timerUnits;
   // Update addiction name labels
-  Object.keys(tr.addictions).forEach(function(k){
-    const el=document.getElementById('add-'+k+'-name');
-    if(el) el.textContent=tr.addictions[k].name;
-  });
+  if(tr.addictions){
+    Object.keys(tr.addictions).forEach(function(k){
+      const el=document.getElementById('add-'+k+'-name');
+      if(el) el.textContent=tr.addictions[k].name;
+    });
+  }
   if(S.addiction) updateHomeAddictionLabel();
   updateDhikr();
   updateFeatureButtonLabels();
@@ -814,35 +941,111 @@ function showQuranVerse(){
 // ═══════════════════════════════════════
 // ADDICTION
 // ═══════════════════════════════════════
+// Multi-select goals
+let selectedGoals=[];
+let customGoalText='';
+
 function selectAddiction(type){
-  document.querySelectorAll('.addiction-card').forEach(c=>c.classList.remove('selected'));
   const el=document.getElementById('add-'+type);
-  if(el) el.classList.add('selected');
-  selectedAddiction=type;
-  document.getElementById('add-continue-btn').style.display='block';
+  if(!el) return;
+  const idx=selectedGoals.indexOf(type);
+  if(idx===-1){ selectedGoals.push(type); el.classList.add('selected'); }
+  else { selectedGoals.splice(idx,1); el.classList.remove('selected'); }
+  selectedAddiction=selectedGoals[0]||null;
+  updateAddictionSummary();
+}
+
+function updateCustomGoal(val){
+  customGoalText=val.trim();
+  const preview=document.getElementById('add-custom-preview');
+  const namePreview=document.getElementById('add-custom-name-preview');
+  if(customGoalText.length>0){ namePreview.textContent=customGoalText; preview.style.display='block'; }
+  else { preview.style.display='none'; }
+  updateAddictionSummary();
+}
+
+function clearCustomGoal(){
+  customGoalText='';
+  const inp=document.getElementById('add-custom-input');
+  if(inp) inp.value='';
+  const prev=document.getElementById('add-custom-preview');
+  if(prev) prev.style.display='none';
+  updateAddictionSummary();
+}
+
+function updateAddictionSummary(){
+  const lang=S.lang||'en';
+  const tr=(T[lang]||T['en'])||{};
+  const btn=document.getElementById('add-continue-btn');
+  const summary=document.getElementById('add-selected-summary');
+  if(!btn) return; // DOM not ready yet
+  const total=selectedGoals.length+(customGoalText?1:0);
+  if(total===0){ btn.style.display='none'; if(summary)summary.style.display='none'; return; }
+  btn.style.display='block';
+  const names=selectedGoals.map(function(k){ return ((tr.addictions||{})[k]||{}).name||k; });
+  if(customGoalText) names.push(customGoalText);
+  const label=lang==='ar'?'الأهداف المختارة: ':'Selected: ';
+  if(summary){ summary.textContent=label+names.join(' · '); summary.style.display='block'; }
 }
 
 function confirmAddiction(){
-  if(!selectedAddiction) return;
-  S.addiction=selectedAddiction;
+  if(selectedGoals.length===0&&!customGoalText) return;
+  const primary=selectedGoals.length>0?selectedGoals[0]:'__custom__';
+  S.addiction=primary;
+  const allGoals=[...selectedGoals];
+  if(customGoalText){ allGoals.push('__custom__:'+customGoalText); localStorage.setItem('aa_custom_goal',customGoalText); }
+  localStorage.setItem('aa_all_goals',JSON.stringify(allGoals));
   if(!S.startTs) S.startTs=Date.now();
   S.onboarded=true;
   applyTranslations();
   buildUrgeTools();
-  startTimer();
   buildMilestoneStrip();
   buildMilestones();
+  updateHomeAddictionLabel();
   updateStats();
   showScreen('screen-home');
+  if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').then(function(){ initNotifications(); }); }
 }
+
+function getAllGoals(){
+  try{ const a=JSON.parse(localStorage.getItem('aa_all_goals')||'null'); if(a&&a.length) return a; }catch(e){}
+  return S.addiction?[S.addiction]:[];
+}
+
 
 function updateHomeAddictionLabel(){
   const add=S.addiction;
   if(!add) return;
-  const tr=T[S.lang||'en'];
-  const label=(tr.addictions[add]||{}).label||add.toUpperCase();
-  document.getElementById('home-addiction-label').textContent=label;
-  document.getElementById('settings-addiction-sub').textContent=(tr.addictions[add]||{}).name||add;
+  const tr=T[S.lang||'en']||T['en'];
+  const addictions=tr.addictions||{};
+  // Handle custom goal
+  if(add==='__custom__'){
+    const customName=localStorage.getItem('aa_custom_goal')||'Custom';
+    const el1=document.getElementById('home-addiction-label');
+    const el2=document.getElementById('settings-addiction-sub');
+    if(el1) el1.textContent=customName.toUpperCase();
+    if(el2) el2.textContent=customName;
+    return;
+  }
+  // Multiple goals — show all in label
+  const allGoals=getAllGoals();
+  const lang=S.lang||'en';
+  let label, subName;
+  if(allGoals.length>1){
+    const names=allGoals.map(function(k){
+      if(k.startsWith('__custom__:')) return k.slice(11);
+      return (addictions[k]||{}).name||k;
+    });
+    label=names.join(' · ');
+    subName=label;
+  } else {
+    label=(addictions[add]||{}).label||add.toUpperCase();
+    subName=(addictions[add]||{}).name||add;
+  }
+  const el1=document.getElementById('home-addiction-label');
+  const el2=document.getElementById('settings-addiction-sub');
+  if(el1) el1.textContent=label;
+  if(el2) el2.textContent=subName;
 }
 
 // ═══════════════════════════════════════
@@ -1038,7 +1241,7 @@ function updateDhikr(){
   document.getElementById('dhikr-count').textContent=dhikrCount;
   const lang=S.lang||'en';
   document.getElementById('dhikr-target').textContent=(lang==='ar'?'الهدف: ':'Target: ')+d.target;
-  document.getElementById('dhikr-tap-text').textContent=T[lang].dhikrTap||'Tap';
+  document.getElementById('dhikr-tap-text').textContent=(T[lang]||T['en']).dhikrTap||'Tap';
 }
 
 function tapDhikr(){
@@ -1080,6 +1283,12 @@ function showLangChange(){
 function showAddictionChange(){
   S.addiction=null;
   selectedAddiction=null;
+  selectedGoals=[];
+  customGoalText='';
+  document.querySelectorAll('.addiction-card').forEach(function(c){c.classList.remove('selected');});
+  const inp=document.getElementById('add-custom-input');if(inp)inp.value='';
+  const prev=document.getElementById('add-custom-preview');if(prev)prev.style.display='none';
+  const sum=document.getElementById('add-selected-summary');if(sum)sum.style.display='none';
   applyTranslations();
   showScreen('screen-addiction');
 }
@@ -1209,6 +1418,38 @@ const SUCCESS_STORIES = {
   procrastination:[
     {days:14, name:'Zaid, 24', text:'2 weeks of starting before I felt ready. The 2-minute rule changed everything. Nothing is as hard as beginning.'},
     {days:30, name:'Layla, 27', text:'I started with one task a day. 30 days later I am more productive than I have ever been, and I actually rest guilt-free.'},
+  ],
+  drugs:[
+    {days:30, name:'Anonymous', text:'30 days. I replaced every urge with dhikr and called my brother whenever things got hard. You cannot do this alone.'},
+    {days:90, name:'Anonymous', text:'90 days clean. Tawbah was the beginning. Then structure — prayer times, sleep, exercise. Replace the habit with something bigger.'},
+  ],
+  lying:[
+    {days:21, name:'Tariq, 29', text:'21 days of pausing before I speak. I caught myself about to lie 40 times and stopped. People trust me more already.'},
+    {days:60, name:'Nadia, 33', text:'60 days. The hardest part was admitting I lied out of fear. Once I faced the fear, the lying stopped on its own.'},
+  ],
+  bad_language:[
+    {days:14, name:'Khalil, 25', text:'Two weeks of replacing every bad word with Astaghfirullah. My family noticed before I did.'},
+    {days:30, name:'Rania, 28', text:'30 days. I started reading Quran in the morning. It set the tone for how I spoke all day.'},
+  ],
+  netflix:[
+    {days:21, name:'Sami, 31', text:'3 weeks without binge watching. I finished a book, started journaling, and my sleep improved dramatically.'},
+    {days:30, name:'Hana, 26', text:'30 days of limits. I still watch — but intentionally. The difference is enormous.'},
+  ],
+  games:[
+    {days:30, name:'Omar, 22', text:'30 days of one-hour limits. I finished reading a full book and started learning a new skill. The time was always there.'},
+    {days:60, name:'Bilal, 27', text:'60 days. Gaming was filling a loneliness I refused to acknowledge. When I fixed the loneliness, the addiction dissolved.'},
+  ],
+  shopping:[
+    {days:30, name:'Mona, 34', text:'30 days of the 24-hour rule. I saved more in one month than I had in the previous six months.'},
+    {days:60, name:'Yusra, 29', text:'60 days. I realized I was buying feelings, not things. Once I named the feeling, I could deal with it directly.'},
+  ],
+  negativity:[
+    {days:21, name:'Ibrahim, 38', text:'21 days of writing 3 gratitudes every morning. It sounds simple. It changed everything.'},
+    {days:40, name:'Sara, 30', text:'40 days of catching negative thoughts before speaking them. My relationships transformed. I had no idea how much my words affected people.'},
+  ],
+  caffeine:[
+    {days:14, name:'Hassan, 35', text:'2 weeks without coffee. The headaches lasted 3 days. After that — better sleep, calmer mornings, real energy.'},
+    {days:30, name:'Leila, 27', text:'30 days caffeine free. I replaced the morning coffee ritual with a walk and Quran. Better than any coffee ever was.'},
   ],
 };
 
@@ -1408,7 +1649,7 @@ function openWidget(){
   document.getElementById('w-label').textContent=lang==='ar'?'أيام : ساعات نظيفة':'days : hours clean';
   const add=S.addiction||'smoking';
   const tr=T[lang];
-  document.getElementById('w-icon').textContent={'smoking':'🚬','masturbation':'🛡️','social_media':'📱','alcohol':'🍶','gambling':'🎲','food':'🍔','anger':'😤','procrastination':'⏰'}[add]||'🌙';
+  document.getElementById('w-icon').textContent={'smoking':'🚬','masturbation':'🛡️','social_media':'📱','alcohol':'🍶','gambling':'🎲','food':'🍔','anger':'😤','procrastination':'⏰','drugs':'💊','lying':'🤥','bad_language':'🤬','netflix':'📺','games':'🎮','shopping':'🛍️','negativity':'🌧️','caffeine':'☕'}[add]||'🌙';
   // next milestone
   const keys=['1h','3h','12h','1d','3d','1w','2w','1m','3m','6m','1y'];
   let nextMs=null;
@@ -1448,6 +1689,8 @@ function updateFeatureButtonLabels(){
   el('home-btn-prayer', lang==='ar'?'الصلاة':'Prayer');
   el('home-btn-widget', lang==='ar'?'ملخصي':'Summary');
   el('home-btn-why', lang==='ar'?'لماذا بدأت':'Why I Started');
+  const customLabel=document.getElementById('add-custom-label');if(customLabel)customLabel.textContent=lang==='ar'?'+ أضف هدفًا مخصصًا':'+ Add your own goal';
+  const customInp=document.getElementById('add-custom-input');if(customInp)customInp.placeholder=lang==='ar'?'مثال: المخدرات، الكذب...':'e.g. Drugs, Lying, Caffeine...';
 }
 
 
@@ -1558,46 +1801,59 @@ function buildPopularCities(){
 function useGPSLocation(){
   const lang=S.lang||'en';
   const btn=document.getElementById('gps-btn');
-  btn.textContent=lang==='ar'?'⏳ جارٍ تحديد الموقع...':'⏳ Detecting location...';
+  const btnText=document.getElementById('gps-btn-text');
+  if(btnText) btnText.textContent=lang==='ar'?'⏳ جارٍ تحديد الموقع...':'⏳ Detecting location...';
   btn.disabled=true;
+
   if(!navigator.geolocation){
-    btn.textContent=lang==='ar'?'❌ GPS غير متاح':'❌ GPS not available';
+    if(btnText) btnText.textContent=lang==='ar'?'❌ GPS غير متاح':'❌ GPS not available';
     btn.disabled=false;
     return;
   }
+
   navigator.geolocation.getCurrentPosition(
     function(pos){
       const lat=pos.coords.latitude;
       const lng=pos.coords.longitude;
-      // Find closest city from our list
+
+      // Find closest city for timezone
       let closest=POPULAR_CITIES[0];
       let minDist=Infinity;
       POPULAR_CITIES.forEach(function(c){
-        const dist=Math.sqrt(Math.pow(c.lat-lat,2)+Math.pow(c.lng-lng,2));
-        if(dist<minDist){minDist=dist;closest=c;}
+        const d=Math.sqrt(Math.pow(c.lat-lat,2)+Math.pow(c.lng-lng,2));
+        if(d<minDist){minDist=d;closest=c;}
       });
-      // Create a custom city entry with GPS coords but closest city's timezone
+
+      // Build a GPS city entry with exact coordinates but nearest city's timezone
       const gpsCity={
-        name:closest.name+' (GPS)',
-        ar:closest.ar+' (GPS)',
+        name:'GPS Location',
+        ar:'موقع GPS',
         country:closest.country,
         lat:lat,
         lng:lng,
         tz:closest.tz
       };
+
+      // Clear cache so new times are calculated
+      Object.keys(localStorage).filter(function(k){
+        return k.startsWith('aa_ptimes_');
+      }).forEach(function(k){ localStorage.removeItem(k); });
+      cachedPrayerTimes=null;
+
       btn.disabled=false;
-      localStorage.removeItem('aa_ptimes_'+getPrayerTodayKey());
       selectCity(gpsCity);
     },
     function(err){
-      btn.textContent=lang==='ar'?'📡 استخدام موقعي':'📡 Use my GPS location';
+      if(btnText) btnText.textContent=lang==='ar'?'📡 استخدام موقعي':'📡 Use my GPS location';
       btn.disabled=false;
-      const msg=lang==='ar'?'تعذّر الوصول إلى الموقع. اختر مدينة يدوياً.':'Could not access GPS. Please pick a city manually.';
-      document.getElementById('loc-current-text').textContent=msg;
+      document.getElementById('loc-current-text').textContent=
+        lang==='ar'?'تعذّر الوصول إلى GPS. اختر مدينة يدوياً.':'Could not access GPS. Please pick a city manually.';
     },
-    {timeout:10000,enableHighAccuracy:true}
+    {timeout:12000, enableHighAccuracy:true}
   );
 }
+
+
 function openLocationPicker(){
   const lang = S.lang || 'en';
   document.getElementById('loc-header-title').textContent = lang==='ar'?'اختر مدينتك':'Choose Your City';
@@ -2501,9 +2757,9 @@ document.addEventListener('DOMContentLoaded', function(){ init(); });
 ════════════════════════════════════ -->
 <div class="screen" id="screen-addiction">
   <div class="addiction-body">
-    <div style="padding:8px 0 20px;text-align:center">
+    <div style="padding:8px 0 16px;text-align:center">
       <div class="addiction-title" id="add-title">What are you working on?</div>
-      <div class="addiction-sub" id="add-sub">Choose what you want to break free from. You can change this later.</div>
+      <div class="addiction-sub" id="add-sub">Select one or more. You can change this later.</div>
     </div>
     <div class="addiction-grid">
       <div class="addiction-card" onclick="selectAddiction('smoking')" id="add-smoking">
@@ -2546,7 +2802,29 @@ document.addEventListener('DOMContentLoaded', function(){ init(); });
         <div class="addiction-card-name" id="add-procrastination-name">Procrastination</div>
         <div class="addiction-card-name-ar">التسويف</div>
       </div>
+
     </div>
+    <!-- Custom goal row -->
+    <div style="margin-top:4px;margin-bottom:12px">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px;text-align:center" id="add-custom-label">+ Add your own goal</div>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="add-custom-input" placeholder="e.g. Drugs, Lying, Caffeine..."
+          style="flex:1;background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none"
+          oninput="updateCustomGoal(this.value)" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'" />
+      </div>
+      <div id="add-custom-preview" style="display:none;margin-top:8px">
+        <div class="addiction-card selected" style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:default">
+          <span id="add-custom-icon" style="font-size:22px">🎯</span>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text)" id="add-custom-name-preview"></div>
+            <div style="font-size:11px;color:var(--gold)">Custom goal</div>
+          </div>
+          <button onclick="clearCustomGoal()" style="margin-left:auto;background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer">✕</button>
+        </div>
+      </div>
+    </div>
+    <!-- Selected summary -->
+    <div id="add-selected-summary" style="display:none;background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--text2)" ></div>
     <button class="btn btn-gold" id="add-continue-btn" onclick="confirmAddiction()" style="display:none"></button>
   </div>
 </div>
@@ -2745,7 +3023,7 @@ document.addEventListener('DOMContentLoaded', function(){ init(); });
           <span class="settings-item-icon">🌙</span>
           <div>
             <div class="settings-item-text">عادة</div>
-            <div class="settings-item-sub">Version 2.4</div>
+            <div class="settings-item-sub">Version 2.5</div>
           </div>
         </div>
       </div>
@@ -2763,7 +3041,7 @@ document.addEventListener('DOMContentLoaded', function(){ init(); });
           <span class="settings-item-icon">❤️</span>
           <div>
             <div class="settings-item-text" id="credits-made-text">Contact for changes</div>
-            <div class="settings-item-sub">Osamah.a.hasan@gmail.com</div>
+            <div class="settings-item-sub" id="credits-made-sub"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b3fcc0d2ded2db9dd29ddbd2c0d2ddf3d4ded2dadf9dd0dcde">[email&#160;protected]</a></div>
           </div>
         </div>
       </div>
